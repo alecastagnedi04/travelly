@@ -31,6 +31,9 @@ public class Trip {
     @OneToMany(mappedBy = "trip")
     private List<Participant> participants = new ArrayList<>();
 
+    @OneToMany(mappedBy = "trip")
+    private List<Expense> expenses = new ArrayList<>();
+
     public Trip() {
     }
 
@@ -82,7 +85,7 @@ public class Trip {
         this.budget = budget;
     }
 
-    
+
     public List<Destination> getDestinations() {
     return destinations;
 }
@@ -103,5 +106,12 @@ public class Trip {
 }
     public void setParticipants(List<Participant> participants) {
     this.participants = participants;
+}
+
+    public List<Expense> getExpenses() {
+    return expenses;
+}
+    public void setExpenses(List<Expense> expenses) {
+    this.expenses = expenses;
 }
 }

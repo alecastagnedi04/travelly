@@ -6,6 +6,9 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import java.util.ArrayList;
+import java.util.List;
+import jakarta.persistence.OneToMany;
 
 @Entity
 public class Participant {
@@ -19,6 +22,9 @@ public class Participant {
     @ManyToOne  //perchè molti partecipanti possono appartenere a un solo trip.
     @JoinColumn(name = "trip_id")
     private Trip trip;
+
+    @OneToMany(mappedBy = "paidBy")
+    private List<Expense> paidExpenses = new ArrayList<>();
 
     public Participant() {
     }
@@ -54,4 +60,12 @@ public class Participant {
     public void setTrip(Trip trip) {
         this.trip = trip;
     }
+
+    
+    public List<Expense> getPaidExpenses() {
+    return paidExpenses;
+}
+    public void setPaidExpenses(List<Expense> paidExpenses) {
+    this.paidExpenses = paidExpenses;
+}
 }
