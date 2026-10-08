@@ -1,11 +1,14 @@
 package it.uniroma3.siw.travelly.model; 
 
 import java.time.LocalDate;  //per la data del viaggio
+import java.util.ArrayList;
+import java.util.List;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;  //per le persistenze
+import jakarta.persistence.OneToMany;
 
 @Entity
 public class Trip {
@@ -18,6 +21,9 @@ public class Trip {
     private LocalDate startDate;
     private LocalDate endDate;
     private Double budget;
+
+    @OneToMany(mappedBy = "trip")
+    private List<Destination> destinations = new ArrayList<>();
 
     public Trip() {
     }
@@ -69,4 +75,12 @@ public class Trip {
     public void setBudget(Double budget) {
         this.budget = budget;
     }
+
+    public List<Destination> getDestinations() {
+    return destinations;
+}
+
+    public void setDestinations(List<Destination> destinations) {
+    this.destinations = destinations;
+}
 }
