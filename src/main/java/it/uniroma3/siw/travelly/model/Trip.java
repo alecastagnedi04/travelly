@@ -25,6 +25,9 @@ public class Trip {
     @OneToMany(mappedBy = "trip")
     private List<Destination> destinations = new ArrayList<>();
 
+    @OneToMany(mappedBy = "trip")
+    private List<Activity> activities = new ArrayList<>();
+
     public Trip() {
     }
 
@@ -82,5 +85,14 @@ public class Trip {
 
     public void setDestinations(List<Destination> destinations) {
     this.destinations = destinations;
+}
+    
+
+    public List<Activity> getActivities() {
+    return activities;
+}
+
+    public void setActivities(List<Activity> activities) {
+    this.activities = activities;
 }
 }
