@@ -9,6 +9,8 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;  //per le persistenze
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 
 @Entity
 public class Trip {
@@ -33,6 +35,10 @@ public class Trip {
 
     @OneToMany(mappedBy = "trip")
     private List<Expense> expenses = new ArrayList<>();
+
+    @ManyToOne  //molti trip, un user
+    @JoinColumn(name = "owner_id")
+    private User owner;
 
     public Trip() {
     }
@@ -113,5 +119,12 @@ public class Trip {
 }
     public void setExpenses(List<Expense> expenses) {
     this.expenses = expenses;
+}
+
+    public User getOwner() {
+    return owner;
+}
+    public void setOwner(User owner) {
+    this.owner = owner;
 }
 }
