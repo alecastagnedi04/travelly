@@ -100,4 +100,12 @@ public class TripController {
 
     return "redirect:/trips";
 }
+
+    @PostMapping("/trips/{id}/delete")
+    public String deleteTrip(@PathVariable("id") Long id) {
+
+    tripService.deleteById(id);
+
+    return "redirect:/trips";
+}
 }

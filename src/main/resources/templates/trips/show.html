@@ -88,6 +88,14 @@
     </a>
         </p>
 
+    <form th:action="@{/trips/{id}/delete(id=${trip.id})}" method="post">
+
+    <button type="submit">
+        Elimina viaggio
+    </button>
+
+</form>
+
 </body>
 
 </html>
