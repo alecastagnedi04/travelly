@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Aggiungi destinazione - Travelly</title>
+</head>
+
+<body>
+
+    <h1>Aggiungi destinazione</h1>
+
+    <p>
+        Viaggio:
+        <strong th:text="${trip.name}">Nome viaggio</strong>
+    </p>
+
+    <form
+        th:action="@{/trips/{tripId}/destinations(tripId=${trip.id})}"
+        method="post">
+
+        <div>
+            <label for="city">Città</label>
+
+            <input
+                type="text"
+                id="city"
+                name="city"
+                required>
+        </div>
+
+        <br>
+
+        <div>
+            <label for="country">Paese</label>
+
+            <input
+                type="text"
+                id="country"
+                name="country"
+                required>
+        </div>
+
+        <br>
+
+        <div>
+            <label for="arrivalDate">Data di arrivo</label>
+
+            <input
+                type="date"
+                id="arrivalDate"
+                name="arrivalDate"
+                required>
+        </div>
+
+        <br>
+
+        <div>
+            <label for="departureDate">Data di partenza</label>
+
+            <input
+                type="date"
+                id="departureDate"
+                name="departureDate"
+                required>
+        </div>
+
+        <br>
+
+        <button type="submit">
+            Aggiungi destinazione
+        </button>
+
+    </form>
+
+    <br>
+
+    <a th:href="@{/trips/{id}(id=${trip.id})}">
+        Annulla
+    </a>
+
+</body>
+
+</html>

@@ -11,6 +11,7 @@ import jakarta.persistence.Id;  //per le persistenze
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.CascadeType;
 
 @Entity
 public class Trip {
@@ -24,16 +25,33 @@ public class Trip {
     private LocalDate endDate;
     private Double budget;
 
-    @OneToMany(mappedBy = "trip")
+   @OneToMany(
+    mappedBy = "trip",
+    cascade = CascadeType.ALL,
+    orphanRemoval = true
+)
     private List<Destination> destinations = new ArrayList<>();
 
-    @OneToMany(mappedBy = "trip")
+
+    @OneToMany(
+    mappedBy = "trip",
+    cascade = CascadeType.ALL,
+    orphanRemoval = true
+)
     private List<Activity> activities = new ArrayList<>();
 
-    @OneToMany(mappedBy = "trip")
+    @OneToMany(
+    mappedBy = "trip",
+    cascade = CascadeType.ALL,
+    orphanRemoval = true
+)
     private List<Participant> participants = new ArrayList<>();
 
-    @OneToMany(mappedBy = "trip")
+    @OneToMany(
+    mappedBy = "trip",
+    cascade = CascadeType.ALL,
+    orphanRemoval = true
+)
     private List<Expense> expenses = new ArrayList<>();
 
     @ManyToOne  //molti trip, un user

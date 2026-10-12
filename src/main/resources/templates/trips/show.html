@@ -32,18 +32,37 @@
 
     <h2>Destinazioni</h2>
 
+    <p>
+    <a th:href="@{/trips/{id}/destinations/new(id=${trip.id})}">
+        + Aggiungi destinazione
+    </a>
+    </p>
+
     <div th:if="${#lists.isEmpty(trip.destinations)}">
         <p>Nessuna destinazione aggiunta.</p>
     </div>
 
     <div th:each="destination : ${trip.destinations}">
-        <p>
-            <span th:text="${destination.city}">Città</span>,
-            <span th:text="${destination.country}">Paese</span>
-        </p>
-    </div>
 
-    <hr>
+    <h3>
+        <span th:text="${destination.city}">Città</span>,
+        <span th:text="${destination.country}">Paese</span>
+    </h3>
+
+    <p>
+        Dal
+        <span th:text="${destination.arrivalDate}">
+            data arrivo
+        </span>
+
+        al
+
+        <span th:text="${destination.departureDate}">
+            data partenza
+        </span>
+    </p>
+
+    </div>
 
     <h2>Attività</h2>
 
