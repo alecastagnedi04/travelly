@@ -8,6 +8,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import it.uniroma3.siw.travelly.service.TripService;
 
@@ -51,4 +52,15 @@ public class TripController {
 
         return "redirect:/trips";
     }
+
+    @GetMapping("/trips/{id}")
+    public String showTrip(@PathVariable("id") Long id, Model model) {
+
+    return tripService.findById(id)
+            .map(trip -> {
+                model.addAttribute("trip", trip);
+                return "trips/show";
+            })
+            .orElse("redirect:/trips");
+}
 }

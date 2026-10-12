@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Dettaglio viaggio - Travelly</title>
+</head>
+
+<body>
+
+    <a th:href="@{/trips}">← Torna ai miei viaggi</a>
+
+    <h1 th:text="${trip.name}">Nome viaggio</h1>
+
+    <p th:text="${trip.description}">
+        Descrizione viaggio
+    </p>
+
+    <p>
+        Dal
+        <span th:text="${trip.startDate}">data partenza</span>
+        al
+        <span th:text="${trip.endDate}">data ritorno</span>
+    </p>
+
+    <p>
+        Budget:
+        <span th:text="${trip.budget}">0</span> €
+    </p>
+
+    <hr>
+
+    <h2>Destinazioni</h2>
+
+    <div th:if="${#lists.isEmpty(trip.destinations)}">
+        <p>Nessuna destinazione aggiunta.</p>
+    </div>
+
+    <div th:each="destination : ${trip.destinations}">
+        <p>
+            <span th:text="${destination.city}">Città</span>,
+            <span th:text="${destination.country}">Paese</span>
+        </p>
+    </div>
+
+    <hr>
+
+    <h2>Attività</h2>
+
+    <div th:if="${#lists.isEmpty(trip.activities)}">
+        <p>Nessuna attività aggiunta.</p>
+    </div>
+
+    <div th:each="activity : ${trip.activities}">
+        <p th:text="${activity.name}">Nome attività</p>
+    </div>
+
+    <hr>
+
+    <h2>Partecipanti</h2>
+
+    <div th:if="${#lists.isEmpty(trip.participants)}">
+        <p>Nessun partecipante aggiunto.</p>
+    </div>
+
+    <div th:each="participant : ${trip.participants}">
+        <p th:text="${participant.name}">Nome partecipante</p>
+    </div>
+
+    <hr>
+
+    <h2>Spese</h2>
+
+    <div th:if="${#lists.isEmpty(trip.expenses)}">
+        <p>Nessuna spesa registrata.</p>
+    </div>
+
+    <div th:each="expense : ${trip.expenses}">
+        <p>
+            <span th:text="${expense.description}">Spesa</span>:
+            <span th:text="${expense.amount}">0</span> €
+        </p>
+    </div>
+
+</body>
+
+</html>
