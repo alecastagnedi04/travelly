@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>I miei viaggi - Travelly</title>
+</head>
+
+<body>
+
+    <h1>I miei viaggi</h1>
+    <a th:href="@{/trips/new}">+ Crea nuovo viaggio</a>
+
+    <div th:each="trip : ${trips}">
+
+        <h2 th:text="${trip.name}">Nome viaggio</h2>
+
+        <p th:text="${trip.description}">
+            Descrizione del viaggio
+        </p>
+
+        <p>
+            Dal
+            <span th:text="${trip.startDate}">data partenza</span>
+            al
+            <span th:text="${trip.endDate}">data ritorno</span>
+        </p>
+
+        <p>
+            Budget:
+            <span th:text="${trip.budget}">0</span> €
+        </p>
+
+        <hr>
+
+    </div>
+
+</body>
+
+</html>

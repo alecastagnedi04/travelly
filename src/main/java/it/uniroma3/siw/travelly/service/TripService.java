@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 
 import it.uniroma3.siw.travelly.model.Trip;
 import it.uniroma3.siw.travelly.repository.TripRepository;
+import java.time.LocalDate;
 
 @Service
 public class TripService {
@@ -31,4 +32,21 @@ public class TripService {
     public void deleteById(Long id) {
         tripRepository.deleteById(id);
     }
+
+    public Trip createTrip(String name,
+                       String description,
+                       LocalDate startDate,
+                       LocalDate endDate,
+                       Double budget) {
+
+    Trip trip = new Trip();
+
+    trip.setName(name);
+    trip.setDescription(description);
+    trip.setStartDate(startDate);
+    trip.setEndDate(endDate);
+    trip.setBudget(budget);
+
+    return tripRepository.save(trip);
+}
 }
