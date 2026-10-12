@@ -49,4 +49,24 @@ public class TripService {
 
     return tripRepository.save(trip);
 }
+
+    public Optional<Trip> updateTrip(Long id,
+                                 String name,
+                                 String description,
+                                 LocalDate startDate,
+                                 LocalDate endDate,
+                                 Double budget) {
+
+    return tripRepository.findById(id)
+            .map(trip -> {    //se il viaggio esiste, modifico quell'oggetto.
+
+                trip.setName(name);
+                trip.setDescription(description);
+                trip.setStartDate(startDate);
+                trip.setEndDate(endDate);
+                trip.setBudget(budget);  //non lavora su un nuovo trip ma sul trip esistente già recuperato dal database.
+
+                return tripRepository.save(trip);
+            });
+}
 }

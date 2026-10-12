@@ -63,4 +63,41 @@ public class TripController {
             })
             .orElse("redirect:/trips");
 }
+
+    @GetMapping("/trips/{id}/edit")  //questo metodo non modifica nulla, serve solo a mostrare la form.
+    public String showEditForm(@PathVariable("id") Long id, Model model) {
+
+    return tripService.findById(id)
+            .map(trip -> {
+                model.addAttribute("trip", trip);
+                return "trips/edit";
+            })
+            .orElse("redirect:/trips");
+}
+
+    @PostMapping("/trips/{id}/edit")
+    public String updateTrip(
+        @PathVariable("id") Long id,
+        @RequestParam("name") String name,
+        @RequestParam(value = "description", defaultValue = "") String description,
+        @RequestParam("startDate")
+        @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+        @RequestParam("endDate")
+        @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
+        @RequestParam("budget") Double budget) {
+
+    if (tripService.updateTrip(
+            id,
+            name,
+            description,
+            startDate,
+            endDate,
+            budget
+    ).isPresent()) {
+
+        return "redirect:/trips/" + id;
+    }
+
+    return "redirect:/trips";
+}
 }
