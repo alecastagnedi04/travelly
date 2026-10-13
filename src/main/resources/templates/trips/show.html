@@ -155,15 +155,51 @@
 
     <h2>Spese</h2>
 
+    <p>
+    <a th:href="@{/trips/{id}/expenses/new(id=${trip.id})}">
+        + Aggiungi spesa
+    </a>
+    </p>
+
     <div th:if="${#lists.isEmpty(trip.expenses)}">
         <p>Nessuna spesa registrata.</p>
     </div>
 
     <div th:each="expense : ${trip.expenses}">
-        <p>
-            <span th:text="${expense.description}">Spesa</span>:
-            <span th:text="${expense.amount}">0</span> €
-        </p>
+
+    <h3 th:text="${expense.description}">
+        Descrizione spesa
+    </h3>
+
+    <p>
+        Importo:
+        <span th:text="${expense.amount}">
+            0
+        </span>
+        €
+    </p>
+
+    <p>
+        Data:
+        <span th:text="${expense.date}">
+            data
+        </span>
+    </p>
+
+    <p>
+        Categoria:
+        <span th:text="${expense.category}">
+            categoria
+        </span>
+    </p>
+
+    <p>
+        Pagata da:
+        <span th:text="${expense.paidBy.name}">
+            partecipante
+        </span>
+    </p>
+
     </div>
 
         <p>
