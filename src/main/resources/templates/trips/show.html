@@ -66,15 +66,63 @@
 
     <h2>Attività</h2>
 
+    <p>
+    <a th:href="@{/trips/{id}/activities/new(id=${trip.id})}">
+        + Aggiungi attività
+    </a>
+    </p>
+
     <div th:if="${#lists.isEmpty(trip.activities)}">
         <p>Nessuna attività aggiunta.</p>
     </div>
 
     <div th:each="activity : ${trip.activities}">
-        <p th:text="${activity.name}">Nome attività</p>
-    </div>
 
-    <hr>
+    <h3 th:text="${activity.name}">
+        Nome attività
+    </h3>
+
+    <p th:text="${activity.description}">
+        Descrizione
+    </p>
+
+    <p>
+        Data:
+        <span th:text="${activity.date}">
+            data
+        </span>
+    </p>
+
+    <p>
+        Ora:
+        <span th:text="${activity.time}">
+            ora
+        </span>
+    </p>
+
+    <p>
+        Luogo:
+        <span th:text="${activity.location}">
+            luogo
+        </span>
+    </p>
+
+    <p>
+        Categoria:
+        <span th:text="${activity.category}">
+            categoria
+        </span>
+    </p>
+
+    <p>
+        Costo:
+        <span th:text="${activity.cost}">
+            0
+        </span>
+        €
+    </p>
+
+    </div>
 
     <h2>Partecipanti</h2>
 
