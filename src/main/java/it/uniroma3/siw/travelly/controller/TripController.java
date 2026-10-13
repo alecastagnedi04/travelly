@@ -6,9 +6,9 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.PathVariable;
 
 import it.uniroma3.siw.travelly.service.TripService;
 
@@ -21,26 +21,51 @@ public class TripController {
         this.tripService = tripService;
     }
 
+    // Mostra tutti i viaggi
     @GetMapping("/trips")
     public String showTrips(Model model) {
-        model.addAttribute("trips", tripService.findAll());
+
+        model.addAttribute(
+                "trips",
+                tripService.findAll()
+        );
+
         return "trips/list";
     }
 
+
+    // Mostra la form per creare un nuovo viaggio
     @GetMapping("/trips/new")
     public String showCreateForm() {
+
         return "trips/form";
     }
 
+
+    // Crea un nuovo viaggio
     @PostMapping("/trips")
     public String createTrip(
             @RequestParam("name") String name,
-            @RequestParam(value = "description", defaultValue = "") String description,
+            @RequestParam(
+                    value = "description",
+                    defaultValue = ""
+            )
+            String description,
+
             @RequestParam("startDate")
-            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+            @DateTimeFormat(
+                    iso = DateTimeFormat.ISO.DATE
+            )
+            LocalDate startDate,
+
             @RequestParam("endDate")
-            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
-            @RequestParam("budget") Double budget) {
+            @DateTimeFormat(
+                    iso = DateTimeFormat.ISO.DATE
+            )
+            LocalDate endDate,
+
+            @RequestParam("budget")
+            Double budget) {
 
         tripService.createTrip(
                 name,
@@ -53,59 +78,113 @@ public class TripController {
         return "redirect:/trips";
     }
 
+
+    // Mostra il dettaglio di un singolo viaggio
     @GetMapping("/trips/{id}")
-    public String showTrip(@PathVariable("id") Long id, Model model) {
+    public String showTrip(
+            @PathVariable("id") Long id,
+            Model model) {
 
-    return tripService.findById(id)
-            .map(trip -> {
-                model.addAttribute("trip", trip);
-                return "trips/show";
-            })
-            .orElse("redirect:/trips");
-}
+        return tripService.findById(id)
+                .map(trip -> {
 
-    @GetMapping("/trips/{id}/edit")  //questo metodo non modifica nulla, serve solo a mostrare la form.
-    public String showEditForm(@PathVariable("id") Long id, Model model) {
+                    // Oggetto Trip da mostrare nella pagina
+                    model.addAttribute(
+                            "trip",
+                            trip
+                    );
 
-    return tripService.findById(id)
-            .map(trip -> {
-                model.addAttribute("trip", trip);
-                return "trips/edit";
-            })
-            .orElse("redirect:/trips");
-}
+                    // Somma di tutte le spese del viaggio
+                    model.addAttribute(
+                            "totalExpenses",
+                            tripService.calculateTotalExpenses(trip)
+                    );
 
-    @PostMapping("/trips/{id}/edit")
-    public String updateTrip(
-        @PathVariable("id") Long id,
-        @RequestParam("name") String name,
-        @RequestParam(value = "description", defaultValue = "") String description,
-        @RequestParam("startDate")
-        @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
-        @RequestParam("endDate")
-        @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
-        @RequestParam("budget") Double budget) {
+                    // Budget iniziale - spese totali
+                    model.addAttribute(
+                            "remainingBudget",
+                            tripService.calculateRemainingBudget(trip)
+                    );
 
-    if (tripService.updateTrip(
-            id,
-            name,
-            description,
-            startDate,
-            endDate,
-            budget
-    ).isPresent()) {
-
-        return "redirect:/trips/" + id;
+                    return "trips/show";
+                })
+                .orElse("redirect:/trips");
     }
 
-    return "redirect:/trips";
-}
 
+    // Mostra la form per modificare un viaggio
+    @GetMapping("/trips/{id}/edit")
+    public String showEditForm(
+            @PathVariable("id") Long id,
+            Model model) {
+
+        return tripService.findById(id)
+                .map(trip -> {
+
+                    model.addAttribute(
+                            "trip",
+                            trip
+                    );
+
+                    return "trips/edit";
+                })
+                .orElse("redirect:/trips");
+    }
+
+
+    // Salva le modifiche di un viaggio
+    @PostMapping("/trips/{id}/edit")
+    public String updateTrip(
+            @PathVariable("id")
+            Long id,
+
+            @RequestParam("name")
+            String name,
+
+            @RequestParam(
+                    value = "description",
+                    defaultValue = ""
+            )
+            String description,
+
+            @RequestParam("startDate")
+            @DateTimeFormat(
+                    iso = DateTimeFormat.ISO.DATE
+            )
+            LocalDate startDate,
+
+            @RequestParam("endDate")
+            @DateTimeFormat(
+                    iso = DateTimeFormat.ISO.DATE
+            )
+            LocalDate endDate,
+
+            @RequestParam("budget")
+            Double budget) {
+
+        if (tripService.updateTrip(
+                id,
+                name,
+                description,
+                startDate,
+                endDate,
+                budget
+        ).isPresent()) {
+
+            return "redirect:/trips/" + id;
+        }
+
+        return "redirect:/trips";
+    }
+
+
+    // Elimina un viaggio
     @PostMapping("/trips/{id}/delete")
-    public String deleteTrip(@PathVariable("id") Long id) {
+    public String deleteTrip(
+            @PathVariable("id") Long id) {
 
-    tripService.deleteById(id);
+        tripService.deleteById(id);
 
-    return "redirect:/trips";
-}
+        return "redirect:/trips";
+    }
 }

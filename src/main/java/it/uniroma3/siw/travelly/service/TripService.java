@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import it.uniroma3.siw.travelly.model.Trip;
 import it.uniroma3.siw.travelly.repository.TripRepository;
 import java.time.LocalDate;
+import it.uniroma3.siw.travelly.model.Expense;
 
 @Service
 public class TripService {
@@ -50,7 +51,7 @@ public class TripService {
     return tripRepository.save(trip);
 }
 
-    public Optional<Trip> updateTrip(Long id,
+public Optional<Trip> updateTrip(Long id,
                                  String name,
                                  String description,
                                  LocalDate startDate,
@@ -68,5 +69,30 @@ public class TripService {
 
                 return tripRepository.save(trip);
             });
+}
+
+public Double calculateTotalExpenses(Trip trip) {
+
+    double total = 0.0;
+
+    for (Expense expense : trip.getExpenses()) {
+
+        if (expense.getAmount() != null) {
+            total += expense.getAmount();
+        }
+    }
+
+    return total;
+}
+
+public Double calculateRemainingBudget(Trip trip) {
+
+    double budget = 0.0;
+
+    if (trip.getBudget() != null) {
+        budget = trip.getBudget();
+    }
+
+    return budget - calculateTotalExpenses(trip);
 }
 }
