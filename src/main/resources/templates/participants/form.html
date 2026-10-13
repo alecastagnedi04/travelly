@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Aggiungi partecipante - Travelly</title>
+</head>
+
+<body>
+
+    <h1>Aggiungi partecipante</h1>
+
+    <p>
+        Viaggio:
+        <strong th:text="${trip.name}">
+            Nome viaggio
+        </strong>
+    </p>
+
+    <form
+        th:action="@{/trips/{tripId}/participants(tripId=${trip.id})}"
+        method="post">
+
+        <div>
+            <label for="name">Nome</label>
+
+            <input
+                type="text"
+                id="name"
+                name="name"
+                required>
+        </div>
+
+        <br>
+
+        <div>
+            <label for="email">Email</label>
+
+            <input
+                type="email"
+                id="email"
+                name="email"
+                required>
+        </div>
+
+        <br>
+
+        <button type="submit">
+            Aggiungi partecipante
+        </button>
+
+    </form>
+
+    <br>
+
+    <a th:href="@{/trips/{id}(id=${trip.id})}">
+        Annulla
+    </a>
+
+</body>
+
+</html>

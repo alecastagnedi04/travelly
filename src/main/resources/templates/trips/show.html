@@ -126,12 +126,29 @@
 
     <h2>Partecipanti</h2>
 
+    <p>
+    <a th:href="@{/trips/{id}/participants/new(id=${trip.id})}">
+        + Aggiungi partecipante
+    </a>
+    </p>
+
     <div th:if="${#lists.isEmpty(trip.participants)}">
         <p>Nessun partecipante aggiunto.</p>
     </div>
 
     <div th:each="participant : ${trip.participants}">
-        <p th:text="${participant.name}">Nome partecipante</p>
+
+    <h3 th:text="${participant.name}">
+        Nome partecipante
+    </h3>
+
+    <p>
+        Email:
+        <span th:text="${participant.email}">
+            email
+        </span>
+    </p>
+
     </div>
 
     <hr>
