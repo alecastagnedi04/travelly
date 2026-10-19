@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Utenti - Travelly Admin</title>
+</head>
+
+<body>
+
+    <h1>Utenti registrati</h1>
+
+    <a th:href="@{/admin}">
+        ← Torna alla dashboard
+    </a>
+
+    <hr>
+
+    <div th:each="user : ${users}">
+
+        <p>
+            <strong>ID:</strong>
+            <span th:text="${user.id}">0</span>
+        </p>
+
+        <p>
+            <strong>Username:</strong>
+            <span th:text="${user.username}">
+                username
+            </span>
+        </p>
+
+        <p>
+            <strong>Email:</strong>
+            <span th:text="${user.email}">
+                email
+            </span>
+        </p>
+
+        <p>
+            <strong>Ruolo:</strong>
+            <span th:text="${user.role}">
+                USER
+            </span>
+        </p>
+
+        <hr>
+
+    </div>
+
+</body>
+
+</html>

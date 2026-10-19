@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Admin - Travelly</title>
+</head>
+
+<body>
+
+    <h1>Dashboard amministratore</h1>
+
+    <p>
+        Area riservata agli amministratori di Travelly.
+    </p>
+
+    <div>
+        <a th:href="@{/admin/users}">
+            Gestisci utenti
+        </a>
+    </div>
+
+    <br>
+
+    <div>
+        <a th:href="@{/admin/trips}">
+            Gestisci viaggi
+        </a>
+    </div>
+
+    <br>
+
+    <div>
+        <a th:href="@{/trips}">
+            I miei viaggi
+        </a>
+    </div>
+
+</body>
+
+</html>

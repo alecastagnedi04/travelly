@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Viaggi - Travelly Admin</title>
+</head>
+
+<body>
+
+    <h1>Tutti i viaggi</h1>
+
+    <a th:href="@{/admin}">
+        ← Torna alla dashboard
+    </a>
+
+    <hr>
+
+
+    <div th:each="trip : ${trips}">
+
+        <h2 th:text="${trip.name}">
+            Nome viaggio
+        </h2>
+
+
+        <p>
+            <strong>ID:</strong>
+            <span th:text="${trip.id}">
+                0
+            </span>
+        </p>
+
+
+        <p>
+            <strong>Descrizione:</strong>
+            <span th:text="${trip.description}">
+                Descrizione
+            </span>
+        </p>
+
+
+        <p>
+            <strong>Proprietario:</strong>
+
+            <span
+                th:if="${trip.owner != null}"
+                th:text="${trip.owner.username}">
+                username
+            </span>
+
+            <span
+                th:if="${trip.owner == null}">
+                Nessun proprietario
+            </span>
+        </p>
+
+
+        <p>
+            <strong>Budget:</strong>
+            <span th:text="${trip.budget}">
+                0
+            </span>
+            €
+        </p>
+
+
+        <form
+            th:action="@{/admin/trips/{id}/delete(id=${trip.id})}"
+            method="post">
+
+            <button type="submit">
+                Elimina viaggio
+            </button>
+
+        </form>
+
+        <hr>
+
+    </div>
+
+</body>
+
+</html>
