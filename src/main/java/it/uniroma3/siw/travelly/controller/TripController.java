@@ -1,5 +1,6 @@
 package it.uniroma3.siw.travelly.controller;
 
+import java.security.Principal;
 import java.time.LocalDate;
 
 import org.springframework.format.annotation.DateTimeFormat;
@@ -21,20 +22,30 @@ public class TripController {
         this.tripService = tripService;
     }
 
-    // Mostra tutti i viaggi
+
+    /*
+     * Mostra solamente i viaggi appartenenti
+     * all'utente autenticato.
+     */
     @GetMapping("/trips")
-    public String showTrips(Model model) {
+    public String showTrips(
+            Model model,
+            Principal principal) {
+
+        String username = principal.getName();
 
         model.addAttribute(
                 "trips",
-                tripService.findAll()
+                tripService.findByOwnerUsername(username)
         );
 
         return "trips/list";
     }
 
 
-    // Mostra la form per creare un nuovo viaggio
+    /*
+     * Mostra la form per creare un nuovo viaggio.
+     */
     @GetMapping("/trips/new")
     public String showCreateForm() {
 
@@ -42,10 +53,15 @@ public class TripController {
     }
 
 
-    // Crea un nuovo viaggio
+    /*
+     * Crea un nuovo viaggio e lo associa
+     * all'utente autenticato.
+     */
     @PostMapping("/trips")
     public String createTrip(
-            @RequestParam("name") String name,
+            @RequestParam("name")
+            String name,
+
             @RequestParam(
                     value = "description",
                     defaultValue = ""
@@ -65,42 +81,53 @@ public class TripController {
             LocalDate endDate,
 
             @RequestParam("budget")
-            Double budget) {
+            Double budget,
+
+            Principal principal) {
 
         tripService.createTrip(
                 name,
                 description,
                 startDate,
                 endDate,
-                budget
+                budget,
+                principal.getName()
         );
 
         return "redirect:/trips";
     }
 
 
-    // Mostra il dettaglio di un singolo viaggio
+    /*
+     * Mostra il dettaglio del viaggio solamente
+     * se appartiene all'utente autenticato.
+     */
     @GetMapping("/trips/{id}")
     public String showTrip(
-            @PathVariable("id") Long id,
-            Model model) {
+            @PathVariable("id")
+            Long id,
 
-        return tripService.findById(id)
+            Model model,
+
+            Principal principal) {
+
+        return tripService
+                .findByIdAndOwnerUsername(
+                        id,
+                        principal.getName()
+                )
                 .map(trip -> {
 
-                    // Oggetto Trip da mostrare nella pagina
                     model.addAttribute(
                             "trip",
                             trip
                     );
 
-                    // Somma di tutte le spese del viaggio
                     model.addAttribute(
                             "totalExpenses",
                             tripService.calculateTotalExpenses(trip)
                     );
 
-                    // Budget iniziale - spese totali
                     model.addAttribute(
                             "remainingBudget",
                             tripService.calculateRemainingBudget(trip)
@@ -112,13 +139,24 @@ public class TripController {
     }
 
 
-    // Mostra la form per modificare un viaggio
+    /*
+     * Mostra la form di modifica solamente
+     * se il Trip appartiene all'utente autenticato.
+     */
     @GetMapping("/trips/{id}/edit")
     public String showEditForm(
-            @PathVariable("id") Long id,
-            Model model) {
+            @PathVariable("id")
+            Long id,
 
-        return tripService.findById(id)
+            Model model,
+
+            Principal principal) {
+
+        return tripService
+                .findByIdAndOwnerUsername(
+                        id,
+                        principal.getName()
+                )
                 .map(trip -> {
 
                     model.addAttribute(
@@ -132,7 +170,10 @@ public class TripController {
     }
 
 
-    // Salva le modifiche di un viaggio
+    /*
+     * Aggiorna il Trip solamente se appartiene
+     * all'utente autenticato.
+     */
     @PostMapping("/trips/{id}/edit")
     public String updateTrip(
             @PathVariable("id")
@@ -160,7 +201,9 @@ public class TripController {
             LocalDate endDate,
 
             @RequestParam("budget")
-            Double budget) {
+            Double budget,
+
+            Principal principal) {
 
         if (tripService.updateTrip(
                 id,
@@ -168,7 +211,8 @@ public class TripController {
                 description,
                 startDate,
                 endDate,
-                budget
+                budget,
+                principal.getName()
         ).isPresent()) {
 
             return "redirect:/trips/" + id;
@@ -178,12 +222,21 @@ public class TripController {
     }
 
 
-    // Elimina un viaggio
+    /*
+     * Elimina il viaggio solamente se appartiene
+     * all'utente autenticato.
+     */
     @PostMapping("/trips/{id}/delete")
     public String deleteTrip(
-            @PathVariable("id") Long id) {
+            @PathVariable("id")
+            Long id,
 
-        tripService.deleteById(id);
+            Principal principal) {
+
+        tripService.deleteByIdForOwner(
+                id,
+                principal.getName()
+        );
 
         return "redirect:/trips";
     }
