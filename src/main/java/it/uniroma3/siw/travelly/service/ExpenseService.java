@@ -16,9 +16,10 @@ import it.uniroma3.siw.travelly.repository.TripRepository;
 @Service
 public class ExpenseService {
 
-    private final ExpenseRepository expenseRepository;  //salva la spesa
-    private final TripRepository tripRepository;  //trova il viaggio
-    private final ParticipantRepository participantRepository;  //trova chi ha pagato
+    private final ExpenseRepository expenseRepository;
+    private final TripRepository tripRepository;
+    private final ParticipantRepository participantRepository;
+
 
     public ExpenseService(
             ExpenseRepository expenseRepository,
@@ -30,34 +31,61 @@ public class ExpenseService {
         this.participantRepository = participantRepository;
     }
 
+
+    /*
+     * Crea una spesa solamente se:
+     *
+     * 1. il viaggio appartiene all'utente autenticato
+     * 2. il partecipante esiste
+     * 3. il partecipante appartiene allo stesso viaggio
+     */
     public Optional<Expense> createExpense(
             Long tripId,
             String description,
             Double amount,
             LocalDate date,
             ExpenseCategory category,
-            Long paidById) {
+            Long paidById,
+            String ownerUsername) {
 
         Optional<Trip> tripOptional =
-                tripRepository.findById(tripId);
+                tripRepository.findByIdAndOwnerUsername(
+                        tripId,
+                        ownerUsername
+                );
+
+        /*
+         * Se il viaggio non esiste oppure non appartiene
+         * all'utente autenticato, fermiamo tutto.
+         */
+        if (tripOptional.isEmpty()) {
+            return Optional.empty();
+        }
 
         Optional<Participant> participantOptional =
                 participantRepository.findById(paidById);
 
-        if (tripOptional.isEmpty() ||
-            participantOptional.isEmpty()) {
-
+        /*
+         * Anche il partecipante deve esistere.
+         */
+        if (participantOptional.isEmpty()) {
             return Optional.empty();
         }
 
         Trip trip = tripOptional.get();
         Participant paidBy = participantOptional.get();
 
+
+        /*
+         * Verifichiamo che il partecipante appartenga
+         * proprio al viaggio su cui stiamo creando la spesa.
+         */
         if (paidBy.getTrip() == null ||
-            !paidBy.getTrip().getId().equals(tripId)) {
+                !paidBy.getTrip().getId().equals(trip.getId())) {
 
             return Optional.empty();
         }
+
 
         Expense expense = new Expense();
 

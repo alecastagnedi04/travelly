@@ -1,5 +1,6 @@
 package it.uniroma3.siw.travelly.controller;
 
+import java.security.Principal;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
@@ -21,25 +22,41 @@ public class ActivityController {
     private final ActivityService activityService;
     private final TripService tripService;
 
-    public ActivityController(ActivityService activityService,
-                              TripService tripService) {
+
+    public ActivityController(
+            ActivityService activityService,
+            TripService tripService) {
 
         this.activityService = activityService;
         this.tripService = tripService;
     }
 
+
+    /*
+     * Mostra la form solamente se il viaggio
+     * appartiene all'utente autenticato.
+     */
     @GetMapping("/trips/{tripId}/activities/new")
     public String showCreateForm(
             @PathVariable("tripId") Long tripId,
-            Model model) {
+            Model model,
+            Principal principal) {
 
-        return tripService.findById(tripId)
+        return tripService
+                .findByIdAndOwnerUsername(
+                        tripId,
+                        principal.getName()
+                )
                 .map(trip -> {
 
-                    model.addAttribute("trip", trip);
+                    model.addAttribute(
+                            "trip",
+                            trip
+                    );
+
                     model.addAttribute(
                             "categories",
-                            ActivityCategory.values()  //restituisce tutti i valori dell'enum ActivityCategory.
+                            ActivityCategory.values()
                     );
 
                     return "activities/form";
@@ -47,21 +64,47 @@ public class ActivityController {
                 .orElse("redirect:/trips");
     }
 
+
+    /*
+     * Salva l'attività solamente se il viaggio
+     * appartiene all'utente autenticato.
+     */
     @PostMapping("/trips/{tripId}/activities")
     public String createActivity(
-            @PathVariable("tripId") Long tripId,
-            @RequestParam("name") String name,
-            @RequestParam(value = "description", defaultValue = "")
+            @PathVariable("tripId")
+            Long tripId,
+
+            @RequestParam("name")
+            String name,
+
+            @RequestParam(
+                    value = "description",
+                    defaultValue = ""
+            )
             String description,
+
             @RequestParam("date")
-            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+            @DateTimeFormat(
+                    iso = DateTimeFormat.ISO.DATE
+            )
             LocalDate date,
+
             @RequestParam("time")
-            @DateTimeFormat(iso = DateTimeFormat.ISO.TIME)
+            @DateTimeFormat(
+                    iso = DateTimeFormat.ISO.TIME
+            )
             LocalTime time,
-            @RequestParam("location") String location,
-            @RequestParam("category") ActivityCategory category,
-            @RequestParam("cost") Double cost) {
+
+            @RequestParam("location")
+            String location,
+
+            @RequestParam("category")
+            ActivityCategory category,
+
+            @RequestParam("cost")
+            Double cost,
+
+            Principal principal) {
 
         if (activityService.createActivity(
                 tripId,
@@ -71,7 +114,8 @@ public class ActivityController {
                 time,
                 location,
                 category,
-                cost
+                cost,
+                principal.getName()
         ).isPresent()) {
 
             return "redirect:/trips/" + tripId;

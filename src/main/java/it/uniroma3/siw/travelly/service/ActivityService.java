@@ -17,13 +17,20 @@ public class ActivityService {
     private final ActivityRepository activityRepository;
     private final TripRepository tripRepository;
 
-    public ActivityService(ActivityRepository activityRepository,
-                           TripRepository tripRepository) {
+
+    public ActivityService(
+            ActivityRepository activityRepository,
+            TripRepository tripRepository) {
 
         this.activityRepository = activityRepository;
         this.tripRepository = tripRepository;
     }
 
+
+    /*
+     * Crea un'attività solamente se il viaggio
+     * appartiene all'utente autenticato.
+     */
     public Optional<Activity> createActivity(
             Long tripId,
             String name,
@@ -32,9 +39,14 @@ public class ActivityService {
             LocalTime time,
             String location,
             ActivityCategory category,
-            Double cost) {
+            Double cost,
+            String ownerUsername) {
 
-        return tripRepository.findById(tripId)
+        return tripRepository
+                .findByIdAndOwnerUsername(
+                        tripId,
+                        ownerUsername
+                )
                 .map(trip -> {
 
                     Activity activity = new Activity();

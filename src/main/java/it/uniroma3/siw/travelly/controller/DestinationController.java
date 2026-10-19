@@ -1,5 +1,6 @@
 package it.uniroma3.siw.travelly.controller;
 
+import java.security.Principal;
 import java.time.LocalDate;
 
 import org.springframework.format.annotation.DateTimeFormat;
@@ -19,44 +20,80 @@ public class DestinationController {
     private final DestinationService destinationService;
     private final TripService tripService;
 
-    public DestinationController(DestinationService destinationService,
-                                 TripService tripService) {
+
+    public DestinationController(
+            DestinationService destinationService,
+            TripService tripService) {
 
         this.destinationService = destinationService;
         this.tripService = tripService;
     }
 
-    @GetMapping("/trips/{tripId}/destinations/new")   //get (mostrare la form)
+
+    /*
+     * Mostra la form solamente se il viaggio
+     * appartiene all'utente autenticato.
+     */
+    @GetMapping("/trips/{tripId}/destinations/new")
     public String showCreateForm(
             @PathVariable("tripId") Long tripId,
-            Model model) {
+            Model model,
+            Principal principal) {
 
-        return tripService.findById(tripId)
+        return tripService
+                .findByIdAndOwnerUsername(
+                        tripId,
+                        principal.getName()
+                )
                 .map(trip -> {
-                    model.addAttribute("trip", trip);
+
+                    model.addAttribute(
+                            "trip",
+                            trip
+                    );
+
                     return "destinations/form";
                 })
                 .orElse("redirect:/trips");
     }
- 
-    @PostMapping("/trips/{tripId}/destinations")   //post (salvare la destinazione)
+
+
+    /*
+     * Salva la destinazione solamente se il viaggio
+     * appartiene all'utente autenticato.
+     */
+    @PostMapping("/trips/{tripId}/destinations")
     public String createDestination(
-            @PathVariable("tripId") Long tripId,
-            @RequestParam("city") String city,
-            @RequestParam("country") String country,
+            @PathVariable("tripId")
+            Long tripId,
+
+            @RequestParam("city")
+            String city,
+
+            @RequestParam("country")
+            String country,
+
             @RequestParam("arrivalDate")
-            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+            @DateTimeFormat(
+                    iso = DateTimeFormat.ISO.DATE
+            )
             LocalDate arrivalDate,
+
             @RequestParam("departureDate")
-            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
-            LocalDate departureDate) {
+            @DateTimeFormat(
+                    iso = DateTimeFormat.ISO.DATE
+            )
+            LocalDate departureDate,
+
+            Principal principal) {
 
         if (destinationService.createDestination(
                 tripId,
                 city,
                 country,
                 arrivalDate,
-                departureDate
+                departureDate,
+                principal.getName()
         ).isPresent()) {
 
             return "redirect:/trips/" + tripId;

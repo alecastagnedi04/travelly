@@ -14,6 +14,7 @@ public class ParticipantService {
     private final ParticipantRepository participantRepository;
     private final TripRepository tripRepository;
 
+
     public ParticipantService(
             ParticipantRepository participantRepository,
             TripRepository tripRepository) {
@@ -22,22 +23,35 @@ public class ParticipantService {
         this.tripRepository = tripRepository;
     }
 
+
+    /*
+     * Crea un partecipante solamente se il viaggio
+     * appartiene all'utente autenticato.
+     */
     public Optional<Participant> createParticipant(
             Long tripId,
             String name,
-            String email) {
+            String email,
+            String ownerUsername) {
 
-        return tripRepository.findById(tripId)
+        return tripRepository
+                .findByIdAndOwnerUsername(
+                        tripId,
+                        ownerUsername
+                )
                 .map(trip -> {
 
-                    Participant participant = new Participant();
+                    Participant participant =
+                            new Participant();
 
                     participant.setName(name);
                     participant.setEmail(email);
 
                     participant.setTrip(trip);
 
-                    return participantRepository.save(participant);
+                    return participantRepository.save(
+                            participant
+                    );
                 });
     }
 }

@@ -12,27 +12,40 @@ import it.uniroma3.siw.travelly.repository.TripRepository;
 @Service
 public class DestinationService {
 
-    private final DestinationRepository destinationRepository;   //serve per salvare destination
-    private final TripRepository tripRepository;  //serve per trovare il trip a cui collegarla.
+    private final DestinationRepository destinationRepository;
+    private final TripRepository tripRepository;
 
-    public DestinationService(DestinationRepository destinationRepository,
-                              TripRepository tripRepository) {
+
+    public DestinationService(
+            DestinationRepository destinationRepository,
+            TripRepository tripRepository) {
 
         this.destinationRepository = destinationRepository;
         this.tripRepository = tripRepository;
     }
 
+
+    /*
+     * Crea una destinazione solamente se il viaggio
+     * appartiene all'utente autenticato.
+     */
     public Optional<Destination> createDestination(
             Long tripId,
             String city,
             String country,
             LocalDate arrivalDate,
-            LocalDate departureDate) {
+            LocalDate departureDate,
+            String ownerUsername) {
 
-        return tripRepository.findById(tripId)
+        return tripRepository
+                .findByIdAndOwnerUsername(
+                        tripId,
+                        ownerUsername
+                )
                 .map(trip -> {
 
-                    Destination destination = new Destination();
+                    Destination destination =
+                            new Destination();
 
                     destination.setCity(city);
                     destination.setCountry(country);
@@ -41,7 +54,9 @@ public class DestinationService {
 
                     destination.setTrip(trip);
 
-                    return destinationRepository.save(destination);
+                    return destinationRepository.save(
+                            destination
+                    );
                 });
     }
 }

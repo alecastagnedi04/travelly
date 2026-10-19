@@ -1,5 +1,6 @@
 package it.uniroma3.siw.travelly.controller;
 
+import java.security.Principal;
 import java.time.LocalDate;
 
 import org.springframework.format.annotation.DateTimeFormat;
@@ -20,6 +21,7 @@ public class ExpenseController {
     private final ExpenseService expenseService;
     private final TripService tripService;
 
+
     public ExpenseController(
             ExpenseService expenseService,
             TripService tripService) {
@@ -28,16 +30,33 @@ public class ExpenseController {
         this.tripService = tripService;
     }
 
+
+    /*
+     * Mostra la form solamente se il viaggio
+     * appartiene all'utente autenticato.
+     */
     @GetMapping("/trips/{tripId}/expenses/new")
     public String showCreateForm(
             @PathVariable("tripId") Long tripId,
-            Model model) {
+            Model model,
+            Principal principal) {
 
-        return tripService.findById(tripId)
+        return tripService
+                .findByIdAndOwnerUsername(
+                        tripId,
+                        principal.getName()
+                )
                 .map(trip -> {
 
-                    model.addAttribute("trip", trip);
+                    model.addAttribute(
+                            "trip",
+                            trip
+                    );
 
+                    /*
+                     * Nella select "Pagato da" mostriamo
+                     * solamente i partecipanti di questo Trip.
+                     */
                     model.addAttribute(
                             "participants",
                             trip.getParticipants()
@@ -53,20 +72,35 @@ public class ExpenseController {
                 .orElse("redirect:/trips");
     }
 
+
+    /*
+     * Salva la spesa solamente se il viaggio
+     * appartiene all'utente autenticato.
+     */
     @PostMapping("/trips/{tripId}/expenses")
     public String createExpense(
-            @PathVariable("tripId") Long tripId,
+            @PathVariable("tripId")
+            Long tripId,
+
             @RequestParam("description")
             String description,
+
             @RequestParam("amount")
             Double amount,
+
             @RequestParam("date")
-            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+            @DateTimeFormat(
+                    iso = DateTimeFormat.ISO.DATE
+            )
             LocalDate date,
+
             @RequestParam("category")
             ExpenseCategory category,
+
             @RequestParam("paidById")
-            Long paidById) {
+            Long paidById,
+
+            Principal principal) {
 
         if (expenseService.createExpense(
                 tripId,
@@ -74,7 +108,8 @@ public class ExpenseController {
                 amount,
                 date,
                 category,
-                paidById
+                paidById,
+                principal.getName()
         ).isPresent()) {
 
             return "redirect:/trips/" + tripId;
