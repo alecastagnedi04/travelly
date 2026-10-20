@@ -32,11 +32,18 @@ public class ActivityController {
     }
 
 
+    /*
+     * Form creazione Activity.
+     */
     @GetMapping("/trips/{tripId}/activities/new")
     public String showCreateForm(
-            @PathVariable("tripId") Long tripId,
+            @PathVariable("tripId")
+            Long tripId,
+
             Model model,
+
             Principal principal) {
+
 
         return tripService
                 .findByIdAndOwnerUsername(
@@ -61,6 +68,9 @@ public class ActivityController {
     }
 
 
+    /*
+     * Creazione Activity.
+     */
     @PostMapping("/trips/{tripId}/activities")
     public String createActivity(
             @PathVariable("tripId")
@@ -98,6 +108,7 @@ public class ActivityController {
 
             Principal principal) {
 
+
         if (activityService.createActivity(
                 tripId,
                 name,
@@ -113,29 +124,164 @@ public class ActivityController {
             return "redirect:/trips/" + tripId;
         }
 
+
         return "redirect:/trips";
     }
 
+
+    /*
+     * Mostra la form di modifica dell'Activity.
+     */
+    @GetMapping(
+        "/trips/{tripId}/activities/{activityId}/edit"
+    )
+    public String showEditForm(
+            @PathVariable("tripId")
+            Long tripId,
+
+            @PathVariable("activityId")
+            Long activityId,
+
+            Model model,
+
+            Principal principal) {
+
+
+        return tripService
+                .findByIdAndOwnerUsername(
+                        tripId,
+                        principal.getName()
+                )
+                .filter(trip ->
+                        trip.getActivities()
+                                .stream()
+                                .anyMatch(activity ->
+                                        activity.getId()
+                                                .equals(activityId)
+                                )
+                )
+                .map(trip -> {
+
+                    trip.getActivities()
+                            .stream()
+                            .filter(activity ->
+                                    activity.getId()
+                                            .equals(activityId)
+                            )
+                            .findFirst()
+                            .ifPresent(activity ->
+                                    model.addAttribute(
+                                            "activity",
+                                            activity
+                                    )
+                            );
+
+
+                    model.addAttribute(
+                            "trip",
+                            trip
+                    );
+
+
+                    model.addAttribute(
+                            "categories",
+                            ActivityCategory.values()
+                    );
+
+
+                    return "activities/edit";
+                })
+                .orElse("redirect:/trips");
+    }
+
+
+    /*
+     * Salva le modifiche dell'Activity.
+     */
     @PostMapping(
-    "/trips/{tripId}/activities/{activityId}/delete"
-)
-public String deleteActivity(
-        @PathVariable("tripId")
-        Long tripId,
+        "/trips/{tripId}/activities/{activityId}/edit"
+    )
+    public String updateActivity(
+            @PathVariable("tripId")
+            Long tripId,
 
-        @PathVariable("activityId")
-        Long activityId,
+            @PathVariable("activityId")
+            Long activityId,
 
-        Principal principal) {
+            @RequestParam("name")
+            String name,
+
+            @RequestParam(
+                    value = "description",
+                    defaultValue = ""
+            )
+            String description,
+
+            @RequestParam("date")
+            @DateTimeFormat(
+                    iso = DateTimeFormat.ISO.DATE
+            )
+            LocalDate date,
+
+            @RequestParam("time")
+            @DateTimeFormat(
+                    iso = DateTimeFormat.ISO.TIME
+            )
+            LocalTime time,
+
+            @RequestParam("location")
+            String location,
+
+            @RequestParam("category")
+            ActivityCategory category,
+
+            @RequestParam("cost")
+            Double cost,
+
+            Principal principal) {
 
 
-    activityService.deleteActivity(
-            tripId,
-            activityId,
-            principal.getName()
-    );
+        activityService.updateActivity(
+                tripId,
+                activityId,
+                name,
+                description,
+                date,
+                time,
+                location,
+                category,
+                cost,
+                principal.getName()
+        );
 
 
-    return "redirect:/trips/" + tripId;
-}
+        return "redirect:/trips/" + tripId;
+    }
+
+
+    /*
+     * Eliminazione Activity.
+     */
+    @PostMapping(
+        "/trips/{tripId}/activities/{activityId}/delete"
+    )
+    public String deleteActivity(
+            @PathVariable("tripId")
+            Long tripId,
+
+            @PathVariable("activityId")
+            Long activityId,
+
+            Principal principal) {
+
+
+        activityService.deleteActivity(
+                tripId,
+                activityId,
+                principal.getName()
+        );
+
+
+        return "redirect:/trips/" + tripId;
+    }
 }

@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import it.uniroma3.siw.travelly.model.Destination;
+import it.uniroma3.siw.travelly.model.Trip;
 import it.uniroma3.siw.travelly.repository.DestinationRepository;
 import it.uniroma3.siw.travelly.repository.TripRepository;
 
@@ -27,9 +28,12 @@ public class DestinationService {
 
 
     /*
-     * Crea una destinazione solamente se il viaggio
-     * appartiene all'utente autenticato.
+     * Crea una destinazione solamente se:
+     *
+     * - il viaggio appartiene all'utente autenticato
+     * - le date sono valide
      */
+    @Transactional
     public Optional<Destination> createDestination(
             Long tripId,
             String city,
@@ -38,36 +42,197 @@ public class DestinationService {
             LocalDate departureDate,
             String ownerUsername) {
 
-        return tripRepository
-                .findByIdAndOwnerUsername(
+
+        Optional<Trip> tripOptional =
+                tripRepository.findByIdAndOwnerUsername(
                         tripId,
                         ownerUsername
-                )
-                .map(trip -> {
+                );
 
-                    Destination destination =
-                            new Destination();
 
-                    destination.setCity(city);
-                    destination.setCountry(country);
-                    destination.setArrivalDate(arrivalDate);
-                    destination.setDepartureDate(departureDate);
+        if (tripOptional.isEmpty()) {
+            return Optional.empty();
+        }
 
-                    destination.setTrip(trip);
 
-                    return destinationRepository.save(
-                            destination
-                    );
-                });
+        Trip trip = tripOptional.get();
+
+
+        if (!datesAreValid(
+                trip,
+                arrivalDate,
+                departureDate)) {
+
+            return Optional.empty();
+        }
+
+
+        Destination destination =
+                new Destination();
+
+
+        destination.setCity(city);
+        destination.setCountry(country);
+        destination.setArrivalDate(arrivalDate);
+        destination.setDepartureDate(departureDate);
+        destination.setTrip(trip);
+
+
+        return Optional.of(
+                destinationRepository.save(destination)
+        );
     }
 
 
     /*
-     * Elimina una destinazione solamente se:
+     * Recupera una Destination solamente se
+     * appartiene a un viaggio dell'utente autenticato.
+     */
+    public Optional<Destination> findByIdAndOwnerUsername(
+            Long tripId,
+            Long destinationId,
+            String ownerUsername) {
+
+
+        /*
+         * Prima verifichiamo la proprietà del Trip.
+         */
+        if (tripRepository
+                .findByIdAndOwnerUsername(
+                        tripId,
+                        ownerUsername
+                )
+                .isEmpty()) {
+
+            return Optional.empty();
+        }
+
+
+        Optional<Destination> destinationOptional =
+                destinationRepository.findById(
+                        destinationId
+                );
+
+
+        if (destinationOptional.isEmpty()) {
+            return Optional.empty();
+        }
+
+
+        Destination destination =
+                destinationOptional.get();
+
+
+        /*
+         * La Destination deve appartenere
+         * proprio al Trip indicato.
+         */
+        if (destination.getTrip() == null ||
+                !destination.getTrip()
+                        .getId()
+                        .equals(tripId)) {
+
+            return Optional.empty();
+        }
+
+
+        return Optional.of(destination);
+    }
+
+
+    /*
+     * Modifica una Destination solamente se:
      *
-     * 1. il Trip appartiene all'utente autenticato
-     * 2. la Destination esiste
-     * 3. la Destination appartiene proprio a quel Trip
+     * - il Trip appartiene all'utente autenticato
+     * - la Destination appartiene a quel Trip
+     * - le nuove date sono valide
+     */
+    @Transactional
+    public Optional<Destination> updateDestination(
+            Long tripId,
+            Long destinationId,
+            String city,
+            String country,
+            LocalDate arrivalDate,
+            LocalDate departureDate,
+            String ownerUsername) {
+
+
+        Optional<Trip> tripOptional =
+                tripRepository.findByIdAndOwnerUsername(
+                        tripId,
+                        ownerUsername
+                );
+
+
+        if (tripOptional.isEmpty()) {
+            return Optional.empty();
+        }
+
+
+        Trip trip =
+                tripOptional.get();
+
+
+        /*
+         * Controlliamo la coerenza delle date.
+         */
+        if (!datesAreValid(
+                trip,
+                arrivalDate,
+                departureDate)) {
+
+            return Optional.empty();
+        }
+
+
+        Optional<Destination> destinationOptional =
+                destinationRepository.findById(
+                        destinationId
+                );
+
+
+        if (destinationOptional.isEmpty()) {
+            return Optional.empty();
+        }
+
+
+        Destination destination =
+                destinationOptional.get();
+
+
+        /*
+         * Sicurezza:
+         *
+         * la Destination deve appartenere
+         * proprio al Trip indicato nell'URL.
+         */
+        if (destination.getTrip() == null ||
+                !destination.getTrip()
+                        .getId()
+                        .equals(tripId)) {
+
+            return Optional.empty();
+        }
+
+
+        destination.setCity(city);
+        destination.setCountry(country);
+        destination.setArrivalDate(arrivalDate);
+        destination.setDepartureDate(departureDate);
+
+
+        return Optional.of(
+                destinationRepository.save(destination)
+        );
+    }
+
+
+    /*
+     * Elimina una Destination solamente se:
+     *
+     * - il Trip appartiene all'utente autenticato
+     * - la Destination appartiene a quel Trip
      */
     @Transactional
     public boolean deleteDestination(
@@ -88,7 +253,9 @@ public class DestinationService {
 
 
         Optional<Destination> destinationOptional =
-                destinationRepository.findById(destinationId);
+                destinationRepository.findById(
+                        destinationId
+                );
 
 
         if (destinationOptional.isEmpty()) {
@@ -110,6 +277,66 @@ public class DestinationService {
 
 
         destinationRepository.delete(destination);
+
+        return true;
+    }
+
+
+    /*
+     * Regola di business sulle date.
+     *
+     * 1. arrivo e partenza devono esistere
+     * 2. arrivo <= partenza
+     * 3. la destinazione deve essere compresa
+     *    nelle date del viaggio
+     */
+    private boolean datesAreValid(
+            Trip trip,
+            LocalDate arrivalDate,
+            LocalDate departureDate) {
+
+
+        if (arrivalDate == null ||
+                departureDate == null) {
+
+            return false;
+        }
+
+
+        /*
+         * Non posso partire dalla destinazione
+         * prima di esserci arrivato.
+         */
+        if (arrivalDate.isAfter(departureDate)) {
+            return false;
+        }
+
+
+        /*
+         * La destinazione non può iniziare
+         * prima del viaggio.
+         */
+        if (trip.getStartDate() != null &&
+                arrivalDate.isBefore(
+                        trip.getStartDate()
+                )) {
+
+            return false;
+        }
+
+
+        /*
+         * La destinazione non può terminare
+         * dopo la fine del viaggio.
+         */
+        if (trip.getEndDate() != null &&
+                departureDate.isAfter(
+                        trip.getEndDate()
+                )) {
+
+            return false;
+        }
+
 
         return true;
     }

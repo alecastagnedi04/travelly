@@ -31,14 +31,17 @@ public class DestinationController {
 
 
     /*
-     * Mostra la form solamente se il viaggio
-     * appartiene all'utente autenticato.
+     * Form creazione Destination.
      */
     @GetMapping("/trips/{tripId}/destinations/new")
     public String showCreateForm(
-            @PathVariable("tripId") Long tripId,
+            @PathVariable("tripId")
+            Long tripId,
+
             Model model,
+
             Principal principal) {
+
 
         return tripService
                 .findByIdAndOwnerUsername(
@@ -59,8 +62,7 @@ public class DestinationController {
 
 
     /*
-     * Salva la destinazione solamente se il viaggio
-     * appartiene all'utente autenticato.
+     * Creazione Destination.
      */
     @PostMapping("/trips/{tripId}/destinations")
     public String createDestination(
@@ -87,6 +89,7 @@ public class DestinationController {
 
             Principal principal) {
 
+
         if (destinationService.createDestination(
                 tripId,
                 city,
@@ -99,13 +102,104 @@ public class DestinationController {
             return "redirect:/trips/" + tripId;
         }
 
-        return "redirect:/trips";
+
+        return "redirect:/trips/" + tripId;
     }
 
 
     /*
-     * Elimina una destinazione solamente se
-     * appartiene a un Trip dell'utente autenticato.
+     * Mostra la form di modifica.
+     */
+    @GetMapping(
+        "/trips/{tripId}/destinations/{destinationId}/edit"
+    )
+    public String showEditForm(
+            @PathVariable("tripId")
+            Long tripId,
+
+            @PathVariable("destinationId")
+            Long destinationId,
+
+            Model model,
+
+            Principal principal) {
+
+
+        return destinationService
+                .findByIdAndOwnerUsername(
+                        tripId,
+                        destinationId,
+                        principal.getName()
+                )
+                .map(destination -> {
+
+                    model.addAttribute(
+                            "destination",
+                            destination
+                    );
+
+                    model.addAttribute(
+                            "trip",
+                            destination.getTrip()
+                    );
+
+                    return "destinations/edit";
+                })
+                .orElse("redirect:/trips");
+    }
+
+
+    /*
+     * Salva le modifiche.
+     */
+    @PostMapping(
+        "/trips/{tripId}/destinations/{destinationId}/edit"
+    )
+    public String updateDestination(
+            @PathVariable("tripId")
+            Long tripId,
+
+            @PathVariable("destinationId")
+            Long destinationId,
+
+            @RequestParam("city")
+            String city,
+
+            @RequestParam("country")
+            String country,
+
+            @RequestParam("arrivalDate")
+            @DateTimeFormat(
+                    iso = DateTimeFormat.ISO.DATE
+            )
+            LocalDate arrivalDate,
+
+            @RequestParam("departureDate")
+            @DateTimeFormat(
+                    iso = DateTimeFormat.ISO.DATE
+            )
+            LocalDate departureDate,
+
+            Principal principal) {
+
+
+        destinationService.updateDestination(
+                tripId,
+                destinationId,
+                city,
+                country,
+                arrivalDate,
+                departureDate,
+                principal.getName()
+        );
+
+
+        return "redirect:/trips/" + tripId;
+    }
+
+
+    /*
+     * Eliminazione Destination.
      */
     @PostMapping(
         "/trips/{tripId}/destinations/{destinationId}/delete"
@@ -119,13 +213,14 @@ public class DestinationController {
 
             Principal principal) {
 
+
         destinationService.deleteDestination(
                 tripId,
                 destinationId,
                 principal.getName()
         );
 
+
         return "redirect:/trips/" + tripId;
     }
-
 }

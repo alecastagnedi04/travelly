@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <title>
+        Modifica attività - Travelly
+    </title>
+
+    <link
+        rel="stylesheet"
+        th:href="@{/css/style.css}">
+
+</head>
+
+
+<body>
+
+
+    <main class="container">
+
+
+        <a
+            class="back-link"
+            th:href="@{/trips/{id}(id=${trip.id})}">
+
+            ← Torna al viaggio
+
+        </a>
+
+
+        <h1>
+            Modifica attività
+        </h1>
+
+
+        <p>
+
+            Viaggio:
+
+            <strong th:text="${trip.name}">
+                Nome viaggio
+            </strong>
+
+        </p>
+
+
+
+        <form
+            th:action="@{/trips/{tripId}/activities/{activityId}/edit(
+                tripId=${trip.id},
+                activityId=${activity.id}
+            )}"
+            method="post">
+
+
+            <!-- NOME -->
+
+            <div>
+
+                <label for="name">
+                    Nome
+                </label>
+
+                <input
+                    type="text"
+                    id="name"
+                    name="name"
+                    th:value="${activity.name}"
+                    required>
+
+            </div>
+
+
+            <br>
+
+
+            <!-- DESCRIZIONE -->
+
+            <div>
+
+                <label for="description">
+                    Descrizione
+                </label>
+
+                <textarea
+                    id="description"
+                    name="description"
+                    th:text="${activity.description}">
+                </textarea>
+
+            </div>
+
+
+            <br>
+
+
+            <!-- DATA -->
+
+            <div>
+
+                <label for="date">
+                    Data
+                </label>
+
+                <input
+                    type="date"
+                    id="date"
+                    name="date"
+                    th:value="${activity.date}"
+                    required>
+
+            </div>
+
+
+            <br>
+
+
+            <!-- ORA -->
+
+            <div>
+
+                <label for="time">
+                    Ora
+                </label>
+
+                <input
+                    type="time"
+                    id="time"
+                    name="time"
+                    th:value="${activity.time}"
+                    required>
+
+            </div>
+
+
+            <br>
+
+
+            <!-- LUOGO -->
+
+            <div>
+
+                <label for="location">
+                    Luogo
+                </label>
+
+                <input
+                    type="text"
+                    id="location"
+                    name="location"
+                    th:value="${activity.location}"
+                    required>
+
+            </div>
+
+
+            <br>
+
+
+            <!-- CATEGORIA -->
+
+            <div>
+
+                <label for="category">
+                    Categoria
+                </label>
+
+                <select
+                    id="category"
+                    name="category"
+                    required>
+
+
+                    <option
+                        th:each="category : ${categories}"
+                        th:value="${category}"
+                        th:text="${category}"
+                        th:selected="${category == activity.category}">
+                    </option>
+
+
+                </select>
+
+            </div>
+
+
+            <br>
+
+
+            <!-- COSTO -->
+
+            <div>
+
+                <label for="cost">
+                    Costo (€)
+                </label>
+
+                <input
+                    type="number"
+                    id="cost"
+                    name="cost"
+                    min="0"
+                    step="0.01"
+                    th:value="${activity.cost}"
+                    required>
+
+            </div>
+
+
+            <br>
+
+
+            <button
+                class="button"
+                type="submit">
+
+                Salva modifiche
+
+            </button>
+
+
+            <a
+                class="button button-secondary"
+                th:href="@{/trips/{id}(id=${trip.id})}">
+
+                Annulla
+
+            </a>
+
+
+        </form>
+
+
+    </main>
+
+
+</body>
+
+</html>

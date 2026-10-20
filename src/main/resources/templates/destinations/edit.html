@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <title>
+        Modifica destinazione - Travelly
+    </title>
+
+    <link
+        rel="stylesheet"
+        th:href="@{/css/style.css}">
+
+</head>
+
+
+<body>
+
+
+    <main class="container">
+
+
+        <a
+            class="back-link"
+            th:href="@{/trips/{id}(id=${trip.id})}">
+
+            ← Torna al viaggio
+
+        </a>
+
+
+        <h1>
+            Modifica destinazione
+        </h1>
+
+
+        <p>
+
+            Viaggio:
+
+            <strong th:text="${trip.name}">
+                Nome viaggio
+            </strong>
+
+        </p>
+
+
+        <form
+            th:action="@{/trips/{tripId}/destinations/{destinationId}/edit(
+                tripId=${trip.id},
+                destinationId=${destination.id}
+            )}"
+            method="post">
+
+
+            <div>
+
+                <label for="city">
+                    Città
+                </label>
+
+                <input
+                    type="text"
+                    id="city"
+                    name="city"
+                    th:value="${destination.city}"
+                    required>
+
+            </div>
+
+
+            <br>
+
+
+            <div>
+
+                <label for="country">
+                    Paese
+                </label>
+
+                <input
+                    type="text"
+                    id="country"
+                    name="country"
+                    th:value="${destination.country}"
+                    required>
+
+            </div>
+
+
+            <br>
+
+
+            <div>
+
+                <label for="arrivalDate">
+                    Data arrivo
+                </label>
+
+                <input
+                    type="date"
+                    id="arrivalDate"
+                    name="arrivalDate"
+                    th:value="${destination.arrivalDate}"
+                    required>
+
+            </div>
+
+
+            <br>
+
+
+            <div>
+
+                <label for="departureDate">
+                    Data partenza
+                </label>
+
+                <input
+                    type="date"
+                    id="departureDate"
+                    name="departureDate"
+                    th:value="${destination.departureDate}"
+                    required>
+
+            </div>
+
+
+            <br>
+
+
+            <button
+                class="button"
+                type="submit">
+
+                Salva modifiche
+
+            </button>
+
+
+            <a
+                class="button button-secondary"
+                th:href="@{/trips/{id}(id=${trip.id})}">
+
+                Annulla
+
+            </a>
+
+
+        </form>
+
+
+    </main>
+
+
+</body>
+
+</html>

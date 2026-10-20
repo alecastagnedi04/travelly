@@ -36,11 +36,11 @@ public class ActivityService {
 
 
     /*
-     * Crea un'attività solamente se il Trip
+     * Crea un'attività solamente se il viaggio
      * appartiene all'utente autenticato.
      *
-     * Se il costo è maggiore di zero,
-     * genera automaticamente anche una Expense.
+     * Se il costo è maggiore di 0,
+     * viene creata automaticamente anche una Expense.
      */
     @Transactional
     public Optional<Activity> createActivity(
@@ -70,10 +70,6 @@ public class ActivityService {
                 )
                 .map(trip -> {
 
-
-                    /*
-                     * 1. Creazione Activity.
-                     */
                     Activity activity = new Activity();
 
                     activity.setName(name);
@@ -91,8 +87,8 @@ public class ActivityService {
 
 
                     /*
-                     * 2. Se l'attività ha un costo,
-                     * generiamo automaticamente una Expense.
+                     * Se l'attività ha un costo,
+                     * creiamo automaticamente una Expense.
                      */
                     if (cost > 0) {
 
@@ -102,30 +98,22 @@ public class ActivityService {
                         expense.setAmount(cost);
                         expense.setDate(date);
 
-
-                        /*
-                         * La categoria economica viene ricavata
-                         * dalla categoria dell'Activity.
-                         */
                         expense.setCategory(
                                 convertActivityCategory(category)
                         );
 
-
                         expense.setTrip(trip);
 
                         /*
-                         * Il pagatore verrà assegnato dopo.
+                         * Appena creata la spesa non ha
+                         * ancora un partecipante assegnato.
                          */
                         expense.setPaidBy(null);
 
-
                         /*
-                         * Colleghiamo la Expense alla Activity
-                         * che l'ha generata.
+                         * Colleghiamo la spesa all'attività.
                          */
                         expense.setActivity(savedActivity);
-
 
                         expenseRepository.save(expense);
                     }
@@ -137,7 +125,224 @@ public class ActivityService {
 
 
     /*
-     * Converte la categoria di una Activity
+     * Modifica un'attività e mantiene sincronizzata
+     * l'eventuale Expense collegata.
+     */
+    @Transactional
+    public Optional<Activity> updateActivity(
+            Long tripId,
+            Long activityId,
+            String name,
+            String description,
+            LocalDate date,
+            LocalTime time,
+            String location,
+            ActivityCategory category,
+            Double cost,
+            String ownerUsername) {
+
+
+        /*
+         * Il costo non può essere negativo.
+         */
+        if (cost == null || cost < 0) {
+            return Optional.empty();
+        }
+
+
+        /*
+         * Controlliamo che il viaggio appartenga
+         * all'utente autenticato.
+         */
+        Optional<Trip> tripOptional =
+                tripRepository.findByIdAndOwnerUsername(
+                        tripId,
+                        ownerUsername
+                );
+
+
+        if (tripOptional.isEmpty()) {
+            return Optional.empty();
+        }
+
+
+        /*
+         * Recuperiamo l'attività.
+         */
+        Optional<Activity> activityOptional =
+                activityRepository.findById(activityId);
+
+
+        if (activityOptional.isEmpty()) {
+            return Optional.empty();
+        }
+
+
+        Activity activity =
+                activityOptional.get();
+
+
+        /*
+         * Controlliamo che l'attività appartenga
+         * realmente al viaggio indicato.
+         */
+        if (activity.getTrip() == null ||
+                !activity.getTrip()
+                        .getId()
+                        .equals(tripId)) {
+
+            return Optional.empty();
+        }
+
+
+        /*
+         * Aggiorniamo i dati dell'Activity.
+         */
+        activity.setName(name);
+        activity.setDescription(description);
+        activity.setDate(date);
+        activity.setTime(time);
+        activity.setLocation(location);
+        activity.setCategory(category);
+        activity.setCost(cost);
+
+
+        Activity savedActivity =
+                activityRepository.save(activity);
+
+
+        /*
+         * Cerchiamo la Expense collegata
+         * a questa Activity.
+         */
+        Optional<Expense> expenseOptional =
+                expenseRepository.findByActivityId(
+                        activityId
+                );
+
+
+        /*
+         * CASO 1:
+         *
+         * Il nuovo costo è maggiore di zero.
+         *
+         * Deve esistere una Expense.
+         */
+        if (cost > 0) {
+
+
+            /*
+             * La Expense esiste già.
+             *
+             * Aggiorniamo solamente:
+             *
+             * - descrizione
+             * - importo
+             * - data
+             * - categoria
+             *
+             * NON tocchiamo paidBy.
+             */
+            if (expenseOptional.isPresent()) {
+
+                Expense expense =
+                        expenseOptional.get();
+
+
+                expense.setDescription(name);
+                expense.setAmount(cost);
+                expense.setDate(date);
+
+                expense.setCategory(
+                        convertActivityCategory(category)
+                );
+
+
+                /*
+                 * IMPORTANTE:
+                 *
+                 * Qui NON facciamo:
+                 *
+                 * expense.setPaidBy(null);
+                 *
+                 * quindi se la spesa era stata pagata
+                 * da Gabriele, Gabriele rimane.
+                 */
+
+
+                expenseRepository.save(expense);
+            }
+
+
+            /*
+             * La Expense NON esiste.
+             *
+             * Per esempio:
+             *
+             * prima Activity costava 0 €
+             * ora Activity costa 20 €
+             *
+             * quindi dobbiamo creare una nuova Expense.
+             */
+            else {
+
+                Expense expense =
+                        new Expense();
+
+
+                expense.setDescription(name);
+                expense.setAmount(cost);
+                expense.setDate(date);
+
+                expense.setCategory(
+                        convertActivityCategory(category)
+                );
+
+
+                expense.setTrip(
+                        tripOptional.get()
+                );
+
+
+                /*
+                 * Essendo una nuova Expense,
+                 * inizialmente non sappiamo chi ha pagato.
+                 */
+                expense.setPaidBy(null);
+
+
+                expense.setActivity(
+                        savedActivity
+                );
+
+
+                expenseRepository.save(expense);
+            }
+        }
+
+
+        /*
+         * CASO 2:
+         *
+         * Il costo è diventato 0.
+         *
+         * L'Activity rimane,
+         * ma la Expense automatica viene eliminata.
+         */
+        else {
+
+            expenseOptional.ifPresent(
+                    expenseRepository::delete
+            );
+        }
+
+
+        return Optional.of(savedActivity);
+    }
+
+
+    /*
+     * Converte la categoria dell'Activity
      * nella corrispondente categoria Expense.
      */
     private ExpenseCategory convertActivityCategory(
@@ -164,11 +369,14 @@ public class ActivityService {
 
 
     /*
-     * Elimina un'Activity solamente se appartiene
-     * a un Trip dell'utente autenticato.
+     * Elimina un'Activity solamente se:
      *
-     * Se l'Activity aveva generato una Expense,
-     * eliminiamo anche quella Expense.
+     * 1. il viaggio appartiene all'utente autenticato
+     * 2. l'Activity esiste
+     * 3. l'Activity appartiene realmente a quel viaggio
+     *
+     * Se esiste una Expense automatica collegata,
+     * viene eliminata prima dell'Activity.
      */
     @Transactional
     public boolean deleteActivity(
@@ -177,10 +385,6 @@ public class ActivityService {
             String ownerUsername) {
 
 
-        /*
-         * Controllo 1:
-         * il Trip deve appartenere all'utente.
-         */
         Optional<Trip> tripOptional =
                 tripRepository.findByIdAndOwnerUsername(
                         tripId,
@@ -193,12 +397,10 @@ public class ActivityService {
         }
 
 
-        /*
-         * Controllo 2:
-         * l'Activity deve esistere.
-         */
         Optional<Activity> activityOptional =
-                activityRepository.findById(activityId);
+                activityRepository.findById(
+                        activityId
+                );
 
 
         if (activityOptional.isEmpty()) {
@@ -211,9 +413,7 @@ public class ActivityService {
 
 
         /*
-         * Controllo 3:
-         * l'Activity deve appartenere proprio
-         * al Trip indicato.
+         * Controllo di appartenenza.
          */
         if (activity.getTrip() == null ||
                 !activity.getTrip()
@@ -225,16 +425,18 @@ public class ActivityService {
 
 
         /*
-         * Se esiste una Expense generata da
-         * questa Activity, la eliminiamo prima.
+         * Eliminiamo prima l'eventuale
+         * Expense collegata.
          */
         expenseRepository
                 .findByActivityId(activityId)
-                .ifPresent(expenseRepository::delete);
+                .ifPresent(
+                        expenseRepository::delete
+                );
 
 
         /*
-         * Infine eliminiamo l'Activity.
+         * Poi eliminiamo l'Activity.
          */
         activityRepository.delete(activity);
 

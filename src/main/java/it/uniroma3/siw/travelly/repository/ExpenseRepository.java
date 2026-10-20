@@ -12,4 +12,4 @@ public interface ExpenseRepository
     Optional<Expense> findByActivityId(Long activityId);
 
     Iterable<Expense> findByPaidById(Long participantId);
-}    //mi permette di chiedere se esiste una expense collegata all'activity, in modo da non poter eliminare un'attività se ha una spesa collegata
+}  //mi permette di chiedere se esiste una expense collegata all'activity, in modo da non poter eliminare un'attività se ha una spesa collegata

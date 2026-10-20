@@ -267,6 +267,17 @@
 
         </p>
 
+<a
+    class="button button-secondary"
+    th:href="@{/trips/{tripId}/destinations/{destinationId}/edit(
+        tripId=${trip.id},
+        destinationId=${destination.id}
+    )}">
+
+    Modifica destinazione
+
+</a>
+
 
         <!-- ELIMINA DESTINAZIONE -->
 
@@ -453,6 +464,18 @@
                     </span>
 
                     €
+
+<a
+    class="button button-secondary"
+    th:href="@{/trips/{tripId}/activities/{activityId}/edit(
+        tripId=${trip.id},
+        activityId=${activity.id}
+    )}">
+
+    Modifica attività
+
+</a>
+
                     <form
     th:action="@{/trips/{tripId}/activities/{activityId}/delete(
         tripId=${trip.id},
