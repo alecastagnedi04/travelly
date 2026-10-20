@@ -28,10 +28,6 @@ public class ParticipantController {
     }
 
 
-    /*
-     * Mostra la form solamente se il viaggio
-     * appartiene all'utente autenticato.
-     */
     @GetMapping("/trips/{tripId}/participants/new")
     public String showCreateForm(
             @PathVariable("tripId") Long tripId,
@@ -56,10 +52,6 @@ public class ParticipantController {
     }
 
 
-    /*
-     * Salva il partecipante solamente se il viaggio
-     * appartiene all'utente autenticato.
-     */
     @PostMapping("/trips/{tripId}/participants")
     public String createParticipant(
             @PathVariable("tripId")
@@ -84,5 +76,32 @@ public class ParticipantController {
         }
 
         return "redirect:/trips";
+    }
+
+
+    /*
+     * Eliminazione partecipante.
+     */
+    @PostMapping(
+        "/trips/{tripId}/participants/{participantId}/delete"
+    )
+    public String deleteParticipant(
+            @PathVariable("tripId")
+            Long tripId,
+
+            @PathVariable("participantId")
+            Long participantId,
+
+            Principal principal) {
+
+
+        participantService.deleteParticipant(
+                tripId,
+                participantId,
+                principal.getName()
+        );
+
+
+        return "redirect:/trips/" + tripId;
     }
 }

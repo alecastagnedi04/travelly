@@ -2,43 +2,201 @@
 <html xmlns:th="http://www.thymeleaf.org">
 
 <head>
+
     <meta charset="UTF-8">
+
     <title>I miei viaggi - Travelly</title>
+
+    <link
+        rel="stylesheet"
+        th:href="@{/css/style.css}">
+
 </head>
+
 
 <body>
 
-    <h1>I miei viaggi</h1>
-    <a th:href="@{/trips/new}">+ Crea nuovo viaggio</a>
 
-    <div th:each="trip : ${trips}">
+    <!-- NAVBAR -->
 
-        <h2 th:text="${trip.name}">Nome viaggio</h2>
+    <nav class="navbar">
 
-        <p th:text="${trip.description}">
-            Descrizione del viaggio
-        </p>
+        <div class="navbar-left">
 
-        <p>
-            Dal
-            <span th:text="${trip.startDate}">data partenza</span>
-            al
-            <span th:text="${trip.endDate}">data ritorno</span>
-        </p>
-
-        <p>
-            Budget:
-            <span th:text="${trip.budget}">0</span> €
-        </p>
-
-        <a th:href="@{/trips/{id}(id=${trip.id})}">
-            Dettagli
-        </a>
+            <a
+                class="logo"
+                th:href="@{/}">
+                Travelly
+            </a>
 
 
-        <hr>
+            <a th:href="@{/trips}">
+                I miei viaggi
+            </a>
 
-    </div>
+
+            <a th:href="@{/trips/new}">
+                + Nuovo viaggio
+            </a>
+
+
+            <!-- Visibile solamente all'ADMIN -->
+
+            <a
+                th:if="${isAdmin}"
+                th:href="@{/admin}">
+                Dashboard Admin
+            </a>
+
+        </div>
+
+
+        <div class="navbar-right">
+
+            <span th:text="${username}">
+                username
+            </span>
+
+
+            <!-- Logout deve essere POST -->
+
+            <form
+                class="logout-form"
+                th:action="@{/logout}"
+                method="post">
+
+                <button
+                    class="logout-button"
+                    type="submit">
+
+                    Logout
+
+                </button>
+
+            </form>
+
+        </div>
+
+    </nav>
+
+
+
+    <!-- CONTENUTO -->
+
+    <main class="container">
+
+
+        <div class="page-header">
+
+            <div>
+
+                <h1>I miei viaggi</h1>
+
+                <p>
+                    Organizza e gestisci le tue prossime avventure.
+                </p>
+
+            </div>
+
+
+            <a
+                class="button"
+                th:href="@{/trips/new}">
+
+                + Crea nuovo viaggio
+
+            </a>
+
+        </div>
+
+
+
+        <!-- Se non ci sono viaggi -->
+
+        <div
+            class="empty-message"
+            th:if="${#lists.isEmpty(trips)}">
+
+            <h2>Nessun viaggio ancora</h2>
+
+            <p>
+                Crea il tuo primo viaggio con Travelly.
+            </p>
+
+            <a
+                class="button"
+                th:href="@{/trips/new}">
+
+                Crea viaggio
+
+            </a>
+
+        </div>
+
+
+
+        <!-- Lista viaggi -->
+
+        <div
+            class="trip-card"
+            th:each="trip : ${trips}">
+
+
+            <h2 th:text="${trip.name}">
+                Nome viaggio
+            </h2>
+
+
+            <p th:text="${trip.description}">
+                Descrizione del viaggio
+            </p>
+
+
+            <p class="trip-info">
+
+                Dal
+
+                <strong th:text="${trip.startDate}">
+                    data partenza
+                </strong>
+
+                al
+
+                <strong th:text="${trip.endDate}">
+                    data ritorno
+                </strong>
+
+            </p>
+
+
+            <p class="trip-info">
+
+                Budget:
+
+                <strong>
+                    <span th:text="${trip.budget}">
+                        0
+                    </span>
+                    €
+                </strong>
+
+            </p>
+
+
+            <a
+                class="button button-secondary"
+                th:href="@{/trips/{id}(id=${trip.id})}">
+
+                Dettagli viaggio
+
+            </a>
+
+
+        </div>
+
+
+    </main>
+
 
 </body>
 

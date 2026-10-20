@@ -101,4 +101,31 @@ public class DestinationController {
 
         return "redirect:/trips";
     }
+
+
+    /*
+     * Elimina una destinazione solamente se
+     * appartiene a un Trip dell'utente autenticato.
+     */
+    @PostMapping(
+        "/trips/{tripId}/destinations/{destinationId}/delete"
+    )
+    public String deleteDestination(
+            @PathVariable("tripId")
+            Long tripId,
+
+            @PathVariable("destinationId")
+            Long destinationId,
+
+            Principal principal) {
+
+        destinationService.deleteDestination(
+                tripId,
+                destinationId,
+                principal.getName()
+        );
+
+        return "redirect:/trips/" + tripId;
+    }
+
 }

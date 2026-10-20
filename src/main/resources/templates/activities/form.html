@@ -17,12 +17,15 @@
         </strong>
     </p>
 
+
     <form
         th:action="@{/trips/{tripId}/activities(tripId=${trip.id})}"
         method="post">
 
+
         <div>
             <label for="name">Nome</label>
+
             <input
                 type="text"
                 id="name"
@@ -30,19 +33,27 @@
                 required>
         </div>
 
+
         <br>
 
+
         <div>
-            <label for="description">Descrizione</label>
+            <label for="description">
+                Descrizione
+            </label>
+
             <textarea
                 id="description"
                 name="description"></textarea>
         </div>
 
+
         <br>
+
 
         <div>
             <label for="date">Data</label>
+
             <input
                 type="date"
                 id="date"
@@ -50,10 +61,13 @@
                 required>
         </div>
 
+
         <br>
+
 
         <div>
             <label for="time">Ora</label>
+
             <input
                 type="time"
                 id="time"
@@ -61,10 +75,15 @@
                 required>
         </div>
 
+
         <br>
 
+
         <div>
-            <label for="location">Luogo</label>
+            <label for="location">
+                Luogo
+            </label>
+
             <input
                 type="text"
                 id="location"
@@ -72,10 +91,15 @@
                 required>
         </div>
 
+
         <br>
 
+
         <div>
-            <label for="category">Categoria</label>
+
+            <label for="category">
+                Categoria
+            </label>
 
             <select
                 id="category"
@@ -89,12 +113,18 @@
                 </option>
 
             </select>
+
         </div>
+
 
         <br>
 
+
         <div>
-            <label for="cost">Costo (€)</label>
+
+            <label for="cost">
+                Costo (€)
+            </label>
 
             <input
                 type="number"
@@ -102,10 +132,14 @@
                 name="cost"
                 min="0"
                 step="0.01"
+                value="0"
                 required>
+
         </div>
 
+
         <br>
+
 
         <button type="submit">
             Aggiungi attività
@@ -113,11 +147,14 @@
 
     </form>
 
+
     <br>
+
 
     <a th:href="@{/trips/{id}(id=${trip.id})}">
         Annulla
     </a>
+
 
 </body>
 

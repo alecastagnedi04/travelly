@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import it.uniroma3.siw.travelly.model.Destination;
 import it.uniroma3.siw.travelly.repository.DestinationRepository;
@@ -58,5 +59,58 @@ public class DestinationService {
                             destination
                     );
                 });
+    }
+
+
+    /*
+     * Elimina una destinazione solamente se:
+     *
+     * 1. il Trip appartiene all'utente autenticato
+     * 2. la Destination esiste
+     * 3. la Destination appartiene proprio a quel Trip
+     */
+    @Transactional
+    public boolean deleteDestination(
+            Long tripId,
+            Long destinationId,
+            String ownerUsername) {
+
+
+        if (tripRepository
+                .findByIdAndOwnerUsername(
+                        tripId,
+                        ownerUsername
+                )
+                .isEmpty()) {
+
+            return false;
+        }
+
+
+        Optional<Destination> destinationOptional =
+                destinationRepository.findById(destinationId);
+
+
+        if (destinationOptional.isEmpty()) {
+            return false;
+        }
+
+
+        Destination destination =
+                destinationOptional.get();
+
+
+        if (destination.getTrip() == null ||
+                !destination.getTrip()
+                        .getId()
+                        .equals(tripId)) {
+
+            return false;
+        }
+
+
+        destinationRepository.delete(destination);
+
+        return true;
     }
 }

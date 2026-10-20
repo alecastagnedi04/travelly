@@ -4,6 +4,7 @@ import java.security.Principal;
 import java.time.LocalDate;
 
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,6 +19,7 @@ public class TripController {
 
     private final TripService tripService;
 
+
     public TripController(TripService tripService) {
         this.tripService = tripService;
     }
@@ -30,13 +32,30 @@ public class TripController {
     @GetMapping("/trips")
     public String showTrips(
             Model model,
-            Principal principal) {
+            Authentication authentication) {
 
-        String username = principal.getName();
+        String username = authentication.getName();
 
         model.addAttribute(
                 "trips",
                 tripService.findByOwnerUsername(username)
+        );
+
+        model.addAttribute(
+                "username",
+                username
+        );
+
+        boolean isAdmin = authentication
+                .getAuthorities()
+                .stream()
+                .anyMatch(authority ->
+                        authority.getAuthority().equals("ROLE_ADMIN")
+                );
+
+        model.addAttribute(
+                "isAdmin",
+                isAdmin
         );
 
         return "trips/list";
@@ -109,12 +128,12 @@ public class TripController {
 
             Model model,
 
-            Principal principal) {
+            Authentication authentication) {
 
         return tripService
                 .findByIdAndOwnerUsername(
                         id,
-                        principal.getName()
+                        authentication.getName()
                 )
                 .map(trip -> {
 
@@ -131,6 +150,24 @@ public class TripController {
                     model.addAttribute(
                             "remainingBudget",
                             tripService.calculateRemainingBudget(trip)
+                    );
+
+                    model.addAttribute(
+                            "username",
+                            authentication.getName()
+                    );
+
+                    boolean isAdmin = authentication
+                            .getAuthorities()
+                            .stream()
+                            .anyMatch(authority ->
+                                    authority.getAuthority()
+                                            .equals("ROLE_ADMIN")
+                            );
+
+                    model.addAttribute(
+                            "isAdmin",
+                            isAdmin
                     );
 
                     return "trips/show";

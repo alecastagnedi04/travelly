@@ -32,10 +32,6 @@ public class ActivityController {
     }
 
 
-    /*
-     * Mostra la form solamente se il viaggio
-     * appartiene all'utente autenticato.
-     */
     @GetMapping("/trips/{tripId}/activities/new")
     public String showCreateForm(
             @PathVariable("tripId") Long tripId,
@@ -65,10 +61,6 @@ public class ActivityController {
     }
 
 
-    /*
-     * Salva l'attività solamente se il viaggio
-     * appartiene all'utente autenticato.
-     */
     @PostMapping("/trips/{tripId}/activities")
     public String createActivity(
             @PathVariable("tripId")
@@ -123,4 +115,27 @@ public class ActivityController {
 
         return "redirect:/trips";
     }
+
+    @PostMapping(
+    "/trips/{tripId}/activities/{activityId}/delete"
+)
+public String deleteActivity(
+        @PathVariable("tripId")
+        Long tripId,
+
+        @PathVariable("activityId")
+        Long activityId,
+
+        Principal principal) {
+
+
+    activityService.deleteActivity(
+            tripId,
+            activityId,
+            principal.getName()
+    );
+
+
+    return "redirect:/trips/" + tripId;
+}
 }

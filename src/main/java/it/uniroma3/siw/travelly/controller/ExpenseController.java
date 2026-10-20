@@ -31,10 +31,6 @@ public class ExpenseController {
     }
 
 
-    /*
-     * Mostra la form solamente se il viaggio
-     * appartiene all'utente autenticato.
-     */
     @GetMapping("/trips/{tripId}/expenses/new")
     public String showCreateForm(
             @PathVariable("tripId") Long tripId,
@@ -53,10 +49,6 @@ public class ExpenseController {
                             trip
                     );
 
-                    /*
-                     * Nella select "Pagato da" mostriamo
-                     * solamente i partecipanti di questo Trip.
-                     */
                     model.addAttribute(
                             "participants",
                             trip.getParticipants()
@@ -74,8 +66,7 @@ public class ExpenseController {
 
 
     /*
-     * Salva la spesa solamente se il viaggio
-     * appartiene all'utente autenticato.
+     * Creazione manuale di una spesa.
      */
     @PostMapping("/trips/{tripId}/expenses")
     public String createExpense(
@@ -102,6 +93,7 @@ public class ExpenseController {
 
             Principal principal) {
 
+
         if (expenseService.createExpense(
                 tripId,
                 description,
@@ -115,6 +107,62 @@ public class ExpenseController {
             return "redirect:/trips/" + tripId;
         }
 
+
         return "redirect:/trips";
     }
+
+
+    /*
+     * Assegna il partecipante che ha pagato
+     * una Expense già esistente.
+     */
+    @PostMapping(
+        "/trips/{tripId}/expenses/{expenseId}/payer"
+    )
+    public String assignPayer(
+            @PathVariable("tripId")
+            Long tripId,
+
+            @PathVariable("expenseId")
+            Long expenseId,
+
+            @RequestParam("participantId")
+            Long participantId,
+
+            Principal principal) {
+
+
+        expenseService.assignPayer(
+                tripId,
+                expenseId,
+                participantId,
+                principal.getName()
+        );
+
+
+        return "redirect:/trips/" + tripId;
+    }
+
+    @PostMapping(
+    "/trips/{tripId}/expenses/{expenseId}/delete"
+)
+public String deleteExpense(
+        @PathVariable("tripId")
+        Long tripId,
+
+        @PathVariable("expenseId")
+        Long expenseId,
+
+        Principal principal) {
+
+
+    expenseService.deleteExpense(
+            tripId,
+            expenseId,
+            principal.getName()
+    );
+
+
+    return "redirect:/trips/" + tripId;
+}
 }

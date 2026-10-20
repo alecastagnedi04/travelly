@@ -5,6 +5,8 @@ public enum ExpenseCategory {
     ACCOMMODATION,
     FOOD,
     TRANSPORT,
+    CULTURE,
+    ENTERTAINMENT,
     ACTIVITY,
     OTHER
 
