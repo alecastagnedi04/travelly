@@ -383,4 +383,22 @@ body {
     .expense-actions {
     margin-top: 20px;
 }
+
+.payer-change {
+    margin-top: 10px;
+}
+
+.payer-change summary {
+    display: inline-block;
+    cursor: pointer;
+    list-style: none;
+}
+
+.payer-change summary::-webkit-details-marker {
+    display: none;
+}
+
+.payer-change form {
+    margin-top: 15px;
+}
 }

@@ -114,76 +114,118 @@ public class ExpenseService {
      * per le Expense generate automaticamente
      * dalle Activity.
      */
-    @Transactional
-    public boolean assignPayer(
-            Long tripId,
-            Long expenseId,
-            Long participantId,
-            String ownerUsername) {
+   @Transactional
+public boolean assignPayer(
+        Long tripId,
+        Long expenseId,
+        Long participantId,
+        String ownerUsername) {
 
 
-        /*
-         * Prima controlliamo che il Trip
-         * appartenga all'utente autenticato.
-         */
-        Optional<Trip> tripOptional =
-                tripRepository.findByIdAndOwnerUsername(
-                        tripId,
-                        ownerUsername
-                );
+    /*
+     * Il viaggio deve appartenere
+     * all'utente autenticato.
+     */
+    Optional<Trip> tripOptional =
+            tripRepository.findByIdAndOwnerUsername(
+                    tripId,
+                    ownerUsername
+            );
 
 
-        if (tripOptional.isEmpty()) {
-            return false;
-        }
+    if (tripOptional.isEmpty()) {
+        return false;
+    }
 
 
-        Optional<Expense> expenseOptional =
-                expenseRepository.findById(expenseId);
+    /*
+     * Recuperiamo la Expense.
+     */
+    Optional<Expense> expenseOptional =
+            expenseRepository.findById(
+                    expenseId
+            );
 
 
-        Optional<Participant> participantOptional =
-                participantRepository.findById(participantId);
+    if (expenseOptional.isEmpty()) {
+        return false;
+    }
 
 
-        if (expenseOptional.isEmpty() ||
-                participantOptional.isEmpty()) {
-
-            return false;
-        }
+    Expense expense =
+            expenseOptional.get();
 
 
-        Expense expense = expenseOptional.get();
-        Participant participant = participantOptional.get();
+    /*
+     * La Expense deve appartenere
+     * proprio al Trip indicato.
+     */
+    if (expense.getTrip() == null ||
+            !expense.getTrip()
+                    .getId()
+                    .equals(tripId)) {
+
+        return false;
+    }
 
 
-        /*
-         * La Expense deve appartenere al Trip.
-         */
-        if (expense.getTrip() == null ||
-                !expense.getTrip().getId().equals(tripId)) {
+    /*
+     * Se participantId è null,
+     * vogliamo rimuovere il pagatore.
+     */
+    if (participantId == null) {
 
-            return false;
-        }
-
-
-        /*
-         * Anche il Participant deve appartenere
-         * allo stesso Trip.
-         */
-        if (participant.getTrip() == null ||
-                !participant.getTrip().getId().equals(tripId)) {
-
-            return false;
-        }
-
-
-        expense.setPaidBy(participant);
+        expense.setPaidBy(null);
 
         expenseRepository.save(expense);
 
         return true;
     }
+
+
+    /*
+     * Recuperiamo il partecipante scelto.
+     */
+    Optional<Participant> participantOptional =
+            participantRepository.findById(
+                    participantId
+            );
+
+
+    if (participantOptional.isEmpty()) {
+        return false;
+    }
+
+
+    Participant participant =
+            participantOptional.get();
+
+
+    /*
+     * Sicurezza e consistenza:
+     *
+     * il partecipante deve appartenere
+     * allo stesso viaggio della Expense.
+     */
+    if (participant.getTrip() == null ||
+            !participant.getTrip()
+                    .getId()
+                    .equals(tripId)) {
+
+        return false;
+    }
+
+
+    /*
+     * Assegniamo oppure cambiamo pagatore.
+     */
+    expense.setPaidBy(participant);
+
+    expenseRepository.save(expense);
+
+
+    return true;
+}
 
     @Transactional
 public boolean deleteExpense(
@@ -247,5 +289,189 @@ public boolean deleteExpense(
     expenseRepository.delete(expense);
 
     return true;
+}
+
+@Transactional
+public Optional<Expense> updateExpense(
+        Long tripId,
+        Long expenseId,
+        String description,
+        Double amount,
+        LocalDate date,
+        ExpenseCategory category,
+        Long participantId,
+        String ownerUsername) {
+
+
+    /*
+     * Importo obbligatorio e positivo.
+     */
+    if (amount == null || amount <= 0) {
+        return Optional.empty();
+    }
+
+
+    /*
+     * Il viaggio deve appartenere
+     * all'utente autenticato.
+     */
+    Optional<Trip> tripOptional =
+            tripRepository.findByIdAndOwnerUsername(
+                    tripId,
+                    ownerUsername
+            );
+
+
+    if (tripOptional.isEmpty()) {
+        return Optional.empty();
+    }
+
+
+    /*
+     * Recuperiamo la Expense.
+     */
+    Optional<Expense> expenseOptional =
+            expenseRepository.findById(expenseId);
+
+
+    if (expenseOptional.isEmpty()) {
+        return Optional.empty();
+    }
+
+
+    Expense expense =
+            expenseOptional.get();
+
+
+    /*
+     * La Expense deve appartenere
+     * proprio al viaggio indicato.
+     */
+    if (expense.getTrip() == null ||
+            !expense.getTrip()
+                    .getId()
+                    .equals(tripId)) {
+
+        return Optional.empty();
+    }
+
+
+    /*
+     * IMPORTANTISSIMO:
+     *
+     * una Expense generata automaticamente
+     * da un'Activity NON può essere modificata
+     * direttamente.
+     */
+    if (expense.getActivity() != null) {
+        return Optional.empty();
+    }
+
+
+    /*
+     * Se è stato scelto un partecipante,
+     * controlliamo che appartenga allo stesso viaggio.
+     */
+    Participant participant = null;
+
+
+    if (participantId != null) {
+
+        Optional<Participant> participantOptional =
+                participantRepository.findById(
+                        participantId
+                );
+
+
+        if (participantOptional.isEmpty()) {
+            return Optional.empty();
+        }
+
+
+        participant =
+                participantOptional.get();
+
+
+        if (participant.getTrip() == null ||
+                !participant.getTrip()
+                        .getId()
+                        .equals(tripId)) {
+
+            return Optional.empty();
+        }
+    }
+
+
+    /*
+     * Aggiornamento della Expense manuale.
+     */
+    expense.setDescription(description);
+    expense.setAmount(amount);
+    expense.setDate(date);
+    expense.setCategory(category);
+    expense.setPaidBy(participant);
+
+
+    return Optional.of(
+            expenseRepository.save(expense)
+    );
+}
+
+public Optional<Expense> findManualExpenseByIdAndOwnerUsername(
+        Long tripId,
+        Long expenseId,
+        String ownerUsername) {
+
+
+    /*
+     * Il Trip deve appartenere all'utente.
+     */
+    if (tripRepository
+            .findByIdAndOwnerUsername(
+                    tripId,
+                    ownerUsername
+            )
+            .isEmpty()) {
+
+        return Optional.empty();
+    }
+
+
+    Optional<Expense> expenseOptional =
+            expenseRepository.findById(
+                    expenseId
+            );
+
+
+    if (expenseOptional.isEmpty()) {
+        return Optional.empty();
+    }
+
+
+    Expense expense =
+            expenseOptional.get();
+
+
+    /*
+     * Deve appartenere allo stesso Trip.
+     */
+    if (expense.getTrip() == null ||
+            !expense.getTrip()
+                    .getId()
+                    .equals(tripId)) {
+
+        return Optional.empty();
+    }
+
+
+    /*
+     * Deve essere manuale.
+     */
+    if (expense.getActivity() != null) {
+        return Optional.empty();
+    }
+
+
+    return Optional.of(expense);
 }
 }

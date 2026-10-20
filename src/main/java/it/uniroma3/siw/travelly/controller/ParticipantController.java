@@ -28,11 +28,18 @@ public class ParticipantController {
     }
 
 
+    /*
+     * Form creazione Participant.
+     */
     @GetMapping("/trips/{tripId}/participants/new")
     public String showCreateForm(
-            @PathVariable("tripId") Long tripId,
+            @PathVariable("tripId")
+            Long tripId,
+
             Model model,
+
             Principal principal) {
+
 
         return tripService
                 .findByIdAndOwnerUsername(
@@ -52,6 +59,9 @@ public class ParticipantController {
     }
 
 
+    /*
+     * Creazione Participant.
+     */
     @PostMapping("/trips/{tripId}/participants")
     public String createParticipant(
             @PathVariable("tripId")
@@ -65,6 +75,7 @@ public class ParticipantController {
 
             Principal principal) {
 
+
         if (participantService.createParticipant(
                 tripId,
                 name,
@@ -75,12 +86,90 @@ public class ParticipantController {
             return "redirect:/trips/" + tripId;
         }
 
-        return "redirect:/trips";
+
+        return "redirect:/trips/" + tripId;
     }
 
 
     /*
-     * Eliminazione partecipante.
+     * Mostra la form di modifica.
+     */
+    @GetMapping(
+        "/trips/{tripId}/participants/{participantId}/edit"
+    )
+    public String showEditForm(
+            @PathVariable("tripId")
+            Long tripId,
+
+            @PathVariable("participantId")
+            Long participantId,
+
+            Model model,
+
+            Principal principal) {
+
+
+        return participantService
+                .findByIdAndOwnerUsername(
+                        tripId,
+                        participantId,
+                        principal.getName()
+                )
+                .map(participant -> {
+
+                    model.addAttribute(
+                            "participant",
+                            participant
+                    );
+
+                    model.addAttribute(
+                            "trip",
+                            participant.getTrip()
+                    );
+
+                    return "participants/edit";
+                })
+                .orElse("redirect:/trips");
+    }
+
+
+    /*
+     * Salva le modifiche del Participant.
+     */
+    @PostMapping(
+        "/trips/{tripId}/participants/{participantId}/edit"
+    )
+    public String updateParticipant(
+            @PathVariable("tripId")
+            Long tripId,
+
+            @PathVariable("participantId")
+            Long participantId,
+
+            @RequestParam("name")
+            String name,
+
+            @RequestParam("email")
+            String email,
+
+            Principal principal) {
+
+
+        participantService.updateParticipant(
+                tripId,
+                participantId,
+                name,
+                email,
+                principal.getName()
+        );
+
+
+        return "redirect:/trips/" + tripId;
+    }
+
+
+    /*
+     * Eliminazione Participant.
      */
     @PostMapping(
         "/trips/{tripId}/participants/{participantId}/delete"

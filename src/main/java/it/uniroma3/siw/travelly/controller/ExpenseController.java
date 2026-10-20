@@ -31,11 +31,18 @@ public class ExpenseController {
     }
 
 
+    /*
+     * Mostra la form per creare manualmente una spesa.
+     */
     @GetMapping("/trips/{tripId}/expenses/new")
     public String showCreateForm(
-            @PathVariable("tripId") Long tripId,
+            @PathVariable("tripId")
+            Long tripId,
+
             Model model,
+
             Principal principal) {
+
 
         return tripService
                 .findByIdAndOwnerUsername(
@@ -66,7 +73,15 @@ public class ExpenseController {
 
 
     /*
-     * Creazione manuale di una spesa.
+     * Creazione manuale di una Expense.
+     *
+     * Questa serve per spese come:
+     *
+     * - hotel
+     * - volo
+     * - taxi
+     * - assicurazione
+     * - altre spese non legate ad Activity
      */
     @PostMapping("/trips/{tripId}/expenses")
     public String createExpense(
@@ -108,13 +123,128 @@ public class ExpenseController {
         }
 
 
-        return "redirect:/trips";
+        return "redirect:/trips/" + tripId;
     }
 
 
     /*
-     * Assegna il partecipante che ha pagato
-     * una Expense già esistente.
+     * Mostra la form di modifica di una Expense manuale.
+     *
+     * Le Expense automatiche generate da Activity
+     * non possono essere modificate direttamente.
+     */
+    @GetMapping(
+        "/trips/{tripId}/expenses/{expenseId}/edit"
+    )
+    public String showEditForm(
+            @PathVariable("tripId")
+            Long tripId,
+
+            @PathVariable("expenseId")
+            Long expenseId,
+
+            Model model,
+
+            Principal principal) {
+
+
+        return expenseService
+                .findManualExpenseByIdAndOwnerUsername(
+                        tripId,
+                        expenseId,
+                        principal.getName()
+                )
+                .map(expense -> {
+
+                    model.addAttribute(
+                            "expense",
+                            expense
+                    );
+
+                    model.addAttribute(
+                            "trip",
+                            expense.getTrip()
+                    );
+
+                    model.addAttribute(
+                            "participants",
+                            expense.getTrip()
+                                    .getParticipants()
+                    );
+
+                    model.addAttribute(
+                            "categories",
+                            ExpenseCategory.values()
+                    );
+
+
+                    return "expenses/edit";
+                })
+                .orElse("redirect:/trips");
+    }
+
+
+    /*
+     * Salva le modifiche di una Expense manuale.
+     */
+    @PostMapping(
+        "/trips/{tripId}/expenses/{expenseId}/edit"
+    )
+    public String updateExpense(
+            @PathVariable("tripId")
+            Long tripId,
+
+            @PathVariable("expenseId")
+            Long expenseId,
+
+            @RequestParam("description")
+            String description,
+
+            @RequestParam("amount")
+            Double amount,
+
+            @RequestParam("date")
+            @DateTimeFormat(
+                    iso = DateTimeFormat.ISO.DATE
+            )
+            LocalDate date,
+
+            @RequestParam("category")
+            ExpenseCategory category,
+
+            @RequestParam(
+                    value = "participantId",
+                    required = false
+            )
+            Long participantId,
+
+            Principal principal) {
+
+
+        expenseService.updateExpense(
+                tripId,
+                expenseId,
+                description,
+                amount,
+                date,
+                category,
+                participantId,
+                principal.getName()
+        );
+
+
+        return "redirect:/trips/" + tripId;
+    }
+
+
+    /*
+     * Assegna, cambia oppure rimuove
+     * il partecipante che ha pagato una Expense.
+     *
+     * Funziona sia per:
+     *
+     * - Expense manuali
+     * - Expense generate automaticamente da Activity
      */
     @PostMapping(
         "/trips/{tripId}/expenses/{expenseId}/payer"
@@ -126,7 +256,10 @@ public class ExpenseController {
             @PathVariable("expenseId")
             Long expenseId,
 
-            @RequestParam("participantId")
+            @RequestParam(
+                    value = "participantId",
+                    required = false
+            )
             Long participantId,
 
             Principal principal) {
@@ -143,26 +276,33 @@ public class ExpenseController {
         return "redirect:/trips/" + tripId;
     }
 
+
+    /*
+     * Elimina solamente una Expense manuale.
+     *
+     * Le Expense automatiche devono essere eliminate
+     * eliminando l'Activity collegata.
+     */
     @PostMapping(
-    "/trips/{tripId}/expenses/{expenseId}/delete"
-)
-public String deleteExpense(
-        @PathVariable("tripId")
-        Long tripId,
+        "/trips/{tripId}/expenses/{expenseId}/delete"
+    )
+    public String deleteExpense(
+            @PathVariable("tripId")
+            Long tripId,
 
-        @PathVariable("expenseId")
-        Long expenseId,
+            @PathVariable("expenseId")
+            Long expenseId,
 
-        Principal principal) {
-
-
-    expenseService.deleteExpense(
-            tripId,
-            expenseId,
-            principal.getName()
-    );
+            Principal principal) {
 
 
-    return "redirect:/trips/" + tripId;
-}
+        expenseService.deleteExpense(
+                tripId,
+                expenseId,
+                principal.getName()
+        );
+
+
+        return "redirect:/trips/" + tripId;
+    }
 }
