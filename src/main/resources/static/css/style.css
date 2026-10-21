@@ -401,4 +401,8 @@ body {
 .payer-change form {
     margin-top: 15px;
 }
+
+.dashboard-link {
+    margin: 24px 0 32px;
+}
 }

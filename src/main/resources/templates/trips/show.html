@@ -199,7 +199,19 @@
 
         </div>
 
+<div class="dashboard-link">
 
+    <a
+        class="button"
+        th:href="@{/react-dashboard/index.html(
+            tripId=${trip.id}
+        )}">
+
+        📊 Dashboard spese
+
+    </a>
+
+</div>
 
    <!-- DESTINAZIONI -->
 
@@ -829,8 +841,6 @@
 
         </div>
 
-
-
         <!-- ================================================== -->
         <!-- AZIONI PER SPESA AUTOMATICA DA ACTIVITY -->
         <!-- ================================================== -->
@@ -859,7 +869,7 @@
             </p>
 
 
-            <!-- MODIFICA ACTIVITY COLLEGATA -->
+            <!-- MODIFICA ATTIVITÀ COLLEGATA -->
 
             <a
                 class="button button-secondary"
@@ -873,150 +883,7 @@
             </a>
 
 
-            <!-- ELIMINA ACTIVITY + EXPENSE -->
-
-            <form
-                th:action="@{/trips/{tripId}/activities/{activityId}/delete(
-                    tripId=${trip.id},
-                    activityId=${expense.activity.id}
-                )}"
-                method="post">
-
-
-                <button
-                    class="button button-danger"
-                    type="submit">
-
-                    Elimina attività e spesa
-
-                </button>
-
-
-            </form>
-
-
-        </div>
-
-
-    </div>
-
-
-</section>
-
-
-  
-
-</div>
-
-            <!-- Partecipanti del viaggio -->
-
-            <option
-                th:each="participant : ${trip.participants}"
-                th:value="${participant.id}"
-                th:text="${participant.name}"
-                th:selected="${
-                    expense.paidBy != null
-                    and expense.paidBy.id == participant.id
-                }">
-
-            </option>
-
-
-        </select>
-
-
-        <button
-            class="button"
-            type="submit"
-            th:text="${
-                expense.paidBy == null
-                ? 'Assegna pagatore'
-                : 'Cambia pagatore'
-            }">
-
-            Salva pagatore
-
-        </button>
-
-
-    </form>
-
-
-</div>
-
-
-        <!-- ============================= -->
-        <!-- SPESA MANUALE -->
-        <!-- ============================= -->
-
-        <div
-            class="expense-actions"
-            th:if="${expense.activity == null}">
-
-
-            <a
-                class="button button-secondary"
-                th:href="@{/trips/{tripId}/expenses/{expenseId}/edit(
-                    tripId=${trip.id},
-                    expenseId=${expense.id}
-                )}">
-
-                Modifica spesa
-
-            </a>
-
-
-            <form
-                th:action="@{/trips/{tripId}/expenses/{expenseId}/delete(
-                    tripId=${trip.id},
-                    expenseId=${expense.id}
-                )}"
-                method="post">
-
-                <button
-                    class="button button-danger"
-                    type="submit">
-
-                    Elimina spesa
-
-                </button>
-
-            </form>
-
-
-        </div>
-
-
-
-        <!-- ============================= -->
-        <!-- SPESA AUTOMATICA DA ACTIVITY -->
-        <!-- ============================= -->
-
-        <div
-            class="expense-actions"
-            th:if="${expense.activity != null}">
-
-
-            <p>
-
-                <strong>
-                    Spesa generata automaticamente da un'attività
-                </strong>
-
-            </p>
-
-
-            <a
-                class="button button-secondary"
-                th:href="@{/trips/{tripId}/activities/{activityId}/edit(
-                    tripId=${trip.id},
-                    activityId=${expense.activity.id}
-                )}">
-
-                Modifica attività collegata
-
-            </a>
-
+            <!-- ELIMINA ATTIVITÀ + SPESA -->
 
             <form
                 th:action="@{/trips/{tripId}/activities/{activityId}/delete(
@@ -1044,35 +911,59 @@
 </section>
 
 
-        <!-- ZONA PERICOLO -->
 
-        <section class="danger-zone">
+<!-- ====================================================== -->
+<!-- GESTIONE VIAGGIO -->
+<!-- ====================================================== -->
 
-            <h2>Elimina viaggio</h2>
+<section class="detail-section">
 
-            <p>
-                L'eliminazione del viaggio rimuoverà anche i dati
-                collegati al viaggio.
-            </p>
+    <div class="section-header">
 
-            <form
-                th:action="@{/trips/{id}/delete(id=${trip.id})}"
-                method="post">
+        <h2>
+            Gestione viaggio
+        </h2>
 
-                <button
-                    class="button button-danger"
-                    type="submit">
-
-                    Elimina viaggio
-
-                </button>
-
-            </form>
-
-        </section>
+    </div>
 
 
-    </main>
+    <div class="expense-actions">
+
+
+        <!-- MODIFICA VIAGGIO -->
+
+        <a
+            class="button button-secondary"
+            th:href="@{/trips/{id}/edit(id=${trip.id})}">
+
+            Modifica viaggio
+
+        </a>
+
+
+        <!-- ELIMINA VIAGGIO -->
+
+        <form
+            th:action="@{/trips/{id}/delete(id=${trip.id})}"
+            method="post">
+
+            <button
+                class="button button-danger"
+                type="submit">
+
+                Elimina viaggio
+
+            </button>
+
+        </form>
+
+
+    </div>
+
+</section>
+
+
+</main>
 
 
 </body>
