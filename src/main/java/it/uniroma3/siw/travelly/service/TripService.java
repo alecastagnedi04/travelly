@@ -4,12 +4,14 @@ import java.time.LocalDate;
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import it.uniroma3.siw.travelly.model.Expense;
 import it.uniroma3.siw.travelly.model.Trip;
 import it.uniroma3.siw.travelly.model.User;
 import it.uniroma3.siw.travelly.repository.TripRepository;
 import it.uniroma3.siw.travelly.repository.UserRepository;
+
 
 @Service
 public class TripService {
@@ -29,8 +31,8 @@ public class TripService {
 
     /*
      * Salva un Trip.
-     * Questo metodo rimane utile anche per future operazioni.
      */
+    @Transactional
     public Trip save(Trip trip) {
 
         return tripRepository.save(trip);
@@ -40,9 +42,9 @@ public class TripService {
     /*
      * Restituisce tutti i Trip presenti nel database.
      *
-     * NON lo useremo più per la pagina "I miei viaggi",
-     * ma lo teniamo perché sarà utile soprattutto all'ADMIN.
+     * Utile soprattutto per l'ADMIN.
      */
+    @Transactional(readOnly = true)
     public Iterable<Trip> findAll() {
 
         return tripRepository.findAll();
@@ -50,10 +52,11 @@ public class TripService {
 
 
     /*
-     * Cerca un Trip solamente attraverso il suo id.
+     * Cerca un Trip tramite id.
      *
-     * Anche questo rimane utile per le operazioni amministrative.
+     * Utile per le operazioni amministrative.
      */
+    @Transactional(readOnly = true)
     public Optional<Trip> findById(Long id) {
 
         return tripRepository.findById(id);
@@ -64,29 +67,34 @@ public class TripService {
      * Restituisce solamente i Trip appartenenti
      * all'utente con lo username specificato.
      */
-    public Iterable<Trip> findByOwnerUsername(String username) {
+    @Transactional(readOnly = true)
+    public Iterable<Trip> findByOwnerUsername(
+            String username) {
 
-        return tripRepository.findByOwnerUsername(username);
+        return tripRepository
+                .findByOwnerUsername(username);
     }
 
 
     /*
      * Cerca un Trip verificando contemporaneamente:
      *
-     * 1. l'id del Trip
-     * 2. lo username del proprietario
+     * 1. id del Trip
+     * 2. username del proprietario
      *
-     * Serve per evitare che un utente possa accedere
-     * al viaggio di un altro utente modificando l'URL.
+     * Impedisce ad un utente di accedere
+     * ai viaggi di altri utenti modificando l'URL.
      */
+    @Transactional(readOnly = true)
     public Optional<Trip> findByIdAndOwnerUsername(
             Long id,
             String username) {
 
-        return tripRepository.findByIdAndOwnerUsername(
-                id,
-                username
-        );
+        return tripRepository
+                .findByIdAndOwnerUsername(
+                        id,
+                        username
+                );
     }
 
 
@@ -94,6 +102,7 @@ public class TripService {
      * Crea un nuovo viaggio e lo associa
      * all'utente autenticato.
      */
+    @Transactional
     public Trip createTrip(
             String name,
             String description,
@@ -110,6 +119,7 @@ public class TripService {
                         )
                 );
 
+
         Trip trip = new Trip();
 
         trip.setName(name);
@@ -119,10 +129,11 @@ public class TripService {
         trip.setBudget(budget);
 
         /*
-         * Questa è la riga fondamentale:
-         * il nuovo Trip appartiene all'utente autenticato.
+         * Il nuovo viaggio appartiene
+         * all'utente autenticato.
          */
         trip.setOwner(owner);
+
 
         return tripRepository.save(trip);
     }
@@ -132,6 +143,7 @@ public class TripService {
      * Modifica un viaggio solamente se appartiene
      * all'utente autenticato.
      */
+    @Transactional
     public Optional<Trip> updateTrip(
             Long id,
             String name,
@@ -162,9 +174,9 @@ public class TripService {
     /*
      * Eliminazione generica tramite id.
      *
-     * La manteniamo perché servirà all'ADMIN,
-     * che dovrà poter eliminare qualsiasi Trip.
+     * Utilizzata dall'ADMIN.
      */
+    @Transactional
     public void deleteById(Long id) {
 
         tripRepository.deleteById(id);
@@ -174,24 +186,32 @@ public class TripService {
     /*
      * Eliminazione sicura per un normale USER.
      *
-     * Cancella il viaggio soltanto se l'utente
-     * autenticato ne è realmente il proprietario.
+     * Il viaggio viene cancellato solamente
+     * se appartiene all'utente autenticato.
      */
+    @Transactional
     public boolean deleteByIdForOwner(
             Long id,
             String ownerUsername) {
 
         Optional<Trip> trip =
-                tripRepository.findByIdAndOwnerUsername(
-                        id,
-                        ownerUsername
-                );
+                tripRepository
+                        .findByIdAndOwnerUsername(
+                                id,
+                                ownerUsername
+                        );
+
 
         if (trip.isEmpty()) {
+
             return false;
         }
 
-        tripRepository.delete(trip.get());
+
+        tripRepository.delete(
+                trip.get()
+        );
+
 
         return true;
     }
@@ -201,34 +221,46 @@ public class TripService {
      * Calcola la somma di tutte le spese
      * associate al viaggio.
      */
-    public Double calculateTotalExpenses(Trip trip) {
+    public Double calculateTotalExpenses(
+            Trip trip) {
 
         double total = 0.0;
 
-        for (Expense expense : trip.getExpenses()) {
+
+        for (Expense expense :
+                trip.getExpenses()) {
 
             if (expense.getAmount() != null) {
-                total += expense.getAmount();
+
+                total +=
+                        expense.getAmount();
             }
         }
+
 
         return total;
     }
 
 
     /*
-     * Calcola il budget ancora disponibile:
+     * Calcola:
      *
      * budget iniziale - spese totali
      */
-    public Double calculateRemainingBudget(Trip trip) {
+    public Double calculateRemainingBudget(
+            Trip trip) {
 
         double budget = 0.0;
 
+
         if (trip.getBudget() != null) {
-            budget = trip.getBudget();
+
+            budget =
+                    trip.getBudget();
         }
 
-        return budget - calculateTotalExpenses(trip);
+
+        return budget -
+                calculateTotalExpenses(trip);
     }
 }
