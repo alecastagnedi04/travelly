@@ -1,18 +1,492 @@
 <!DOCTYPE html>
-<html>
+
+<html
+    lang="it"
+    xmlns:th="http://www.thymeleaf.org">
 
 <head>
+
     <meta charset="UTF-8">
-    <title>Travelly</title>
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
+    <title>Travelly - Organizza i tuoi viaggi</title>
+
+    <link
+        rel="stylesheet"
+        th:href="@{/css/style.css}">
+
 </head>
 
-<body>
 
-    <h1>Travelly</h1>
+<body class="home-page">
 
-    <p>Plan your next adventure.</p>
 
-    <a href="/trips">I miei viaggi</a>
+<!-- ====================================================== -->
+<!-- NAVBAR PUBBLICA -->
+<!-- ====================================================== -->
+
+<header class="home-navbar">
+
+    <a
+        class="home-logo"
+        th:href="@{/}">
+
+        Travelly<span>.</span>
+
+    </a>
+
+
+    <nav class="home-nav-links">
+
+        <a href="#features">
+            Come funziona
+        </a>
+
+        <a
+            class="home-login-link"
+            th:href="@{/login}">
+
+            Accedi
+
+        </a>
+
+        <a
+            class="home-nav-button"
+            th:href="@{/register}">
+
+            Registrati
+
+        </a>
+
+    </nav>
+
+</header>
+
+
+
+<!-- ====================================================== -->
+<!-- HERO -->
+<!-- ====================================================== -->
+
+<main>
+
+
+    <section class="home-hero">
+
+
+        <!-- TESTO -->
+
+        <div class="home-hero-content">
+
+
+            <div class="home-badge">
+
+                ✈️ Il tuo viaggio, tutto in un posto
+
+            </div>
+
+
+            <h1>
+
+                Organizza.
+
+                <span>
+                    Parti.
+                </span>
+
+                Ricorda.
+
+            </h1>
+
+
+            <p class="home-hero-description">
+
+                Travelly ti aiuta a organizzare ogni dettaglio
+                del tuo viaggio: destinazioni, attività,
+                partecipanti e spese.
+
+                Tutto semplice, tutto insieme.
+
+            </p>
+
+
+            <div class="home-hero-buttons">
+
+
+                <a
+                    class="home-primary-button"
+                    th:href="@{/register}">
+
+                    Inizia il tuo viaggio
+
+                    <span>→</span>
+
+                </a>
+
+
+                <a
+                    class="home-secondary-button"
+                    th:href="@{/login}">
+
+                    Ho già un account
+
+                </a>
+
+
+            </div>
+
+
+            <div class="home-mini-features">
+
+
+                <span>
+                    ✓ Pianificazione
+                </span>
+
+                <span>
+                    ✓ Spese condivise
+                </span>
+
+                <span>
+                    ✓ Ricordi
+                </span>
+
+
+            </div>
+
+
+        </div>
+
+
+
+        <!-- PARTE VISIVA -->
+
+        <div class="home-hero-visual">
+
+
+            <div class="travel-postcard travel-postcard-main">
+
+
+                <div class="postcard-sky">
+
+
+                    <div class="postcard-sun">
+                    </div>
+
+
+                    <span class="postcard-plane">
+                        ✈
+                    </span>
+
+
+                    <div class="postcard-mountain mountain-one">
+                    </div>
+
+                    <div class="postcard-mountain mountain-two">
+                    </div>
+
+
+                </div>
+
+
+                <div class="postcard-info">
+
+
+                    <div>
+
+                        <span class="postcard-small">
+                            PROSSIMO VIAGGIO
+                        </span>
+
+                        <strong>
+                            Tokyo, Japan
+                        </strong>
+
+                    </div>
+
+
+                    <span class="postcard-date">
+                        05 — 15 DIC
+                    </span>
+
+
+                </div>
+
+
+            </div>
+
+
+
+            <!-- CARD FLOTTANTE 1 -->
+
+            <div class="floating-card floating-card-budget">
+
+                <span class="floating-icon">
+                    💸
+                </span>
+
+                <div>
+
+                    <small>
+                        Budget rimanente
+                    </small>
+
+                    <strong>
+                        915 €
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- CARD FLOTTANTE 2 -->
+
+            <div class="floating-card floating-card-people">
+
+                <span class="floating-icon">
+                    👥
+                </span>
+
+                <div>
+
+                    <small>
+                        Partecipanti
+                    </small>
+
+                    <strong>
+                        3 viaggiatori
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+        </div>
+
+
+    </section>
+
+
+
+    <!-- ================================================== -->
+    <!-- COME FUNZIONA -->
+    <!-- ================================================== -->
+
+    <section
+        class="home-features-section"
+        id="features">
+
+
+        <div class="home-section-heading">
+
+
+            <span>
+                TUTTO QUELLO CHE TI SERVE
+            </span>
+
+
+            <h2>
+
+                Meno fogli sparsi.
+
+                <br>
+
+                Più tempo per viaggiare.
+
+            </h2>
+
+
+            <p>
+
+                Travelly raccoglie in un unico spazio
+                tutto quello che serve per organizzare
+                un viaggio.
+
+            </p>
+
+
+        </div>
+
+
+
+        <div class="home-feature-grid">
+
+
+            <!-- PIANIFICA -->
+
+            <article class="home-feature-card feature-orange">
+
+
+                <div class="home-feature-icon">
+                    🗺️
+                </div>
+
+
+                <span class="feature-number">
+                    01
+                </span>
+
+
+                <h3>
+                    Pianifica
+                </h3>
+
+
+                <p>
+
+                    Salva destinazioni, date, attività
+                    e tutti i dettagli del tuo itinerario.
+
+                </p>
+
+
+            </article>
+
+
+
+            <!-- SPESE -->
+
+            <article class="home-feature-card feature-green">
+
+
+                <div class="home-feature-icon">
+                    💳
+                </div>
+
+
+                <span class="feature-number">
+                    02
+                </span>
+
+
+                <h3>
+                    Gestisci le spese
+                </h3>
+
+
+                <p>
+
+                    Registra le spese e scopri in modo
+                    semplice come gestirle.
+
+                </p>
+
+
+            </article>
+
+
+
+            <!-- RICORDI -->
+
+            <article class="home-feature-card feature-yellow">
+
+
+                <div class="home-feature-icon">
+                    📷
+                </div>
+
+
+                <span class="feature-number">
+                    03
+                </span>
+
+
+                <h3>
+                    Conserva i ricordi
+                </h3>
+
+
+                <p>
+
+                    Il viaggio non finisce al ritorno:
+                    costruisci il tuo diario personale
+                    e conserva i momenti più belli.
+
+                </p>
+
+
+            </article>
+
+
+        </div>
+
+
+    </section>
+
+
+
+    <!-- ================================================== -->
+    <!-- BANNER FINALE -->
+    <!-- ================================================== -->
+
+    <section class="home-cta">
+
+
+        <div>
+
+
+            <span class="home-cta-label">
+                PRONTO A PARTIRE?
+            </span>
+
+
+            <h2>
+
+                Il prossimo viaggio
+                inizia da qui.
+
+            </h2>
+
+
+        </div>
+
+
+        <a
+            class="home-cta-button"
+            th:href="@{/register}">
+
+            Crea il tuo account
+
+            <span>→</span>
+
+        </a>
+
+
+    </section>
+
+
+</main>
+
+
+
+<!-- ====================================================== -->
+<!-- FOOTER -->
+<!-- ====================================================== -->
+
+<footer class="home-footer">
+
+
+    <div>
+
+        <strong>
+            Travelly<span>.</span>
+        </strong>
+
+        <p>
+            Pianifica. Viaggia. Ricorda.
+        </p>
+
+    </div>
+
+
+</footer>
+
 
 </body>
 

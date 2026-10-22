@@ -66,10 +66,17 @@ public class TripController {
      * Mostra la form per creare un nuovo viaggio.
      */
     @GetMapping("/trips/new")
-    public String showCreateForm() {
+public String showCreateForm(
+        Model model,
+        Principal principal) {
 
-        return "trips/form";
-    }
+    model.addAttribute(
+            "username",
+            principal.getName()
+    );
+
+    return "trips/form";
+}
 
 
     /*
@@ -181,31 +188,35 @@ public class TripController {
      * se il Trip appartiene all'utente autenticato.
      */
     @GetMapping("/trips/{id}/edit")
-    public String showEditForm(
-            @PathVariable("id")
-            Long id,
+public String showEditForm(
+        @PathVariable("id")
+        Long id,
 
-            Model model,
+        Model model,
 
-            Principal principal) {
+        Principal principal) {
 
-        return tripService
-                .findByIdAndOwnerUsername(
-                        id,
+    return tripService
+            .findByIdAndOwnerUsername(
+                    id,
+                    principal.getName()
+            )
+            .map(trip -> {
+
+                model.addAttribute(
+                        "trip",
+                        trip
+                );
+
+                model.addAttribute(
+                        "username",
                         principal.getName()
-                )
-                .map(trip -> {
+                );
 
-                    model.addAttribute(
-                            "trip",
-                            trip
-                    );
-
-                    return "trips/edit";
-                })
-                .orElse("redirect:/trips");
-    }
-
+                return "trips/edit";
+            })
+            .orElse("redirect:/trips");
+}
 
     /*
      * Aggiorna il Trip solamente se appartiene

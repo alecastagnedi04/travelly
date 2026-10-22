@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+
+<html
+    lang="it"
+    xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
+    <title>Il mio profilo - Travelly</title>
+
+    <link
+        rel="stylesheet"
+        th:href="@{/css/style.css}">
+
+</head>
+
+
+<body>
+
+
+<!-- ====================================================== -->
+<!-- NAVBAR -->
+<!-- ====================================================== -->
+
+<nav class="navbar">
+
+    <div class="navbar-left">
+
+        <a
+            class="logo"
+            th:href="@{/}">
+            Travelly
+        </a>
+
+
+        <a th:href="@{/trips}">
+            I miei viaggi
+        </a>
+
+
+        <a th:href="@{/trips/new}">
+            Nuovo viaggio
+        </a>
+
+    </div>
+
+
+    <div class="navbar-right">
+
+
+        <a
+            class="navbar-profile-link"
+            th:href="@{/profile}">
+
+            <span
+                class="navbar-avatar"
+                th:text="${#strings.substring(username,0,1).toUpperCase()}">
+
+                A
+
+            </span>
+
+
+            <span th:text="${username}">
+                username
+            </span>
+
+        </a>
+
+
+        <form
+            class="logout-form"
+            th:action="@{/logout}"
+            method="post">
+
+            <button
+                class="logout-button"
+                type="submit">
+
+                Logout
+
+            </button>
+
+        </form>
+
+    </div>
+
+</nav>
+
+
+
+<!-- ====================================================== -->
+<!-- PROFILO -->
+<!-- ====================================================== -->
+
+<main class="profile-page">
+
+
+    <!-- ================================================== -->
+    <!-- HEADER PROFILO -->
+    <!-- ================================================== -->
+
+    <section class="profile-header">
+
+
+        <div class="profile-cover">
+
+
+            <div class="profile-cover-sun">
+            </div>
+
+
+            <div class="profile-cover-shape profile-cover-shape-one">
+            </div>
+
+
+            <div class="profile-cover-shape profile-cover-shape-two">
+            </div>
+
+
+        </div>
+
+
+
+        <div class="profile-main-info">
+
+
+            <!-- AVATAR -->
+
+            <div
+                class="profile-avatar"
+                th:text="${#strings.substring(username,0,1).toUpperCase()}">
+
+                A
+
+            </div>
+
+
+
+            <div class="profile-name-area">
+
+
+                <span class="profile-label">
+                    PROFILO PERSONALE
+                </span>
+
+
+                <h1 th:text="${username}">
+                    username
+                </h1>
+
+
+                <p>
+
+                    Il tuo spazio personale su Travelly.
+
+                </p>
+
+
+            </div>
+
+
+        </div>
+
+
+    </section>
+
+
+
+    <!-- ================================================== -->
+    <!-- SEZIONE VIAGGI -->
+    <!-- ================================================== -->
+
+    <section class="profile-trips-section">
+
+
+        <div class="profile-section-heading">
+
+
+            <div>
+
+                <span class="profile-label">
+                    I TUOI RICORDI
+                </span>
+
+
+                <h2>
+                    I tuoi viaggi
+                </h2>
+
+
+                <p>
+
+                    Tutti i viaggi che hai creato
+                    e organizzato con Travelly.
+
+                </p>
+
+            </div>
+
+
+            <a
+                class="button"
+                th:href="@{/trips/new}">
+
+                Nuovo viaggio
+
+            </a>
+
+
+        </div>
+
+
+
+        <!-- ============================================== -->
+        <!-- NESSUN VIAGGIO -->
+        <!-- ============================================== -->
+
+        <div
+            class="profile-empty"
+            th:if="${#lists.isEmpty(trips)}">
+
+
+            <h3>
+                Non ci sono ancora viaggi
+            </h3>
+
+
+            <p>
+
+                Quando creerai il tuo primo viaggio,
+                apparirà qui.
+
+            </p>
+
+
+            <a
+                class="button"
+                th:href="@{/trips/new}">
+
+                Crea un viaggio
+
+            </a>
+
+
+        </div>
+
+
+
+        <!-- ============================================== -->
+        <!-- VIAGGI -->
+        <!-- ============================================== -->
+
+        <div
+            class="profile-trip-grid"
+            th:if="${!#lists.isEmpty(trips)}">
+
+
+            <article
+                class="profile-trip-card"
+                th:each="trip, tripStat : ${trips}">
+
+
+                <!-- COPERTINA -->
+
+                <div
+                    class="profile-trip-cover"
+                    th:classappend="${
+                        tripStat.index % 3 == 0
+                        ? ' profile-cover-orange'
+                        :
+                        tripStat.index % 3 == 1
+                        ? ' profile-cover-green'
+                        : ' profile-cover-sand'
+                    }">
+
+
+                    <div class="profile-trip-sun">
+                    </div>
+
+
+                    <div class="profile-trip-mountain profile-trip-mountain-back">
+                    </div>
+
+
+                    <div class="profile-trip-mountain profile-trip-mountain-front">
+                    </div>
+
+
+                </div>
+
+
+
+                <!-- DATI -->
+
+                <div class="profile-trip-content">
+
+
+                    <span class="profile-trip-label">
+                        VIAGGIO
+                    </span>
+
+
+                    <h3 th:text="${trip.name}">
+                        Nome viaggio
+                    </h3>
+
+
+                    <p
+                        class="profile-trip-description"
+                        th:text="${trip.description}">
+
+                        Descrizione viaggio
+
+                    </p>
+
+
+
+                    <div class="profile-trip-dates">
+
+
+                        <span>
+
+                            <small>
+                                Partenza
+                            </small>
+
+                            <strong
+                                th:text="${trip.startDate}">
+                                data
+                            </strong>
+
+                        </span>
+
+
+                        <span>
+
+                            <small>
+                                Ritorno
+                            </small>
+
+                            <strong
+                                th:text="${trip.endDate}">
+                                data
+                            </strong>
+
+                        </span>
+
+
+                    </div>
+
+
+
+                    <a
+                        class="profile-trip-link"
+                        th:href="@{/trips/{id}(id=${trip.id})}">
+
+                        Apri viaggio
+
+                        <span>→</span>
+
+                    </a>
+
+
+                </div>
+
+
+            </article>
+
+
+        </div>
+
+
+    </section>
+
+
+</main>
+
+
+</body>
+
+</html>

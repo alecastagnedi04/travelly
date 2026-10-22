@@ -2,13 +2,18 @@ package it.uniroma3.siw.travelly.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+
 import org.springframework.security.web.SecurityFilterChain;
+
 
 @Configuration
 public class SecurityConfig {
+
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -16,19 +21,22 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
+
     @Bean
     public SecurityFilterChain securityFilterChain(
             HttpSecurity http) throws Exception {
 
+
         http
+
             .authorizeHttpRequests(authorize -> authorize
 
                 .requestMatchers(
-                        "/",
-                        "/login",
-                        "/register",
-                        "/css/**",
-                        "/images/**"
+                    "/",
+                    "/login",
+                    "/register",
+                    "/css/**",
+                    "/images/**"
                 ).permitAll()
 
                 .requestMatchers("/admin/**")
@@ -41,15 +49,31 @@ public class SecurityConfig {
                 .authenticated()
             )
 
+
             .formLogin(form -> form
-                .defaultSuccessUrl("/trips", true)
+
+                /*
+                 * Da ora Spring Security
+                 * usa la nostra pagina HTML.
+                 */
+                .loginPage("/login")
+
+                .defaultSuccessUrl(
+                    "/trips",
+                    true
+                )
+
                 .permitAll()
             )
 
+
             .logout(logout -> logout
+
                 .logoutSuccessUrl("/")
+
                 .permitAll()
             );
+
 
         return http.build();
     }

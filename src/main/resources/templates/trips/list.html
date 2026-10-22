@@ -1,9 +1,16 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+
+<html
+    lang="it"
+    xmlns:th="http://www.thymeleaf.org">
 
 <head>
 
     <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0">
 
     <title>I miei viaggi - Travelly</title>
 
@@ -17,185 +24,384 @@
 <body>
 
 
-    <!-- NAVBAR -->
+<!-- ====================================================== -->
+<!-- NAVBAR -->
+<!-- ====================================================== -->
 
-    <nav class="navbar">
+<nav class="navbar">
 
-        <div class="navbar-left">
+    <div class="navbar-left">
 
-            <a
-                class="logo"
-                th:href="@{/}">
-                Travelly
-            </a>
+        <a
+            class="logo"
+            th:href="@{/}">
 
+            Travelly
 
-            <a th:href="@{/trips}">
-                I miei viaggi
-            </a>
-
-
-            <a th:href="@{/trips/new}">
-                + Nuovo viaggio
-            </a>
+        </a>
 
 
-            <!-- Visibile solamente all'ADMIN -->
-
-            <a
-                th:if="${isAdmin}"
-                th:href="@{/admin}">
-                Dashboard Admin
-            </a>
-
-        </div>
+        <a th:href="@{/trips}">
+            I miei viaggi
+        </a>
 
 
-        <div class="navbar-right">
+        <a th:href="@{/trips/new}">
+            Nuovo viaggio
+        </a>
 
-            <span th:text="${username}">
-                username
+
+        <a
+            th:if="${isAdmin}"
+            th:href="@{/admin}">
+
+            Dashboard Admin
+
+        </a>
+
+    </div>
+
+
+    <div class="navbar-right">
+
+    <a
+        class="navbar-profile-link"
+        th:href="@{/profile}">
+
+        <span
+            class="navbar-avatar"
+            th:text="${#strings.substring(username,0,1).toUpperCase()}">
+            A
+        </span>
+
+        <span th:text="${username}">
+            username
+        </span>
+
+    </a>
+
+
+    <form
+        class="logout-form"
+        th:action="@{/logout}"
+        method="post">
+
+        <button
+            class="logout-button"
+            type="submit">
+
+            Logout
+
+        </button>
+
+    </form>
+
+</div>
+
+
+</nav>
+
+
+
+<!-- ====================================================== -->
+<!-- CONTENUTO -->
+<!-- ====================================================== -->
+
+<main class="trips-page">
+
+
+    <!-- ================================================== -->
+    <!-- HEADER -->
+    <!-- ================================================== -->
+
+    <section class="trips-hero">
+
+
+        <div class="trips-hero-text">
+
+
+            <span class="trips-eyebrow">
+                IL TUO SPAZIO DI VIAGGIO
             </span>
 
 
-            <!-- Logout deve essere POST -->
+            <h1>
+                I miei viaggi
+            </h1>
 
-            <form
-                class="logout-form"
-                th:action="@{/logout}"
-                method="post">
 
-                <button
-                    class="logout-button"
-                    type="submit">
+            <p>
 
-                    Logout
+                Bentornata/o,
 
-                </button>
+                <strong th:text="${username}">
+                    utente
+                </strong>.
 
-            </form>
+                Qui trovi tutti i tuoi viaggi,
+                quelli già vissuti e quelli ancora da organizzare.
+
+            </p>
+
 
         </div>
 
-    </nav>
+
+        <a
+            class="trips-create-button"
+            th:href="@{/trips/new}">
+
+            <span>
+                Nuovo viaggio
+            </span>
+
+            <span class="trips-create-arrow">
+                →
+            </span>
+
+        </a>
+
+
+    </section>
 
 
 
-    <!-- CONTENUTO -->
+    <!-- ================================================== -->
+    <!-- NESSUN VIAGGIO -->
+    <!-- ================================================== -->
 
-    <main class="container">
+    <section
+        class="trips-empty"
+        th:if="${#lists.isEmpty(trips)}">
 
 
-        <div class="page-header">
+        <div class="trips-empty-graphic">
 
-            <div>
 
-                <h1>I miei viaggi</h1>
+            <div class="empty-sun">
+            </div>
 
-                <p>
-                    Organizza e gestisci le tue prossime avventure.
-                </p>
+
+            <div class="empty-hill empty-hill-one">
+            </div>
+
+
+            <div class="empty-hill empty-hill-two">
+            </div>
+
+
+        </div>
+
+
+        <h2>
+            Non hai ancora creato nessun viaggio
+        </h2>
+
+
+        <p>
+
+            Crea il tuo primo viaggio e inizia
+            ad aggiungere destinazioni, attività,
+            partecipanti e spese.
+
+        </p>
+
+
+        <a
+            class="button"
+            th:href="@{/trips/new}">
+
+            Crea il primo viaggio
+
+        </a>
+
+
+    </section>
+
+
+
+    <!-- ================================================== -->
+    <!-- LISTA VIAGGI -->
+    <!-- ================================================== -->
+
+    <section
+        class="trip-card-grid"
+        th:if="${!#lists.isEmpty(trips)}">
+
+
+        <article
+            class="travel-card"
+            th:each="trip, tripStat : ${trips}">
+
+
+            <!-- ========================================== -->
+            <!-- COPERTINA GRAFICA TEMPORANEA -->
+            <!-- ========================================== -->
+
+            <div
+                class="travel-card-cover"
+                th:classappend="${
+                    tripStat.index % 3 == 0
+                    ? ' cover-terracotta'
+                    :
+                    tripStat.index % 3 == 1
+                    ? ' cover-green'
+                    : ' cover-sand'
+                }">
+
+
+                <div class="travel-card-sun">
+                </div>
+
+
+                <div class="travel-card-landscape landscape-back">
+                </div>
+
+
+                <div class="travel-card-landscape landscape-front">
+                </div>
+
+
+                <span class="travel-card-number">
+
+                    <span>
+                        VIAGGIO
+                    </span>
+
+                    <strong
+                        th:text="${tripStat.count < 10
+                        ? '0' + tripStat.count
+                        : tripStat.count}">
+
+                        01
+
+                    </strong>
+
+                </span>
+
 
             </div>
 
 
-            <a
-                class="button"
-                th:href="@{/trips/new}">
 
-                + Crea nuovo viaggio
+            <!-- ========================================== -->
+            <!-- INFORMAZIONI -->
+            <!-- ========================================== -->
 
-            </a>
-
-        </div>
+            <div class="travel-card-content">
 
 
-
-        <!-- Se non ci sono viaggi -->
-
-        <div
-            class="empty-message"
-            th:if="${#lists.isEmpty(trips)}">
-
-            <h2>Nessun viaggio ancora</h2>
-
-            <p>
-                Crea il tuo primo viaggio con Travelly.
-            </p>
-
-            <a
-                class="button"
-                th:href="@{/trips/new}">
-
-                Crea viaggio
-
-            </a>
-
-        </div>
+                <div class="travel-card-title-row">
 
 
+                    <div>
 
-        <!-- Lista viaggi -->
-
-        <div
-            class="trip-card"
-            th:each="trip : ${trips}">
-
-
-            <h2 th:text="${trip.name}">
-                Nome viaggio
-            </h2>
+                        <span class="travel-card-label">
+                            DESTINAZIONE
+                        </span>
 
 
-            <p th:text="${trip.description}">
-                Descrizione del viaggio
-            </p>
+                        <h2 th:text="${trip.name}">
+                            Nome viaggio
+                        </h2>
+
+                    </div>
 
 
-            <p class="trip-info">
-
-                Dal
-
-                <strong th:text="${trip.startDate}">
-                    data partenza
-                </strong>
-
-                al
-
-                <strong th:text="${trip.endDate}">
-                    data ritorno
-                </strong>
-
-            </p>
-
-
-            <p class="trip-info">
-
-                Budget:
-
-                <strong>
-                    <span th:text="${trip.budget}">
-                        0
+                    <span class="travel-card-arrow">
+                        ↗
                     </span>
-                    €
-                </strong>
-
-            </p>
 
 
-            <a
-                class="button button-secondary"
-                th:href="@{/trips/{id}(id=${trip.id})}">
-
-                Dettagli viaggio
-
-            </a>
+                </div>
 
 
-        </div>
+
+                <p
+                    class="travel-card-description"
+                    th:text="${trip.description}">
+
+                    Descrizione del viaggio
+
+                </p>
 
 
-    </main>
+
+                <div class="travel-card-details">
+
+
+                    <div>
+
+                        <span>
+                            Partenza
+                        </span>
+
+                        <strong th:text="${trip.startDate}">
+                            data
+                        </strong>
+
+                    </div>
+
+
+                    <div>
+
+                        <span>
+                            Ritorno
+                        </span>
+
+                        <strong th:text="${trip.endDate}">
+                            data
+                        </strong>
+
+                    </div>
+
+
+                    <div>
+
+                        <span>
+                            Budget
+                        </span>
+
+                        <strong>
+
+                            <span th:text="${trip.budget}">
+                                0
+                            </span>
+
+                            €
+
+                        </strong>
+
+                    </div>
+
+
+                </div>
+
+
+
+                <a
+                    class="travel-card-open"
+                    th:href="@{/trips/{id}(id=${trip.id})}">
+
+                    Apri viaggio
+
+                    <span>
+                        →
+                    </span>
+
+                </a>
+
+
+            </div>
+
+
+        </article>
+
+
+    </section>
+
+
+</main>
 
 
 </body>

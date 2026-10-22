@@ -1,88 +1,346 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+
+<html
+    lang="it"
+    xmlns:th="http://www.thymeleaf.org">
 
 <head>
+
     <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
     <title>Modifica viaggio - Travelly</title>
+
+    <link
+        rel="stylesheet"
+        th:href="@{/css/style.css}">
+
 </head>
+
 
 <body>
 
-    <h1>Modifica viaggio</h1>
 
-    <form th:action="@{/trips/{id}/edit(id=${trip.id})}" method="post">
+<!-- ====================================================== -->
+<!-- NAVBAR -->
+<!-- ====================================================== -->
 
-        <div>
-            <label for="name">Nome del viaggio</label>
-            <input
-                type="text"
-                id="name"
-                name="name"
-                th:value="${trip.name}"
-                required>
-        </div>
+<nav class="navbar">
 
-        <br>
+    <div class="navbar-left">
 
-        <div>
-            <label for="description">Descrizione</label>
+        <a
+            class="logo"
+            th:href="@{/}">
+            Travelly
+        </a>
 
-            <textarea
-                id="description"
-                name="description"
-                th:text="${trip.description}">
-            </textarea>
-        </div>
+        <a th:href="@{/trips}">
+            I miei viaggi
+        </a>
 
-        <br>
+        <a th:href="@{/trips/new}">
+            Nuovo viaggio
+        </a>
 
-        <div>
-            <label for="startDate">Data di partenza</label>
-            <input
-                type="date"
-                id="startDate"
-                name="startDate"
-                th:value="${trip.startDate}"
-                required>
-        </div>
+    </div>
 
-        <br>
 
-        <div>
-            <label for="endDate">Data di ritorno</label>
-            <input
-                type="date"
-                id="endDate"
-                name="endDate"
-                th:value="${trip.endDate}"
-                required>
-        </div>
+    <div class="navbar-right">
 
-        <br>
+        <a
+            class="navbar-profile-link"
+            th:href="@{/profile}">
 
-        <div>
-            <label for="budget">Budget (€)</label>
-            <input
-                type="number"
-                id="budget"
-                name="budget"
-                step="0.01"
-                min="0"
-                th:value="${trip.budget}"
-                required>
-        </div>
+            <span
+                class="navbar-avatar"
+                th:text="${#strings.substring(username, 0, 1).toUpperCase()}">
+                A
+            </span>
 
-        <br>
+            <span th:text="${username}">
+                username
+            </span>
 
-        <button type="submit">Salva modifiche</button>
+        </a>
 
-    </form>
 
-    <br>
+        <form
+            class="logout-form"
+            th:action="@{/logout}"
+            method="post">
 
-    <a th:href="@{/trips/{id}(id=${trip.id})}">
-        Annulla
+            <button
+                class="logout-button"
+                type="submit">
+
+                Logout
+
+            </button>
+
+        </form>
+
+    </div>
+
+</nav>
+
+
+
+<!-- ====================================================== -->
+<!-- PAGINA -->
+<!-- ====================================================== -->
+
+<main class="trip-form-page">
+
+
+    <a
+        class="back-link"
+        th:href="@{/trips/{id}(id=${trip.id})}">
+
+        ← Torna al viaggio
+
     </a>
+
+
+    <div class="trip-form-layout">
+
+
+        <!-- ============================================== -->
+        <!-- INTRO SINISTRA -->
+        <!-- ============================================== -->
+
+        <section class="trip-form-intro trip-edit-intro">
+
+
+            <span class="trip-form-eyebrow">
+                MODIFICA VIAGGIO
+            </span>
+
+
+            <h1 th:text="${trip.name}">
+                Nome viaggio
+            </h1>
+
+
+            <p>
+
+                Aggiorna le informazioni principali
+                del viaggio. Destinazioni, attività,
+                partecipanti e spese resteranno invariati.
+
+            </p>
+
+
+            <div class="trip-form-visual edit-form-visual">
+
+                <div class="trip-form-sun">
+                </div>
+
+                <div
+                    class="trip-form-landscape
+                           trip-form-landscape-back">
+                </div>
+
+                <div
+                    class="trip-form-landscape
+                           trip-form-landscape-front">
+                </div>
+
+            </div>
+
+
+        </section>
+
+
+
+        <!-- ============================================== -->
+        <!-- FORM -->
+        <!-- ============================================== -->
+
+        <section class="trip-form-panel">
+
+
+            <div class="trip-form-heading">
+
+                <span>
+                    DETTAGLI DEL VIAGGIO
+                </span>
+
+                <h2>
+                    Modifica informazioni
+                </h2>
+
+                <p>
+                    Cambia solo i dati che vuoi aggiornare.
+                </p>
+
+            </div>
+
+
+
+            <form
+                class="travelly-form"
+                th:action="@{/trips/{id}/edit(id=${trip.id})}"
+                method="post">
+
+
+                <!-- ====================================== -->
+                <!-- NOME -->
+                <!-- ====================================== -->
+
+                <div class="travelly-field">
+
+                    <label for="name">
+                        Nome del viaggio
+                    </label>
+
+                    <input
+                        id="name"
+                        name="name"
+                        type="text"
+                        th:value="${trip.name}"
+                        required>
+
+                </div>
+
+
+
+                <!-- ====================================== -->
+                <!-- DESCRIZIONE -->
+                <!-- ====================================== -->
+
+                <div class="travelly-field">
+
+                    <label for="description">
+                        Descrizione
+                    </label>
+
+                    <textarea
+                        id="description"
+                        name="description"
+                        th:text="${trip.description}">
+                    </textarea>
+
+                </div>
+
+
+
+                <!-- ====================================== -->
+                <!-- DATE -->
+                <!-- ====================================== -->
+
+                <div class="travelly-form-row">
+
+
+                    <div class="travelly-field">
+
+                        <label for="startDate">
+                            Data di partenza
+                        </label>
+
+                        <input
+                            id="startDate"
+                            name="startDate"
+                            type="date"
+                            th:value="${trip.startDate}"
+                            required>
+
+                    </div>
+
+
+                    <div class="travelly-field">
+
+                        <label for="endDate">
+                            Data di ritorno
+                        </label>
+
+                        <input
+                            id="endDate"
+                            name="endDate"
+                            type="date"
+                            th:value="${trip.endDate}"
+                            required>
+
+                    </div>
+
+
+                </div>
+
+
+
+                <!-- ====================================== -->
+                <!-- BUDGET -->
+                <!-- ====================================== -->
+
+                <div class="travelly-field">
+
+                    <label for="budget">
+                        Budget previsto
+                    </label>
+
+                    <div class="budget-input-wrapper">
+
+                        <input
+                            id="budget"
+                            name="budget"
+                            type="number"
+                            step="0.01"
+                            min="0"
+                            th:value="${trip.budget}"
+                            required>
+
+                        <span>
+                            €
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- ====================================== -->
+                <!-- AZIONI -->
+                <!-- ====================================== -->
+
+                <div class="travelly-form-actions">
+
+                    <a
+                        class="form-cancel-button"
+                        th:href="@{/trips/{id}(id=${trip.id})}">
+
+                        Annulla
+
+                    </a>
+
+
+                    <button
+                        class="form-submit-button"
+                        type="submit">
+
+                        Salva modifiche
+
+                        <span>→</span>
+
+                    </button>
+
+                </div>
+
+
+            </form>
+
+
+        </section>
+
+
+    </div>
+
+
+</main>
+
 
 </body>
 
