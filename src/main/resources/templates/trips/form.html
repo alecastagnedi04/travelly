@@ -57,7 +57,7 @@
 
             <span
                 class="navbar-avatar"
-                th:text="${#strings.substring(username,0,1).toUpperCase()}">
+                th:text="${#strings.substring(username, 0, 1).toUpperCase()}">
                 A
             </span>
 
@@ -197,7 +197,8 @@
             <form
                 class="travelly-form"
                 th:action="@{/trips}"
-                method="post">
+                method="post"
+                enctype="multipart/form-data">
 
 
                 <!-- ====================================== -->
@@ -277,6 +278,33 @@
 
                     </div>
 
+
+                </div>
+
+
+
+                <!-- ====================================== -->
+                <!-- FOTO DI COPERTINA -->
+                <!-- ====================================== -->
+
+                <div class="travelly-field">
+
+                    <label for="coverImage">
+                        Foto di copertina
+                    </label>
+
+                    <input
+                        id="coverImage"
+                        name="coverImage"
+                        type="file"
+                        accept="image/jpeg,image/png,image/webp">
+
+                    <small class="field-help">
+
+                        JPG, PNG o WEBP.
+                        Massimo 5 MB.
+
+                    </small>
 
                 </div>
 

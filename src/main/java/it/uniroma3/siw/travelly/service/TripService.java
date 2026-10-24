@@ -16,31 +16,46 @@ import it.uniroma3.siw.travelly.repository.UserRepository;
 @Service
 public class TripService {
 
+
     private final TripRepository tripRepository;
+
     private final UserRepository userRepository;
+
 
 
     public TripService(
             TripRepository tripRepository,
             UserRepository userRepository) {
 
-        this.tripRepository = tripRepository;
-        this.userRepository = userRepository;
+        this.tripRepository =
+                tripRepository;
+
+        this.userRepository =
+                userRepository;
     }
 
 
+
     /*
-     * Salva un Trip.
+     * =====================================================
+     * SALVATAGGIO GENERICO
+     * =====================================================
      */
     @Transactional
-    public Trip save(Trip trip) {
+    public Trip save(
+            Trip trip) {
 
-        return tripRepository.save(trip);
+        return tripRepository.save(
+                trip
+        );
     }
 
 
+
     /*
-     * Restituisce tutti i Trip presenti nel database.
+     * =====================================================
+     * TUTTI I VIAGGI
+     * =====================================================
      *
      * Utile soprattutto per l'ADMIN.
      */
@@ -51,39 +66,62 @@ public class TripService {
     }
 
 
+
     /*
-     * Cerca un Trip tramite id.
+     * =====================================================
+     * CERCA TRIP PER ID
+     * =====================================================
      *
-     * Utile per le operazioni amministrative.
+     * Utilizzato soprattutto
+     * dalle funzionalità amministrative.
      */
     @Transactional(readOnly = true)
-    public Optional<Trip> findById(Long id) {
+    public Optional<Trip> findById(
+            Long id) {
 
-        return tripRepository.findById(id);
+        return tripRepository.findById(
+                id
+        );
     }
 
 
+
     /*
-     * Restituisce solamente i Trip appartenenti
-     * all'utente con lo username specificato.
+     * =====================================================
+     * VIAGGI PERSONALI DELL'UTENTE
+     * =====================================================
+     *
+     * Restituisce solamente:
+     *
+     * owner.username = username
+     * template = false
+     *
+     * Quindi gli itinerari ufficiali Travelly
+     * non compariranno in "I miei viaggi".
      */
     @Transactional(readOnly = true)
     public Iterable<Trip> findByOwnerUsername(
             String username) {
 
         return tripRepository
-                .findByOwnerUsername(username);
+                .findByOwnerUsernameAndTemplateFalse(
+                        username
+                );
     }
 
 
+
     /*
-     * Cerca un Trip verificando contemporaneamente:
+     * =====================================================
+     * CERCA VIAGGIO DEL PROPRIETARIO
+     * =====================================================
      *
-     * 1. id del Trip
-     * 2. username del proprietario
+     * Verifica contemporaneamente:
      *
-     * Impedisce ad un utente di accedere
-     * ai viaggi di altri utenti modificando l'URL.
+     * - id viaggio
+     * - username proprietario
+     *
+     * Serve per la sicurezza.
      */
     @Transactional(readOnly = true)
     public Optional<Trip> findByIdAndOwnerUsername(
@@ -98,8 +136,51 @@ public class TripService {
     }
 
 
+
     /*
-     * Crea un nuovo viaggio e lo associa
+     * =====================================================
+     * ITINERARI UFFICIALI TRAVELLY
+     * =====================================================
+     *
+     * Restituisce tutti i Trip
+     * con template = true.
+     *
+     * Verrà utilizzato:
+     *
+     * - dalla homepage
+     * - da /explore
+     * - dalla dashboard ADMIN
+     */
+    @Transactional(readOnly = true)
+    public Iterable<Trip> findTemplates() {
+
+        return tripRepository
+                .findByTemplateTrue();
+    }
+
+
+
+    /*
+     * Cerca uno specifico itinerario ufficiale.
+     */
+    @Transactional(readOnly = true)
+    public Optional<Trip> findTemplateById(
+            Long id) {
+
+        return tripRepository
+                .findByIdAndTemplateTrue(
+                        id
+                );
+    }
+
+
+
+    /*
+     * =====================================================
+     * CREA VIAGGIO PERSONALE
+     * =====================================================
+     *
+     * Crea un normale viaggio appartenente
      * all'utente autenticato.
      */
     @Transactional
@@ -109,39 +190,86 @@ public class TripService {
             LocalDate startDate,
             LocalDate endDate,
             Double budget,
+            String coverImage,
             String ownerUsername) {
 
-        User owner = userRepository
-                .findByUsername(ownerUsername)
-                .orElseThrow(() ->
-                        new IllegalStateException(
-                                "Utente autenticato non trovato"
+
+        User owner =
+                userRepository
+                        .findByUsername(
+                                ownerUsername
                         )
-                );
+                        .orElseThrow(() ->
+                                new IllegalStateException(
+                                        "Utente autenticato non trovato"
+                                )
+                        );
 
 
-        Trip trip = new Trip();
+        Trip trip =
+                new Trip();
 
-        trip.setName(name);
-        trip.setDescription(description);
-        trip.setStartDate(startDate);
-        trip.setEndDate(endDate);
-        trip.setBudget(budget);
+
+        trip.setName(
+                name
+        );
+
+
+        trip.setDescription(
+                description
+        );
+
+
+        trip.setStartDate(
+                startDate
+        );
+
+
+        trip.setEndDate(
+                endDate
+        );
+
+
+        trip.setBudget(
+                budget
+        );
+
+
+        trip.setCoverImage(
+                coverImage
+        );
+
 
         /*
-         * Il nuovo viaggio appartiene
-         * all'utente autenticato.
+         * È un normale viaggio personale.
          */
-        trip.setOwner(owner);
+        trip.setTemplate(
+                false
+        );
 
 
-        return tripRepository.save(trip);
+        /*
+         * Proprietario del viaggio.
+         */
+        trip.setOwner(
+                owner
+        );
+
+
+        return tripRepository.save(
+                trip
+        );
     }
 
 
+
     /*
-     * Modifica un viaggio solamente se appartiene
-     * all'utente autenticato.
+     * =====================================================
+     * MODIFICA VIAGGIO PERSONALE
+     * =====================================================
+     *
+     * Un utente può modificare solamente
+     * un proprio Trip.
      */
     @Transactional
     public Optional<Trip> updateTrip(
@@ -151,7 +279,9 @@ public class TripService {
             LocalDate startDate,
             LocalDate endDate,
             Double budget,
+            String coverImage,
             String ownerUsername) {
+
 
         return tripRepository
                 .findByIdAndOwnerUsername(
@@ -160,39 +290,76 @@ public class TripService {
                 )
                 .map(trip -> {
 
-                    trip.setName(name);
-                    trip.setDescription(description);
-                    trip.setStartDate(startDate);
-                    trip.setEndDate(endDate);
-                    trip.setBudget(budget);
 
-                    return tripRepository.save(trip);
+                    trip.setName(
+                            name
+                    );
+
+
+                    trip.setDescription(
+                            description
+                    );
+
+
+                    trip.setStartDate(
+                            startDate
+                    );
+
+
+                    trip.setEndDate(
+                            endDate
+                    );
+
+
+                    trip.setBudget(
+                            budget
+                    );
+
+
+                    trip.setCoverImage(
+                            coverImage
+                    );
+
+
+                    return tripRepository.save(
+                            trip
+                    );
                 });
     }
 
 
+
     /*
-     * Eliminazione generica tramite id.
+     * =====================================================
+     * ELIMINAZIONE GENERICA
+     * =====================================================
      *
      * Utilizzata dall'ADMIN.
      */
     @Transactional
-    public void deleteById(Long id) {
+    public void deleteById(
+            Long id) {
 
-        tripRepository.deleteById(id);
+        tripRepository.deleteById(
+                id
+        );
     }
 
 
+
     /*
-     * Eliminazione sicura per un normale USER.
+     * =====================================================
+     * ELIMINAZIONE SICURA PER USER
+     * =====================================================
      *
-     * Il viaggio viene cancellato solamente
-     * se appartiene all'utente autenticato.
+     * Elimina il viaggio solamente se
+     * appartiene all'utente autenticato.
      */
     @Transactional
     public boolean deleteByIdForOwner(
             Long id,
             String ownerUsername) {
+
 
         Optional<Trip> trip =
                 tripRepository
@@ -217,18 +384,23 @@ public class TripService {
     }
 
 
+
     /*
-     * Calcola la somma di tutte le spese
-     * associate al viaggio.
+     * =====================================================
+     * TOTALE SPESE
+     * =====================================================
      */
     public Double calculateTotalExpenses(
             Trip trip) {
 
-        double total = 0.0;
+
+        double total =
+                0.0;
 
 
         for (Expense expense :
                 trip.getExpenses()) {
+
 
             if (expense.getAmount() != null) {
 
@@ -242,15 +414,18 @@ public class TripService {
     }
 
 
+
     /*
-     * Calcola:
-     *
-     * budget iniziale - spese totali
+     * =====================================================
+     * BUDGET RIMANENTE
+     * =====================================================
      */
     public Double calculateRemainingBudget(
             Trip trip) {
 
-        double budget = 0.0;
+
+        double budget =
+                0.0;
 
 
         if (trip.getBudget() != null) {
@@ -261,6 +436,180 @@ public class TripService {
 
 
         return budget -
-                calculateTotalExpenses(trip);
+                calculateTotalExpenses(
+                        trip
+                );
     }
+
+    /*
+ * =====================================================
+ * CREA ITINERARIO UFFICIALE TRAVELLY
+ * =====================================================
+ *
+ * Gli itinerari ufficiali:
+ *
+ * - template = true
+ * - owner = null
+ *
+ * Possono essere creati solamente
+ * attraverso l'area ADMIN.
+ */
+@Transactional
+public Trip createTemplate(
+        String name,
+        String description,
+        LocalDate startDate,
+        LocalDate endDate,
+        Double budget,
+        String coverImage) {
+
+
+    Trip trip =
+            new Trip();
+
+
+    trip.setName(
+            name
+    );
+
+
+    trip.setDescription(
+            description
+    );
+
+
+    trip.setStartDate(
+            startDate
+    );
+
+
+    trip.setEndDate(
+            endDate
+    );
+
+
+    trip.setBudget(
+            budget
+    );
+
+
+    trip.setCoverImage(
+            coverImage
+    );
+
+
+    /*
+     * È un itinerario ufficiale.
+     */
+    trip.setTemplate(
+            true
+    );
+
+
+    /*
+     * Non appartiene ad un normale utente.
+     */
+    trip.setOwner(
+            null
+    );
+
+
+    return tripRepository.save(
+            trip
+    );
 }
+
+
+/*
+ * =====================================================
+ * MODIFICA ITINERARIO UFFICIALE
+ * =====================================================
+ */
+@Transactional
+public Optional<Trip> updateTemplate(
+        Long id,
+        String name,
+        String description,
+        LocalDate startDate,
+        LocalDate endDate,
+        Double budget,
+        String coverImage) {
+
+
+    return tripRepository
+            .findByIdAndTemplateTrue(
+                    id
+            )
+            .map(trip -> {
+
+
+                trip.setName(
+                        name
+                );
+
+
+                trip.setDescription(
+                        description
+                );
+
+
+                trip.setStartDate(
+                        startDate
+                );
+
+
+                trip.setEndDate(
+                        endDate
+                );
+
+
+                trip.setBudget(
+                        budget
+                );
+
+
+                trip.setCoverImage(
+                        coverImage
+                );
+
+
+                return tripRepository.save(
+                        trip
+                );
+            });
+}
+
+
+/*
+ * =====================================================
+ * ELIMINA ITINERARIO UFFICIALE
+ * =====================================================
+ */
+@Transactional
+public boolean deleteTemplate(
+        Long id) {
+
+
+    Optional<Trip> trip =
+            tripRepository
+                    .findByIdAndTemplateTrue(
+                            id
+                    );
+
+
+    if (trip.isEmpty()) {
+
+        return false;
+    }
+
+
+    tripRepository.delete(
+            trip.get()
+    );
+
+
+    return true;
+}
+}
+
+

@@ -12,7 +12,9 @@
         name="viewport"
         content="width=device-width, initial-scale=1.0">
 
-    <title>Travelly - Organizza i tuoi viaggi</title>
+    <title>
+        Travelly - Organizza i tuoi viaggi
+    </title>
 
     <link
         rel="stylesheet"
@@ -25,10 +27,11 @@
 
 
 <!-- ====================================================== -->
-<!-- NAVBAR PUBBLICA -->
+<!-- NAVBAR -->
 <!-- ====================================================== -->
 
 <header class="home-navbar">
+
 
     <a
         class="home-logo"
@@ -39,11 +42,19 @@
     </a>
 
 
+
     <nav class="home-nav-links">
+
+
+        <a th:href="@{/explore}">
+            Esplora
+        </a>
+
 
         <a href="#features">
             Come funziona
         </a>
+
 
         <a
             class="home-login-link"
@@ -53,6 +64,7 @@
 
         </a>
 
+
         <a
             class="home-nav-button"
             th:href="@{/register}">
@@ -61,32 +73,33 @@
 
         </a>
 
+
     </nav>
+
 
 </header>
 
 
 
-<!-- ====================================================== -->
-<!-- HERO -->
-<!-- ====================================================== -->
-
 <main>
 
 
+    <!-- ================================================== -->
+    <!-- HERO -->
+    <!-- ================================================== -->
+
     <section class="home-hero">
 
-
-        <!-- TESTO -->
 
         <div class="home-hero-content">
 
 
             <div class="home-badge">
 
-                ✈️ Il tuo viaggio, tutto in un posto
+                ✈ La tua prossima avventura inizia qui
 
             </div>
+
 
 
             <h1>
@@ -102,15 +115,16 @@
             </h1>
 
 
+
             <p class="home-hero-description">
 
-                Travelly ti aiuta a organizzare ogni dettaglio
-                del tuo viaggio: destinazioni, attività,
-                partecipanti e spese.
-
-                Tutto semplice, tutto insieme.
+                Dall'idea alla partenza, tutto il tuo viaggio
+                in un unico posto. Organizza destinazioni,
+                attività, compagni di viaggio e spese
+                in modo semplice.
 
             </p>
+
 
 
             <div class="home-hero-buttons">
@@ -122,21 +136,24 @@
 
                     Inizia il tuo viaggio
 
-                    <span>→</span>
+                    <span>
+                        →
+                    </span>
 
                 </a>
 
 
                 <a
                     class="home-secondary-button"
-                    th:href="@{/login}">
+                    th:href="@{/explore}">
 
-                    Ho già un account
+                    Esplora gli itinerari
 
                 </a>
 
 
             </div>
+
 
 
             <div class="home-mini-features">
@@ -146,12 +163,14 @@
                     ✓ Pianificazione
                 </span>
 
+
                 <span>
                     ✓ Spese condivise
                 </span>
 
+
                 <span>
-                    ✓ Ricordi
+                    ✓ Itinerari
                 </span>
 
 
@@ -161,110 +180,153 @@
         </div>
 
 
-
-        <!-- PARTE VISIVA -->
-
-        <div class="home-hero-visual">
+    </section>
 
 
-            <div class="travel-postcard travel-postcard-main">
+
+    <!-- ================================================== -->
+    <!-- ITINERARI TRAVELLY -->
+    <!-- ================================================== -->
+
+    <section class="home-inspiration-section">
 
 
-                <div class="postcard-sky">
+        <div class="home-section-heading">
 
 
-                    <div class="postcard-sun">
-                    </div>
+            <span>
+                ISPIRATI
+            </span>
 
 
-                    <span class="postcard-plane">
-                        ✈
-                    </span>
+            <h2>
+                Il prossimo viaggio potrebbe essere già qui.
+            </h2>
 
 
-                    <div class="postcard-mountain mountain-one">
-                    </div>
+            <p>
 
-                    <div class="postcard-mountain mountain-two">
-                    </div>
+                Scopri gli itinerari creati da Travelly
+                e trova nuove idee per la tua prossima
+                avventura.
 
-
-                </div>
-
-
-                <div class="postcard-info">
+            </p>
 
 
-                    <div>
+        </div>
 
-                        <span class="postcard-small">
-                            PROSSIMO VIAGGIO
+
+
+        <div class="trip-card-grid">
+
+
+            <article
+                class="travel-card"
+                th:each="trip : ${templates}">
+
+
+                <!-- COPERTINA -->
+
+                <div class="travel-card-cover has-cover-image">
+
+
+                    <img
+                        th:if="${trip.coverImage != null}"
+                        class="travel-card-cover-image"
+                        th:src="@{/uploads/trips/{image}(image=${trip.coverImage})}"
+                        th:alt="'Copertina di ' + ${trip.name}">
+
+
+                    <img
+                        th:if="${trip.coverImage == null}"
+                        class="travel-card-cover-image"
+                        th:src="@{/images/default-trip.png}"
+                        alt="Copertina Travelly">
+
+
+                    <span class="travel-card-number">
+
+                        <span>
+                            TRAVELLY
                         </span>
 
                         <strong>
-                            Tokyo, Japan
+                            GUIDE
                         </strong>
 
-                    </div>
-
-
-                    <span class="postcard-date">
-                        05 — 15 DIC
                     </span>
 
 
                 </div>
 
 
-            </div>
+
+                <!-- CONTENUTO -->
+
+                <div class="travel-card-content">
+
+
+                    <span class="travel-card-label">
+                        ITINERARIO
+                    </span>
+
+
+                    <h2
+                        th:text="${trip.name}">
+
+                        Nome itinerario
+
+                    </h2>
 
 
 
-            <!-- CARD FLOTTANTE 1 -->
+                    <p
+                        class="travel-card-description"
+                        th:text="${trip.description}">
 
-            <div class="floating-card floating-card-budget">
+                        Descrizione itinerario
 
-                <span class="floating-icon">
-                    💸
-                </span>
+                    </p>
 
-                <div>
 
-                    <small>
-                        Budget rimanente
-                    </small>
 
-                    <strong>
-                        915 €
-                    </strong>
+                    <a
+                        class="travel-card-open"
+                        th:href="@{/explore/{id}(id=${trip.id})}">
+
+                        Scopri il viaggio
+
+                        <span>
+                            →
+                        </span>
+
+                    </a>
+
 
                 </div>
 
-            </div>
+
+            </article>
+
+
+        </div>
 
 
 
-            <!-- CARD FLOTTANTE 2 -->
+        <div class="home-explore-action">
 
-            <div class="floating-card floating-card-people">
 
-                <span class="floating-icon">
-                    👥
+            <a
+                class="home-secondary-button"
+                th:href="@{/explore}">
+
+                Vedi tutti gli itinerari
+
+                <span>
+                    →
                 </span>
 
-                <div>
-
-                    <small>
-                        Partecipanti
-                    </small>
-
-                    <strong>
-                        3 viaggiatori
-                    </strong>
-
-                </div>
-
-            </div>
+            </a>
 
 
         </div>
@@ -292,21 +354,14 @@
 
 
             <h2>
-
-                Meno fogli sparsi.
-
-                <br>
-
-                Più tempo per viaggiare.
-
+                Meno cose sparse. Più tempo per viaggiare.
             </h2>
 
 
             <p>
 
-                Travelly raccoglie in un unico spazio
-                tutto quello che serve per organizzare
-                un viaggio.
+                Destinazioni, attività, partecipanti
+                e spese organizzati in un unico spazio.
 
             </p>
 
@@ -318,13 +373,16 @@
         <div class="home-feature-grid">
 
 
+            <!-- ========================================== -->
             <!-- PIANIFICA -->
+            <!-- ========================================== -->
 
-            <article class="home-feature-card feature-orange">
+            <article
+                class="home-feature-card feature-orange">
 
 
                 <div class="home-feature-icon">
-                    🗺️
+                    🗺
                 </div>
 
 
@@ -340,8 +398,9 @@
 
                 <p>
 
-                    Salva destinazioni, date, attività
-                    e tutti i dettagli del tuo itinerario.
+                    Organizza destinazioni, date e attività
+                    e costruisci il tuo itinerario
+                    giorno dopo giorno.
 
                 </p>
 
@@ -350,9 +409,12 @@
 
 
 
+            <!-- ========================================== -->
             <!-- SPESE -->
+            <!-- ========================================== -->
 
-            <article class="home-feature-card feature-green">
+            <article
+                class="home-feature-card feature-green">
 
 
                 <div class="home-feature-icon">
@@ -372,8 +434,9 @@
 
                 <p>
 
-                    Registra le spese e scopri in modo
-                    semplice come gestirle.
+                    Registra i costi del viaggio,
+                    controlla il budget e gestisci
+                    le spese tra i partecipanti.
 
                 </p>
 
@@ -382,13 +445,16 @@
 
 
 
-            <!-- RICORDI -->
+            <!-- ========================================== -->
+            <!-- CONTROLLO -->
+            <!-- ========================================== -->
 
-            <article class="home-feature-card feature-yellow">
+            <article
+                class="home-feature-card feature-yellow">
 
 
                 <div class="home-feature-icon">
-                    📷
+                    📊
                 </div>
 
 
@@ -398,15 +464,15 @@
 
 
                 <h3>
-                    Conserva i ricordi
+                    Tieni tutto sotto controllo
                 </h3>
 
 
                 <p>
 
-                    Il viaggio non finisce al ritorno:
-                    costruisci il tuo diario personale
-                    e conserva i momenti più belli.
+                    Consulta attività, partecipanti,
+                    budget e informazioni del viaggio
+                    da un unico spazio.
 
                 </p>
 
@@ -422,7 +488,7 @@
 
 
     <!-- ================================================== -->
-    <!-- BANNER FINALE -->
+    <!-- CTA FINALE -->
     <!-- ================================================== -->
 
     <section class="home-cta">
@@ -437,14 +503,12 @@
 
 
             <h2>
-
-                Il prossimo viaggio
-                inizia da qui.
-
+                Il prossimo viaggio inizia da qui.
             </h2>
 
 
         </div>
+
 
 
         <a
@@ -453,7 +517,9 @@
 
             Crea il tuo account
 
-            <span>→</span>
+            <span>
+                →
+            </span>
 
         </a>
 
@@ -474,13 +540,16 @@
 
     <div>
 
+
         <strong>
             Travelly<span>.</span>
         </strong>
 
+
         <p>
             Pianifica. Viaggia. Ricorda.
         </p>
+
 
     </div>
 

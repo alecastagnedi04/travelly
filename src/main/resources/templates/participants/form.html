@@ -1,61 +1,145 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+
+<html
+    lang="it"
+    xmlns:th="http://www.thymeleaf.org">
 
 <head>
+
     <meta charset="UTF-8">
-    <title>Aggiungi partecipante - Travelly</title>
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
+    <title>
+        Aggiungi partecipante - Travelly
+    </title>
+
+    <link
+        rel="stylesheet"
+        th:href="@{/css/style.css}">
+
 </head>
+
 
 <body>
 
-    <h1>Aggiungi partecipante</h1>
 
-    <p>
-        Viaggio:
-        <strong th:text="${trip.name}">
-            Nome viaggio
-        </strong>
-    </p>
+<main class="compact-form-page">
 
-    <form
-        th:action="@{/trips/{tripId}/participants(tripId=${trip.id})}"
-        method="post">
 
-        <div>
-            <label for="name">Nome</label>
+    <a
+        class="back-link"
+        th:href="@{/trips/{id}(id=${trip.id})}">
 
-            <input
-                type="text"
-                id="name"
-                name="name"
-                required>
-        </div>
+        ← Torna al viaggio
 
-        <br>
-
-        <div>
-            <label for="email">Email</label>
-
-            <input
-                type="email"
-                id="email"
-                name="email"
-                required>
-        </div>
-
-        <br>
-
-        <button type="submit">
-            Aggiungi partecipante
-        </button>
-
-    </form>
-
-    <br>
-
-    <a th:href="@{/trips/{id}(id=${trip.id})}">
-        Annulla
     </a>
+
+
+
+    <section class="compact-form-card">
+
+
+        <div class="compact-form-header">
+
+            <span>
+                PARTECIPANTI
+            </span>
+
+            <h1>
+                Aggiungi partecipante
+            </h1>
+
+            <p>
+
+                Viaggio:
+
+                <strong th:text="${trip.name}">
+                    Nome viaggio
+                </strong>
+
+            </p>
+
+        </div>
+
+
+
+        <form
+            class="travelly-form"
+            th:action="@{/trips/{tripId}/participants(tripId=${trip.id})}"
+            method="post">
+
+
+            <div class="travelly-field">
+
+                <label for="name">
+                    Nome
+                </label>
+
+                <input
+                    type="text"
+                    id="name"
+                    name="name"
+                    placeholder="Es. Alessia"
+                    required>
+
+            </div>
+
+
+
+            <div class="travelly-field">
+
+                <label for="email">
+                    Email
+                </label>
+
+                <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    placeholder="nome@email.com"
+                    required>
+
+            </div>
+
+
+
+            <div class="travelly-form-actions">
+
+
+                <a
+                    class="form-cancel-button"
+                    th:href="@{/trips/{id}(id=${trip.id})}">
+
+                    Annulla
+
+                </a>
+
+
+                <button
+                    class="form-submit-button"
+                    type="submit">
+
+                    Aggiungi partecipante
+
+                    <span>→</span>
+
+                </button>
+
+
+            </div>
+
+
+        </form>
+
+
+    </section>
+
+
+</main>
+
 
 </body>
 

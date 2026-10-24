@@ -1,40 +1,123 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+
+<html
+    lang="it"
+    xmlns:th="http://www.thymeleaf.org">
 
 <head>
+
     <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
     <title>Admin - Travelly</title>
+
+    <link
+        rel="stylesheet"
+        th:href="@{/css/style.css}">
+
 </head>
+
 
 <body>
 
-    <h1>Dashboard amministratore</h1>
 
-    <p>
-        Area riservata agli amministratori di Travelly.
-    </p>
+<main class="container">
 
-    <div>
-        <a th:href="@{/admin/users}">
-            Gestisci utenti
-        </a>
+
+    <a
+        class="logo"
+        th:href="@{/}">
+        Travelly
+    </a>
+
+
+    <div class="trip-detail-header">
+
+        <div>
+
+            <span class="trip-form-eyebrow">
+                AREA AMMINISTRATORE
+            </span>
+
+            <h1>
+                Dashboard Admin
+            </h1>
+
+            <p class="trip-description">
+
+                Gestisci utenti, viaggi personali
+                e itinerari ufficiali Travelly.
+
+            </p>
+
+        </div>
+
     </div>
 
-    <br>
 
-    <div>
-        <a th:href="@{/admin/trips}">
-            Gestisci viaggi
-        </a>
-    </div>
 
-    <br>
+    <section class="detail-section">
 
-    <div>
-        <a th:href="@{/trips}">
-            I miei viaggi
-        </a>
-    </div>
+
+        <div class="section-header">
+
+            <h2>
+                Gestione sistema
+            </h2>
+
+        </div>
+
+
+        <div class="expense-actions">
+
+
+            <a
+                class="button"
+                th:href="@{/admin/templates}">
+
+                Itinerari Travelly
+
+            </a>
+
+
+            <a
+                class="button button-secondary"
+                th:href="@{/admin/users}">
+
+                Gestisci utenti
+
+            </a>
+
+
+            <a
+                class="button button-secondary"
+                th:href="@{/admin/trips}">
+
+                Tutti i viaggi
+
+            </a>
+
+
+            <a
+                class="button button-secondary"
+                th:href="@{/trips}">
+
+                I miei viaggi
+
+            </a>
+
+
+        </div>
+
+
+    </section>
+
+
+</main>
+
 
 </body>
 

@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+
+<html
+    lang="it"
+    xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
+    <title>Esplora - Travelly</title>
+
+    <link
+        rel="stylesheet"
+        th:href="@{/css/style.css}">
+
+</head>
+
+
+<body class="explore-page">
+
+
+<!-- ====================================================== -->
+<!-- NAVBAR -->
+<!-- ====================================================== -->
+
+<header class="home-navbar">
+
+
+    <a
+        class="home-logo"
+        th:href="@{/}">
+
+        Travelly<span>.</span>
+
+    </a>
+
+
+    <nav class="home-nav-links">
+
+
+        <a
+            th:href="@{/}">
+
+            Home
+
+        </a>
+
+
+        <a
+            class="home-login-link"
+            th:href="@{/login}">
+
+            Accedi
+
+        </a>
+
+
+        <a
+            class="home-nav-button"
+            th:href="@{/register}">
+
+            Registrati
+
+        </a>
+
+
+    </nav>
+
+
+</header>
+
+
+
+<main class="explore-main">
+
+
+    <!-- ================================================== -->
+    <!-- HERO -->
+    <!-- ================================================== -->
+
+    <section class="explore-hero">
+
+
+        <span class="trips-eyebrow">
+            TRAVELLY GUIDES
+        </span>
+
+
+        <h1>
+            Trova l'ispirazione
+            per il tuo prossimo viaggio.
+        </h1>
+
+
+        <p>
+
+            Itinerari creati da Travelly per aiutarti
+            a scoprire nuove destinazioni e organizzare
+            ogni giornata del tuo viaggio.
+
+        </p>
+
+
+    </section>
+
+
+
+    <!-- ================================================== -->
+    <!-- CARD -->
+    <!-- ================================================== -->
+
+    <section class="trip-card-grid">
+
+
+        <article
+            class="travel-card"
+            th:each="trip : ${templates}">
+
+
+            <!-- COPERTINA -->
+
+            <div class="travel-card-cover has-cover-image">
+
+
+                <img
+                    th:if="${trip.coverImage != null}"
+                    class="travel-card-cover-image"
+                    th:src="@{/uploads/trips/{image}(image=${trip.coverImage})}"
+                    th:alt="'Copertina di ' + ${trip.name}">
+
+
+                <img
+                    th:if="${trip.coverImage == null}"
+                    class="travel-card-cover-image"
+                    th:src="@{/images/default-trip.png}"
+                    alt="Copertina Travelly">
+
+
+                <span class="travel-card-number">
+
+                    <span>
+                        TRAVELLY
+                    </span>
+
+                    <strong>
+                        GUIDE
+                    </strong>
+
+                </span>
+
+
+            </div>
+
+
+
+            <!-- CONTENUTO -->
+
+            <div class="travel-card-content">
+
+
+                <span class="travel-card-label">
+                    ITINERARIO
+                </span>
+
+
+                <h2
+                    th:text="${trip.name}">
+
+                    Copenhagen in 3 giorni
+
+                </h2>
+
+
+                <p
+                    class="travel-card-description"
+                    th:text="${trip.description}">
+
+                    Descrizione itinerario
+
+                </p>
+
+
+
+                <div class="travel-card-details">
+
+
+                    <div>
+
+                        <span>
+                            Dal
+                        </span>
+
+                        <strong
+                            th:text="${trip.startDate}">
+                            data
+                        </strong>
+
+                    </div>
+
+
+                    <div>
+
+                        <span>
+                            Al
+                        </span>
+
+                        <strong
+                            th:text="${trip.endDate}">
+                            data
+                        </strong>
+
+                    </div>
+
+
+                    <div>
+
+                        <span>
+                            Budget
+                        </span>
+
+                        <strong>
+
+                            <span
+                                th:text="${trip.budget}">
+                                0
+                            </span>
+
+                            €
+
+                        </strong>
+
+                    </div>
+
+
+                </div>
+
+
+
+                <a
+                    class="travel-card-open"
+                    th:href="@{/explore/{id}(id=${trip.id})}">
+
+                    Scopri l'itinerario
+
+                    <span>
+                        →
+                    </span>
+
+                </a>
+
+
+            </div>
+
+
+        </article>
+
+
+    </section>
+
+
+</main>
+
+
+
+<footer class="home-footer">
+
+
+    <div>
+
+        <strong>
+            Travelly<span>.</span>
+        </strong>
+
+        <p>
+            Pianifica. Viaggia. Ricorda.
+        </p>
+
+    </div>
+
+
+</footer>
+
+
+</body>
+
+</html>

@@ -84,17 +84,49 @@
 
         </a>
 
+<!-- ====================================================== -->
+<!-- COPERTINA VIAGGIO -->
+<!-- ====================================================== -->
 
+<div class="trip-detail-cover">
+
+
+    <!-- FOTO CARICATA DALL'UTENTE -->
+
+    <img
+        th:if="${trip.coverImage != null}"
+        th:src="@{/uploads/trips/{image}(image=${trip.coverImage})}"
+        th:alt="'Copertina di ' + ${trip.name}">
+
+
+    <!-- FOTO DEFAULT -->
+
+    <img
+        th:if="${trip.coverImage == null}"
+        th:src="@{/images/default-trip.jpg}"
+        alt="Copertina Travelly">
+
+
+    <div class="trip-detail-cover-overlay">
+
+        <span>
+            IL TUO VIAGGIO
+        </span>
+
+        <h1 th:text="${trip.name}">
+            Nome viaggio
+        </h1>
+
+    </div>
+
+
+</div>
 
         <!-- INTESTAZIONE VIAGGIO -->
 
         <div class="trip-detail-header">
 
             <div>
-
-                <h1 th:text="${trip.name}">
-                    Nome viaggio
-                </h1>
 
                 <p
                     class="trip-description"

@@ -234,53 +234,50 @@
             th:each="trip, tripStat : ${trips}">
 
 
-            <!-- ========================================== -->
-            <!-- COPERTINA GRAFICA TEMPORANEA -->
-            <!-- ========================================== -->
+<!-- ========================================== -->
+<!-- COPERTINA DEL VIAGGIO -->
+<!-- ========================================== -->
 
-            <div
-                class="travel-card-cover"
-                th:classappend="${
-                    tripStat.index % 3 == 0
-                    ? ' cover-terracotta'
-                    :
-                    tripStat.index % 3 == 1
-                    ? ' cover-green'
-                    : ' cover-sand'
-                }">
+<div class="travel-card-cover has-cover-image">
 
 
-                <div class="travel-card-sun">
-                </div>
+    <!-- FOTO CARICATA DALL'UTENTE -->
+
+    <img
+        th:if="${trip.coverImage != null}"
+        class="travel-card-cover-image"
+        th:src="@{/uploads/trips/{image}(image=${trip.coverImage})}"
+        th:alt="'Copertina di ' + ${trip.name}">
 
 
-                <div class="travel-card-landscape landscape-back">
-                </div>
+    <!-- FOTO DEFAULT TRAVELLY -->
+
+    <img
+        th:if="${trip.coverImage == null}"
+        class="travel-card-cover-image"
+        th:src="@{/images/default-trip.jpg}"
+        alt="Copertina Travelly">
 
 
-                <div class="travel-card-landscape landscape-front">
-                </div>
+    <span class="travel-card-number">
+
+        <span>
+            VIAGGIO
+        </span>
+
+        <strong
+            th:text="${tripStat.count < 10
+            ? '0' + tripStat.count
+            : tripStat.count}">
+
+            01
+
+        </strong>
+
+    </span>
 
 
-                <span class="travel-card-number">
-
-                    <span>
-                        VIAGGIO
-                    </span>
-
-                    <strong
-                        th:text="${tripStat.count < 10
-                        ? '0' + tripStat.count
-                        : tripStat.count}">
-
-                        01
-
-                    </strong>
-
-                </span>
-
-
-            </div>
+</div>
 
 
 

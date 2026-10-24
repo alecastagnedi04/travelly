@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+
+<html
+    lang="it"
+    xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
+    <title
+        th:text="${trip.name} + ' - Travelly'">
+
+        Travelly
+
+    </title>
+
+    <link
+        rel="stylesheet"
+        th:href="@{/css/style.css}">
+
+</head>
+
+
+<body>
+
+
+<header class="home-navbar">
+
+
+    <a
+        class="home-logo"
+        th:href="@{/}">
+
+        Travelly<span>.</span>
+
+    </a>
+
+
+    <nav class="home-nav-links">
+
+
+        <a
+            th:href="@{/explore}">
+
+            Esplora
+
+        </a>
+
+
+        <a
+            class="home-login-link"
+            th:href="@{/login}">
+
+            Accedi
+
+        </a>
+
+
+        <a
+            class="home-nav-button"
+            th:href="@{/register}">
+
+            Registrati
+
+        </a>
+
+
+    </nav>
+
+
+</header>
+
+
+
+<main class="container explore-detail-page">
+
+
+    <a
+        class="back-link"
+        th:href="@{/explore}">
+
+        ← Tutti gli itinerari
+
+    </a>
+
+
+
+    <!-- ================================================== -->
+    <!-- COPERTINA -->
+    <!-- ================================================== -->
+
+    <div class="trip-detail-cover">
+
+
+        <img
+            th:if="${trip.coverImage != null}"
+            th:src="@{/uploads/trips/{image}(image=${trip.coverImage})}"
+            th:alt="'Copertina di ' + ${trip.name}">
+
+
+        <img
+            th:if="${trip.coverImage == null}"
+            th:src="@{/images/default-trip.png}"
+            alt="Copertina Travelly">
+
+
+        <div class="trip-detail-cover-overlay">
+
+
+            <span>
+                TRAVELLY GUIDE
+            </span>
+
+
+            <h1
+                th:text="${trip.name}">
+
+                Nome itinerario
+
+            </h1>
+
+
+        </div>
+
+
+    </div>
+
+
+
+    <!-- ================================================== -->
+    <!-- INTRO -->
+    <!-- ================================================== -->
+
+    <section class="explore-trip-intro">
+
+
+        <div>
+
+
+            <span class="trip-form-eyebrow">
+                ITINERARIO CONSIGLIATO
+            </span>
+
+
+            <p
+                class="trip-description"
+                th:text="${trip.description}">
+
+                Descrizione
+
+            </p>
+
+
+            <p class="trip-info">
+
+                Dal
+
+                <strong
+                    th:text="${trip.startDate}">
+                    data
+                </strong>
+
+                al
+
+                <strong
+                    th:text="${trip.endDate}">
+                    data
+                </strong>
+
+            </p>
+
+
+        </div>
+
+
+        <div class="explore-budget-card">
+
+
+            <span>
+                Budget indicativo
+            </span>
+
+
+            <strong>
+
+                <span
+                    th:text="${trip.budget}">
+                    0
+                </span>
+
+                €
+
+            </strong>
+
+
+        </div>
+
+
+    </section>
+
+
+
+    <!-- ================================================== -->
+    <!-- DESTINAZIONI -->
+    <!-- ================================================== -->
+
+    <section class="detail-section">
+
+
+        <div class="section-header">
+
+
+            <div>
+
+                <span class="trip-form-eyebrow">
+                    LE TAPPE
+                </span>
+
+                <h2>
+                    Destinazioni
+                </h2>
+
+            </div>
+
+
+        </div>
+
+
+
+        <div
+            class="empty-section"
+            th:if="${#lists.isEmpty(trip.destinations)}">
+
+            Nessuna destinazione disponibile.
+
+        </div>
+
+
+
+        <div class="explore-destination-grid">
+
+
+            <article
+                class="explore-destination-card"
+                th:each="destination : ${trip.destinations}">
+
+
+                <span class="explore-card-kicker">
+                    DESTINAZIONE
+                </span>
+
+
+                <h3>
+
+                    <span
+                        th:text="${destination.city}">
+                        Città
+                    </span>
+
+                </h3>
+
+
+                <p
+                    class="explore-country"
+                    th:text="${destination.country}">
+
+                    Paese
+
+                </p>
+
+
+                <div class="explore-dates">
+
+
+                    <span>
+
+                        Arrivo
+
+                        <strong
+                            th:text="${destination.arrivalDate}">
+                            data
+                        </strong>
+
+                    </span>
+
+
+                    <span>
+
+                        Partenza
+
+                        <strong
+                            th:text="${destination.departureDate}">
+                            data
+                        </strong>
+
+                    </span>
+
+
+                </div>
+
+
+            </article>
+
+
+        </div>
+
+
+    </section>
+
+
+
+    <!-- ================================================== -->
+    <!-- ATTIVITÀ -->
+    <!-- ================================================== -->
+
+    <section class="detail-section">
+
+
+        <div class="section-header">
+
+
+            <div>
+
+                <span class="trip-form-eyebrow">
+                    COSA FARE
+                </span>
+
+                <h2>
+                    Attività
+                </h2>
+
+            </div>
+
+
+        </div>
+
+
+
+        <div
+            class="empty-section"
+            th:if="${#lists.isEmpty(trip.activities)}">
+
+            Nessuna attività disponibile.
+
+        </div>
+
+
+
+        <div class="explore-activity-grid">
+
+
+            <article
+                class="explore-activity-card"
+                th:each="activity : ${trip.activities}">
+
+
+                <div class="explore-activity-top">
+
+
+                    <span
+                        class="explore-category"
+                        th:text="${activity.category}">
+
+                        CULTURE
+
+                    </span>
+
+
+                    <strong
+                        th:if="${activity.cost != null}"
+                        class="explore-activity-cost">
+
+                        <span
+                            th:text="${activity.cost}">
+                            0
+                        </span>
+
+                        €
+
+                    </strong>
+
+
+                </div>
+
+
+                <h3
+                    th:text="${activity.name}">
+
+                    Nome attività
+
+                </h3>
+
+
+                <p
+                    th:if="${activity.description != null && !activity.description.isEmpty()}"
+                    th:text="${activity.description}">
+
+                    Descrizione
+
+                </p>
+
+
+                <div class="explore-activity-meta">
+
+
+                    <span>
+
+                        <strong>
+                            Data
+                        </strong>
+
+                        <span
+                            th:text="${activity.date}">
+                            data
+                        </span>
+
+                    </span>
+
+
+                    <span>
+
+                        <strong>
+                            Ora
+                        </strong>
+
+                        <span
+                            th:text="${activity.time}">
+                            ora
+                        </span>
+
+                    </span>
+
+
+                    <span>
+
+                        <strong>
+                            Luogo
+                        </strong>
+
+                        <span
+                            th:text="${activity.location}">
+                            luogo
+                        </span>
+
+                    </span>
+
+
+                </div>
+
+
+            </article>
+
+
+        </div>
+
+
+    </section>
+
+
+
+    <!-- ================================================== -->
+    <!-- CTA -->
+    <!-- ================================================== -->
+
+    <section class="explore-detail-cta">
+
+
+        <div>
+
+
+            <span>
+                TI PIACE QUESTO VIAGGIO?
+            </span>
+
+
+            <h2>
+                Rendilo tuo.
+            </h2>
+
+
+            <p>
+
+                Crea un account Travelly e organizza
+                il tuo viaggio partendo da questo itinerario.
+
+            </p>
+
+
+        </div>
+
+
+        <!--
+            PER ORA PORTA ALLA REGISTRAZIONE.
+
+            Nel prossimo passaggio questo diventerà:
+            "Usa questo itinerario"
+        -->
+
+        <a
+            class="home-cta-button"
+            th:href="@{/register}">
+
+            Inizia con Travelly
+
+            <span>→</span>
+
+        </a>
+
+
+    </section>
+
+
+</main>
+
+
+
+<footer class="home-footer">
+
+
+    <div>
+
+        <strong>
+            Travelly<span>.</span>
+        </strong>
+
+        <p>
+            Pianifica. Viaggia. Ricorda.
+        </p>
+
+    </div>
+
+
+</footer>
+
+
+</body>
+
+</html>

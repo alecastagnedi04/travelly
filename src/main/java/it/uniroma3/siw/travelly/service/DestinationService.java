@@ -282,6 +282,260 @@ public class DestinationService {
     }
 
 
+/*
+ * =====================================================
+ * DESTINAZIONI DEGLI ITINERARI TRAVELLY
+ * =====================================================
+ */
+
+
+/*
+ * Crea una destinazione dentro
+ * un itinerario ufficiale Travelly.
+ */
+@Transactional
+public Optional<Destination> createTemplateDestination(
+        Long templateId,
+        String city,
+        String country,
+        LocalDate arrivalDate,
+        LocalDate departureDate) {
+
+
+    Optional<Trip> tripOptional =
+            tripRepository
+                    .findByIdAndTemplateTrue(
+                            templateId
+                    );
+
+
+    if (tripOptional.isEmpty()) {
+
+        return Optional.empty();
+    }
+
+
+    Trip trip =
+            tripOptional.get();
+
+
+    if (!datesAreValid(
+            trip,
+            arrivalDate,
+            departureDate)) {
+
+        return Optional.empty();
+    }
+
+
+    Destination destination =
+            new Destination();
+
+
+    destination.setCity(
+            city
+    );
+
+
+    destination.setCountry(
+            country
+    );
+
+
+    destination.setArrivalDate(
+            arrivalDate
+    );
+
+
+    destination.setDepartureDate(
+            departureDate
+    );
+
+
+    destination.setTrip(
+            trip
+    );
+
+
+    return Optional.of(
+            destinationRepository.save(
+                    destination
+            )
+    );
+}
+
+
+/*
+ * Recupera una destinazione verificando
+ * che appartenga proprio al template indicato.
+ */
+@Transactional(readOnly = true)
+public Optional<Destination> findTemplateDestination(
+        Long templateId,
+        Long destinationId) {
+
+
+    if (tripRepository
+            .findByIdAndTemplateTrue(
+                    templateId
+            )
+            .isEmpty()) {
+
+        return Optional.empty();
+    }
+
+
+    Optional<Destination> destinationOptional =
+            destinationRepository.findById(
+                    destinationId
+            );
+
+
+    if (destinationOptional.isEmpty()) {
+
+        return Optional.empty();
+    }
+
+
+    Destination destination =
+            destinationOptional.get();
+
+
+    if (destination.getTrip() == null ||
+            !destination.getTrip()
+                    .getId()
+                    .equals(templateId)) {
+
+        return Optional.empty();
+    }
+
+
+    return Optional.of(
+            destination
+    );
+}
+
+
+/*
+ * Modifica una destinazione
+ * di un itinerario Travelly.
+ */
+@Transactional
+public Optional<Destination> updateTemplateDestination(
+        Long templateId,
+        Long destinationId,
+        String city,
+        String country,
+        LocalDate arrivalDate,
+        LocalDate departureDate) {
+
+
+    Optional<Trip> tripOptional =
+            tripRepository
+                    .findByIdAndTemplateTrue(
+                            templateId
+                    );
+
+
+    if (tripOptional.isEmpty()) {
+
+        return Optional.empty();
+    }
+
+
+    Trip trip =
+            tripOptional.get();
+
+
+    if (!datesAreValid(
+            trip,
+            arrivalDate,
+            departureDate)) {
+
+        return Optional.empty();
+    }
+
+
+    Optional<Destination> destinationOptional =
+            findTemplateDestination(
+                    templateId,
+                    destinationId
+            );
+
+
+    if (destinationOptional.isEmpty()) {
+
+        return Optional.empty();
+    }
+
+
+    Destination destination =
+            destinationOptional.get();
+
+
+    destination.setCity(
+            city
+    );
+
+
+    destination.setCountry(
+            country
+    );
+
+
+    destination.setArrivalDate(
+            arrivalDate
+    );
+
+
+    destination.setDepartureDate(
+            departureDate
+    );
+
+
+    return Optional.of(
+            destinationRepository.save(
+                    destination
+            )
+    );
+}
+
+
+/*
+ * Elimina una destinazione
+ * da un itinerario Travelly.
+ */
+@Transactional
+public boolean deleteTemplateDestination(
+        Long templateId,
+        Long destinationId) {
+
+
+    Optional<Destination> destinationOptional =
+            findTemplateDestination(
+                    templateId,
+                    destinationId
+            );
+
+
+    if (destinationOptional.isEmpty()) {
+
+        return false;
+    }
+
+
+    destinationRepository.delete(
+            destinationOptional.get()
+    );
+
+
+    return true;
+}
+
+
+
+
+
     /*
      * Regola di business sulle date.
      *

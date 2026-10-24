@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+
+<html
+    lang="it"
+    xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
+    <title>Itinerari Travelly - Admin</title>
+
+    <link
+        rel="stylesheet"
+        th:href="@{/css/style.css}">
+
+</head>
+
+
+<body>
+
+
+<main class="trips-page">
+
+
+    <a
+        class="back-link"
+        th:href="@{/admin}">
+
+        ← Dashboard Admin
+
+    </a>
+
+
+
+    <section class="trips-hero">
+
+
+        <div class="trips-hero-text">
+
+            <span class="trips-eyebrow">
+                CONTENUTI UFFICIALI
+            </span>
+
+            <h1>
+                Itinerari Travelly
+            </h1>
+
+            <p>
+
+                Crea e gestisci gli itinerari
+                ufficiali proposti agli utenti
+                come fonte di ispirazione.
+
+            </p>
+
+        </div>
+
+
+        <a
+            class="trips-create-button"
+            th:href="@{/admin/templates/new}">
+
+            <span>
+                Nuovo itinerario
+            </span>
+
+            <span>
+                →
+            </span>
+
+        </a>
+
+
+    </section>
+
+
+
+    <!-- NESSUN TEMPLATE -->
+
+    <section
+        class="trips-empty"
+        th:if="${#lists.isEmpty(templates)}">
+
+
+        <h2>
+            Nessun itinerario Travelly
+        </h2>
+
+
+        <p>
+
+            Crea il primo itinerario ufficiale
+            da mostrare nella homepage.
+
+        </p>
+
+
+        <a
+            class="button"
+            th:href="@{/admin/templates/new}">
+
+            Crea itinerario
+
+        </a>
+
+
+    </section>
+
+
+
+    <!-- TEMPLATE -->
+
+    <section
+        class="trip-card-grid"
+        th:if="${!#lists.isEmpty(templates)}">
+
+
+        <article
+            class="travel-card"
+            th:each="trip : ${templates}">
+
+
+            <div class="travel-card-cover has-cover-image">
+
+
+                <img
+                    th:if="${trip.coverImage != null}"
+                    class="travel-card-cover-image"
+                    th:src="@{/uploads/trips/{image}(image=${trip.coverImage})}"
+                    th:alt="'Copertina di ' + ${trip.name}">
+
+
+                <img
+                    th:if="${trip.coverImage == null}"
+                    class="travel-card-cover-image"
+                    th:src="@{/images/default-trip.png}"
+                    alt="Copertina Travelly">
+
+
+                <span class="travel-card-number">
+
+                    <span>
+                        TRAVELLY
+                    </span>
+
+                    <strong>
+                        GUIDE
+                    </strong>
+
+                </span>
+
+
+            </div>
+
+
+
+            <div class="travel-card-content">
+
+
+                <span class="travel-card-label">
+                    ITINERARIO UFFICIALE
+                </span>
+
+
+                <h2 th:text="${trip.name}">
+                    Nome itinerario
+                </h2>
+
+
+                <p
+                    class="travel-card-description"
+                    th:text="${trip.description}">
+
+                    Descrizione
+
+                </p>
+
+
+
+                <div class="travel-card-details">
+
+
+                    <div>
+
+                        <span>
+                            Inizio
+                        </span>
+
+                        <strong th:text="${trip.startDate}">
+                            data
+                        </strong>
+
+                    </div>
+
+
+                    <div>
+
+                        <span>
+                            Fine
+                        </span>
+
+                        <strong th:text="${trip.endDate}">
+                            data
+                        </strong>
+
+                    </div>
+
+
+                </div>
+
+
+
+                <a
+                    class="travel-card-open"
+                    th:href="@{/admin/templates/{id}(id=${trip.id})}">
+
+                    Apri itinerario
+
+                    <span>
+                        →
+                    </span>
+
+                </a>
+
+
+            </div>
+
+
+        </article>
+
+
+    </section>
+
+
+</main>
+
+
+</body>
+
+</html>

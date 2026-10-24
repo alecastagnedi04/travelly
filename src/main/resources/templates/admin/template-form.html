@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+
+<html
+    lang="it"
+    xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
+    <title>Nuovo itinerario - Travelly</title>
+
+    <link
+        rel="stylesheet"
+        th:href="@{/css/style.css}">
+
+</head>
+
+
+<body>
+
+
+<main class="trip-form-page">
+
+
+    <a
+        class="back-link"
+        th:href="@{/admin/templates}">
+
+        ← Torna agli itinerari
+
+    </a>
+
+
+
+    <div class="trip-form-layout">
+
+
+        <section class="trip-form-intro">
+
+
+            <span class="trip-form-eyebrow">
+                ITINERARIO UFFICIALE
+            </span>
+
+
+            <h1>
+                Crea una nuova guida Travelly
+            </h1>
+
+
+            <p>
+
+                Crea la base dell'itinerario.
+                Nel passaggio successivo potrai
+                aggiungere destinazioni e attività.
+
+            </p>
+
+
+            <div class="trip-form-visual">
+
+                <div class="trip-form-sun">
+                </div>
+
+                <div
+                    class="trip-form-landscape
+                           trip-form-landscape-back">
+                </div>
+
+                <div
+                    class="trip-form-landscape
+                           trip-form-landscape-front">
+                </div>
+
+            </div>
+
+
+        </section>
+
+
+
+        <section class="trip-form-panel">
+
+
+            <div class="trip-form-heading">
+
+                <span>
+                    NUOVA GUIDA
+                </span>
+
+                <h2>
+                    Informazioni principali
+                </h2>
+
+            </div>
+
+
+
+            <form
+                class="travelly-form"
+                th:action="@{/admin/templates}"
+                method="post"
+                enctype="multipart/form-data">
+
+
+                <div class="travelly-field">
+
+                    <label for="name">
+                        Nome itinerario
+                    </label>
+
+                    <input
+                        id="name"
+                        name="name"
+                        type="text"
+                        placeholder="Es. Copenhagen in 3 giorni"
+                        required>
+
+                </div>
+
+
+
+                <div class="travelly-field">
+
+                    <label for="description">
+                        Descrizione
+                    </label>
+
+                    <textarea
+                        id="description"
+                        name="description"
+                        placeholder="Descrivi brevemente l'itinerario...">
+                    </textarea>
+
+                </div>
+
+
+
+                <div class="travelly-form-row">
+
+
+                    <div class="travelly-field">
+
+                        <label for="startDate">
+                            Data di inizio
+                        </label>
+
+                        <input
+                            id="startDate"
+                            name="startDate"
+                            type="date"
+                            required>
+
+                    </div>
+
+
+                    <div class="travelly-field">
+
+                        <label for="endDate">
+                            Data di fine
+                        </label>
+
+                        <input
+                            id="endDate"
+                            name="endDate"
+                            type="date"
+                            required>
+
+                    </div>
+
+
+                </div>
+
+
+
+                <div class="travelly-field">
+
+                    <label for="coverImage">
+                        Foto di copertina
+                    </label>
+
+                    <input
+                        id="coverImage"
+                        name="coverImage"
+                        type="file"
+                        accept="image/jpeg,image/png,image/webp">
+
+                    <small class="field-help">
+                        Facoltativa. Se non scegli nulla,
+                        Travelly userà la copertina standard.
+                    </small>
+
+                </div>
+
+
+
+                <div class="travelly-field">
+
+                    <label for="budget">
+                        Budget indicativo
+                    </label>
+
+                    <div class="budget-input-wrapper">
+
+                        <input
+                            id="budget"
+                            name="budget"
+                            type="number"
+                            min="0"
+                            step="0.01"
+                            placeholder="800"
+                            required>
+
+                        <span>
+                            €
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+
+                <div class="travelly-form-actions">
+
+
+                    <a
+                        class="form-cancel-button"
+                        th:href="@{/admin/templates}">
+
+                        Annulla
+
+                    </a>
+
+
+                    <button
+                        class="form-submit-button"
+                        type="submit">
+
+                        Crea itinerario
+
+                        <span>→</span>
+
+                    </button>
+
+
+                </div>
+
+
+            </form>
+
+
+        </section>
+
+
+    </div>
+
+
+</main>
+
+
+</body>
+
+</html>

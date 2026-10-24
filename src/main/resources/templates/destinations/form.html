@@ -1,83 +1,191 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+
+<html
+    lang="it"
+    xmlns:th="http://www.thymeleaf.org">
 
 <head>
+
     <meta charset="UTF-8">
-    <title>Aggiungi destinazione - Travelly</title>
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
+    <title>
+        Aggiungi destinazione - Travelly
+    </title>
+
+    <link
+        rel="stylesheet"
+        th:href="@{/css/style.css}">
+
 </head>
+
 
 <body>
 
-    <h1>Aggiungi destinazione</h1>
 
-    <p>
-        Viaggio:
-        <strong th:text="${trip.name}">Nome viaggio</strong>
-    </p>
+<main class="compact-form-page">
 
-    <form
-        th:action="@{/trips/{tripId}/destinations(tripId=${trip.id})}"
-        method="post">
 
-        <div>
-            <label for="city">Città</label>
+    <a
+        class="back-link"
+        th:href="@{/trips/{id}(id=${trip.id})}">
 
-            <input
-                type="text"
-                id="city"
-                name="city"
-                required>
-        </div>
+        ← Torna al viaggio
 
-        <br>
-
-        <div>
-            <label for="country">Paese</label>
-
-            <input
-                type="text"
-                id="country"
-                name="country"
-                required>
-        </div>
-
-        <br>
-
-        <div>
-            <label for="arrivalDate">Data di arrivo</label>
-
-            <input
-                type="date"
-                id="arrivalDate"
-                name="arrivalDate"
-                required>
-        </div>
-
-        <br>
-
-        <div>
-            <label for="departureDate">Data di partenza</label>
-
-            <input
-                type="date"
-                id="departureDate"
-                name="departureDate"
-                required>
-        </div>
-
-        <br>
-
-        <button type="submit">
-            Aggiungi destinazione
-        </button>
-
-    </form>
-
-    <br>
-
-    <a th:href="@{/trips/{id}(id=${trip.id})}">
-        Annulla
     </a>
+
+
+
+    <section class="compact-form-card">
+
+
+        <div class="compact-form-header">
+
+
+            <span>
+                DESTINAZIONI
+            </span>
+
+
+            <h1>
+                Aggiungi destinazione
+            </h1>
+
+
+            <p>
+
+                Viaggio:
+
+                <strong th:text="${trip.name}">
+                    Nome viaggio
+                </strong>
+
+            </p>
+
+
+        </div>
+
+
+
+        <form
+            class="travelly-form"
+            th:action="@{/trips/{tripId}/destinations(tripId=${trip.id})}"
+            method="post">
+
+
+            <div class="travelly-form-row">
+
+
+                <div class="travelly-field">
+
+                    <label for="city">
+                        Città
+                    </label>
+
+                    <input
+                        type="text"
+                        id="city"
+                        name="city"
+                        placeholder="Es. Copenhagen"
+                        required>
+
+                </div>
+
+
+                <div class="travelly-field">
+
+                    <label for="country">
+                        Paese
+                    </label>
+
+                    <input
+                        type="text"
+                        id="country"
+                        name="country"
+                        placeholder="Es. Danimarca"
+                        required>
+
+                </div>
+
+
+            </div>
+
+
+
+            <div class="travelly-form-row">
+
+
+                <div class="travelly-field">
+
+                    <label for="arrivalDate">
+                        Data di arrivo
+                    </label>
+
+                    <input
+                        type="date"
+                        id="arrivalDate"
+                        name="arrivalDate"
+                        required>
+
+                </div>
+
+
+                <div class="travelly-field">
+
+                    <label for="departureDate">
+                        Data di partenza
+                    </label>
+
+                    <input
+                        type="date"
+                        id="departureDate"
+                        name="departureDate"
+                        required>
+
+                </div>
+
+
+            </div>
+
+
+
+            <div class="travelly-form-actions">
+
+
+                <a
+                    class="form-cancel-button"
+                    th:href="@{/trips/{id}(id=${trip.id})}">
+
+                    Annulla
+
+                </a>
+
+
+                <button
+                    class="form-submit-button"
+                    type="submit">
+
+                    Aggiungi destinazione
+
+                    <span>→</span>
+
+                </button>
+
+
+            </div>
+
+
+        </form>
+
+
+    </section>
+
+
+</main>
+
 
 </body>
 

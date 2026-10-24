@@ -1,159 +1,250 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+
+<html
+    lang="it"
+    xmlns:th="http://www.thymeleaf.org">
 
 <head>
+
     <meta charset="UTF-8">
-    <title>Aggiungi attività - Travelly</title>
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
+    <title>
+        Aggiungi attività - Travelly
+    </title>
+
+    <link
+        rel="stylesheet"
+        th:href="@{/css/style.css}">
+
 </head>
+
 
 <body>
 
-    <h1>Aggiungi attività</h1>
 
-    <p>
-        Viaggio:
-        <strong th:text="${trip.name}">
-            Nome viaggio
-        </strong>
-    </p>
+<main class="compact-form-page">
 
 
-    <form
-        th:action="@{/trips/{tripId}/activities(tripId=${trip.id})}"
-        method="post">
+    <a
+        class="back-link"
+        th:href="@{/trips/{id}(id=${trip.id})}">
 
+        ← Torna al viaggio
 
-        <div>
-            <label for="name">Nome</label>
-
-            <input
-                type="text"
-                id="name"
-                name="name"
-                required>
-        </div>
-
-
-        <br>
-
-
-        <div>
-            <label for="description">
-                Descrizione
-            </label>
-
-            <textarea
-                id="description"
-                name="description"></textarea>
-        </div>
-
-
-        <br>
-
-
-        <div>
-            <label for="date">Data</label>
-
-            <input
-                type="date"
-                id="date"
-                name="date"
-                required>
-        </div>
-
-
-        <br>
-
-
-        <div>
-            <label for="time">Ora</label>
-
-            <input
-                type="time"
-                id="time"
-                name="time"
-                required>
-        </div>
-
-
-        <br>
-
-
-        <div>
-            <label for="location">
-                Luogo
-            </label>
-
-            <input
-                type="text"
-                id="location"
-                name="location"
-                required>
-        </div>
-
-
-        <br>
-
-
-        <div>
-
-            <label for="category">
-                Categoria
-            </label>
-
-            <select
-                id="category"
-                name="category"
-                required>
-
-                <option
-                    th:each="category : ${categories}"
-                    th:value="${category}"
-                    th:text="${category}">
-                </option>
-
-            </select>
-
-        </div>
-
-
-        <br>
-
-
-        <div>
-
-            <label for="cost">
-                Costo (€)
-            </label>
-
-            <input
-                type="number"
-                id="cost"
-                name="cost"
-                min="0"
-                step="0.01"
-                value="0"
-                required>
-
-        </div>
-
-
-        <br>
-
-
-        <button type="submit">
-            Aggiungi attività
-        </button>
-
-    </form>
-
-
-    <br>
-
-
-    <a th:href="@{/trips/{id}(id=${trip.id})}">
-        Annulla
     </a>
+
+
+
+    <section class="compact-form-card">
+
+
+        <div class="compact-form-header">
+
+
+            <span>
+                ATTIVITÀ
+            </span>
+
+
+            <h1>
+                Aggiungi attività
+            </h1>
+
+
+            <p>
+
+                Viaggio:
+
+                <strong th:text="${trip.name}">
+                    Nome viaggio
+                </strong>
+
+            </p>
+
+
+        </div>
+
+
+
+        <form
+            class="travelly-form"
+            th:action="@{/trips/{tripId}/activities(tripId=${trip.id})}"
+            method="post">
+
+
+            <div class="travelly-field">
+
+                <label for="name">
+                    Nome attività
+                </label>
+
+                <input
+                    type="text"
+                    id="name"
+                    name="name"
+                    placeholder="Es. Visita al museo"
+                    required>
+
+            </div>
+
+
+
+            <div class="travelly-field">
+
+                <label for="description">
+                    Descrizione
+                </label>
+
+                <textarea
+                    id="description"
+                    name="description"
+                    placeholder="Aggiungi qualche dettaglio...">
+                </textarea>
+
+            </div>
+
+
+
+            <div class="travelly-form-row">
+
+
+                <div class="travelly-field">
+
+                    <label for="date">
+                        Data
+                    </label>
+
+                    <input
+                        type="date"
+                        id="date"
+                        name="date"
+                        required>
+
+                </div>
+
+
+                <div class="travelly-field">
+
+                    <label for="time">
+                        Ora
+                    </label>
+
+                    <input
+                        type="time"
+                        id="time"
+                        name="time"
+                        required>
+
+                </div>
+
+
+            </div>
+
+
+
+            <div class="travelly-field">
+
+                <label for="location">
+                    Luogo
+                </label>
+
+                <input
+                    type="text"
+                    id="location"
+                    name="location"
+                    placeholder="Es. Nyhavn"
+                    required>
+
+            </div>
+
+
+
+            <div class="travelly-form-row">
+
+
+                <div class="travelly-field">
+
+                    <label for="category">
+                        Categoria
+                    </label>
+
+                    <select
+                        id="category"
+                        name="category"
+                        required>
+
+
+                        <option
+                            th:each="category : ${categories}"
+                            th:value="${category}"
+                            th:text="${category}">
+                        </option>
+
+
+                    </select>
+
+                </div>
+
+
+                <div class="travelly-field">
+
+                    <label for="cost">
+                        Costo
+                    </label>
+
+                    <input
+                        type="number"
+                        id="cost"
+                        name="cost"
+                        min="0"
+                        step="0.01"
+                        value="0"
+                        required>
+
+                </div>
+
+
+            </div>
+
+
+
+            <div class="travelly-form-actions">
+
+
+                <a
+                    class="form-cancel-button"
+                    th:href="@{/trips/{id}(id=${trip.id})}">
+
+                    Annulla
+
+                </a>
+
+
+                <button
+                    class="form-submit-button"
+                    type="submit">
+
+                    Aggiungi attività
+
+                    <span>→</span>
+
+                </button>
+
+
+            </div>
+
+
+        </form>
+
+
+    </section>
+
+
+</main>
 
 
 </body>

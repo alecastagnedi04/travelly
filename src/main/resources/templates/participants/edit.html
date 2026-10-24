@@ -1,9 +1,16 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+
+<html
+    lang="it"
+    xmlns:th="http://www.thymeleaf.org">
 
 <head>
 
     <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0">
 
     <title>
         Modifica partecipante - Travelly
@@ -19,35 +26,52 @@
 <body>
 
 
-    <main class="container">
+<main class="compact-form-page">
 
 
-        <a
-            class="back-link"
-            th:href="@{/trips/{id}(id=${trip.id})}">
+    <a
+        class="back-link"
+        th:href="@{/trips/{id}(id=${trip.id})}">
 
-            ← Torna al viaggio
+        ← Torna al viaggio
 
-        </a>
-
-
-        <h1>
-            Modifica partecipante
-        </h1>
+    </a>
 
 
-        <p>
 
-            Viaggio:
+    <section class="compact-form-card">
 
-            <strong th:text="${trip.name}">
-                Nome viaggio
-            </strong>
 
-        </p>
+        <div class="compact-form-header">
+
+
+            <span>
+                PARTECIPANTI
+            </span>
+
+
+            <h1>
+                Modifica partecipante
+            </h1>
+
+
+            <p>
+
+                Viaggio:
+
+                <strong th:text="${trip.name}">
+                    Nome viaggio
+                </strong>
+
+            </p>
+
+
+        </div>
+
 
 
         <form
+            class="travelly-form"
             th:action="@{/trips/{tripId}/participants/{participantId}/edit(
                 tripId=${trip.id},
                 participantId=${participant.id}
@@ -55,9 +79,7 @@
             method="post">
 
 
-            <!-- NOME -->
-
-            <div>
+            <div class="travelly-field">
 
                 <label for="name">
                     Nome
@@ -73,12 +95,8 @@
             </div>
 
 
-            <br>
 
-
-            <!-- EMAIL -->
-
-            <div>
+            <div class="travelly-field">
 
                 <label for="email">
                     Email
@@ -94,31 +112,40 @@
             </div>
 
 
-            <br>
+
+            <div class="travelly-form-actions">
 
 
-            <button
-                class="button"
-                type="submit">
+                <a
+                    class="form-cancel-button"
+                    th:href="@{/trips/{id}(id=${trip.id})}">
 
-                Salva modifiche
+                    Annulla
 
-            </button>
+                </a>
 
 
-            <a
-                class="button button-secondary"
-                th:href="@{/trips/{id}(id=${trip.id})}">
+                <button
+                    class="form-submit-button"
+                    type="submit">
 
-                Annulla
+                    Salva modifiche
 
-            </a>
+                    <span>→</span>
+
+                </button>
+
+
+            </div>
 
 
         </form>
 
 
-    </main>
+    </section>
+
+
+</main>
 
 
 </body>

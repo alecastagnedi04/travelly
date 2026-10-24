@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+
+<html
+    lang="it"
+    xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
+    <title>Modifica itinerario - Travelly</title>
+
+    <link
+        rel="stylesheet"
+        th:href="@{/css/style.css}">
+
+</head>
+
+
+<body>
+
+
+<main class="trip-form-page">
+
+
+    <a
+        class="back-link"
+        th:href="@{/admin/templates/{id}(id=${trip.id})}">
+
+        ← Torna all'itinerario
+
+    </a>
+
+
+
+    <div class="trip-form-layout">
+
+
+        <section class="trip-form-intro">
+
+
+            <span class="trip-form-eyebrow">
+                TRAVELLY GUIDE
+            </span>
+
+
+            <h1 th:text="${trip.name}">
+                Itinerario
+            </h1>
+
+
+            <p>
+
+                Modifica le informazioni principali
+                della guida Travelly.
+
+            </p>
+
+
+        </section>
+
+
+
+        <section class="trip-form-panel">
+
+
+            <div class="trip-form-heading">
+
+                <span>
+                    MODIFICA ITINERARIO
+                </span>
+
+                <h2>
+                    Informazioni principali
+                </h2>
+
+            </div>
+
+
+
+            <form
+                class="travelly-form"
+                th:action="@{/admin/templates/{id}/edit(id=${trip.id})}"
+                method="post"
+                enctype="multipart/form-data">
+
+
+                <div class="travelly-field">
+
+                    <label for="name">
+                        Nome
+                    </label>
+
+                    <input
+                        id="name"
+                        name="name"
+                        type="text"
+                        th:value="${trip.name}"
+                        required>
+
+                </div>
+
+
+
+                <div class="travelly-field">
+
+                    <label for="description">
+                        Descrizione
+                    </label>
+
+                    <textarea
+                        id="description"
+                        name="description"
+                        th:text="${trip.description}">
+                    </textarea>
+
+                </div>
+
+
+
+                <div class="travelly-form-row">
+
+
+                    <div class="travelly-field">
+
+                        <label for="startDate">
+                            Data inizio
+                        </label>
+
+                        <input
+                            id="startDate"
+                            name="startDate"
+                            type="date"
+                            th:value="${trip.startDate}"
+                            required>
+
+                    </div>
+
+
+                    <div class="travelly-field">
+
+                        <label for="endDate">
+                            Data fine
+                        </label>
+
+                        <input
+                            id="endDate"
+                            name="endDate"
+                            type="date"
+                            th:value="${trip.endDate}"
+                            required>
+
+                    </div>
+
+
+                </div>
+
+
+
+                <div class="travelly-field">
+
+                    <label for="coverImage">
+                        Nuova copertina
+                    </label>
+
+                    <input
+                        id="coverImage"
+                        name="coverImage"
+                        type="file"
+                        accept="image/jpeg,image/png,image/webp">
+
+                    <small class="field-help">
+
+                        Lascia vuoto per mantenere
+                        la copertina attuale.
+
+                    </small>
+
+                </div>
+
+
+
+                <div class="travelly-field">
+
+                    <label for="budget">
+                        Budget indicativo
+                    </label>
+
+                    <div class="budget-input-wrapper">
+
+                        <input
+                            id="budget"
+                            name="budget"
+                            type="number"
+                            step="0.01"
+                            min="0"
+                            th:value="${trip.budget}"
+                            required>
+
+                        <span>
+                            €
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+
+                <div class="travelly-form-actions">
+
+
+                    <a
+                        class="form-cancel-button"
+                        th:href="@{/admin/templates/{id}(id=${trip.id})}">
+
+                        Annulla
+
+                    </a>
+
+
+                    <button
+                        class="form-submit-button"
+                        type="submit">
+
+                        Salva modifiche
+
+                        <span>→</span>
+
+                    </button>
+
+
+                </div>
+
+
+            </form>
+
+
+        </section>
+
+
+    </div>
+
+
+</main>
+
+
+</body>
+
+</html>

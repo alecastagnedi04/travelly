@@ -341,6 +341,373 @@ public class ActivityService {
     }
 
 
+
+/*
+ * =====================================================
+ * ATTIVITÀ DEGLI ITINERARI TRAVELLY
+ * =====================================================
+ *
+ * IMPORTANTE:
+ *
+ * queste Activity NON generano Expense.
+ */
+
+
+/*
+ * Crea una Activity dentro
+ * un itinerario ufficiale Travelly.
+ */
+@Transactional
+public Optional<Activity> createTemplateActivity(
+        Long templateId,
+        String name,
+        String description,
+        LocalDate date,
+        LocalTime time,
+        String location,
+        ActivityCategory category,
+        Double cost) {
+
+
+    if (cost == null || cost < 0) {
+
+        return Optional.empty();
+    }
+
+
+    Optional<Trip> tripOptional =
+            tripRepository
+                    .findByIdAndTemplateTrue(
+                            templateId
+                    );
+
+
+    if (tripOptional.isEmpty()) {
+
+        return Optional.empty();
+    }
+
+
+    Trip trip =
+            tripOptional.get();
+
+
+    /*
+     * L'attività deve essere compresa
+     * nelle date dell'itinerario.
+     */
+    if (!activityDateIsValid(
+            trip,
+            date)) {
+
+        return Optional.empty();
+    }
+
+
+    Activity activity =
+            new Activity();
+
+
+    activity.setName(
+            name
+    );
+
+
+    activity.setDescription(
+            description
+    );
+
+
+    activity.setDate(
+            date
+    );
+
+
+    activity.setTime(
+            time
+    );
+
+
+    activity.setLocation(
+            location
+    );
+
+
+    activity.setCategory(
+            category
+    );
+
+
+    activity.setCost(
+            cost
+    );
+
+
+    activity.setTrip(
+            trip
+    );
+
+
+    /*
+     * Qui NON creiamo Expense.
+     */
+    return Optional.of(
+            activityRepository.save(
+                    activity
+            )
+    );
+}
+
+
+/*
+ * Recupera una Activity verificando
+ * che appartenga al template.
+ */
+@Transactional(readOnly = true)
+public Optional<Activity> findTemplateActivity(
+        Long templateId,
+        Long activityId) {
+
+
+    if (tripRepository
+            .findByIdAndTemplateTrue(
+                    templateId
+            )
+            .isEmpty()) {
+
+        return Optional.empty();
+    }
+
+
+    Optional<Activity> activityOptional =
+            activityRepository.findById(
+                    activityId
+            );
+
+
+    if (activityOptional.isEmpty()) {
+
+        return Optional.empty();
+    }
+
+
+    Activity activity =
+            activityOptional.get();
+
+
+    if (activity.getTrip() == null ||
+            !activity.getTrip()
+                    .getId()
+                    .equals(templateId)) {
+
+        return Optional.empty();
+    }
+
+
+    return Optional.of(
+            activity
+    );
+}
+
+
+/*
+ * Modifica una Activity del template.
+ *
+ * Anche in questo caso NON tocchiamo Expense.
+ */
+@Transactional
+public Optional<Activity> updateTemplateActivity(
+        Long templateId,
+        Long activityId,
+        String name,
+        String description,
+        LocalDate date,
+        LocalTime time,
+        String location,
+        ActivityCategory category,
+        Double cost) {
+
+
+    if (cost == null || cost < 0) {
+
+        return Optional.empty();
+    }
+
+
+    Optional<Trip> tripOptional =
+            tripRepository
+                    .findByIdAndTemplateTrue(
+                            templateId
+                    );
+
+
+    if (tripOptional.isEmpty()) {
+
+        return Optional.empty();
+    }
+
+
+    Trip trip =
+            tripOptional.get();
+
+
+    if (!activityDateIsValid(
+            trip,
+            date)) {
+
+        return Optional.empty();
+    }
+
+
+    Optional<Activity> activityOptional =
+            findTemplateActivity(
+                    templateId,
+                    activityId
+            );
+
+
+    if (activityOptional.isEmpty()) {
+
+        return Optional.empty();
+    }
+
+
+    Activity activity =
+            activityOptional.get();
+
+
+    activity.setName(
+            name
+    );
+
+
+    activity.setDescription(
+            description
+    );
+
+
+    activity.setDate(
+            date
+    );
+
+
+    activity.setTime(
+            time
+    );
+
+
+    activity.setLocation(
+            location
+    );
+
+
+    activity.setCategory(
+            category
+    );
+
+
+    activity.setCost(
+            cost
+    );
+
+
+    return Optional.of(
+            activityRepository.save(
+                    activity
+            )
+    );
+}
+
+
+/*
+ * Elimina una Activity del template.
+ */
+@Transactional
+public boolean deleteTemplateActivity(
+        Long templateId,
+        Long activityId) {
+
+
+    Optional<Activity> activityOptional =
+            findTemplateActivity(
+                    templateId,
+                    activityId
+            );
+
+
+    if (activityOptional.isEmpty()) {
+
+        return false;
+    }
+
+
+    Activity activity =
+            activityOptional.get();
+
+
+    /*
+     * Normalmente un template non possiede Expense.
+     *
+     * Questo controllo ci protegge comunque
+     * da eventuali dati incoerenti.
+     */
+    expenseRepository
+            .findByActivityId(
+                    activityId
+            )
+            .ifPresent(
+                    expenseRepository::delete
+            );
+
+
+    activityRepository.delete(
+            activity
+    );
+
+
+    return true;
+}
+
+
+/*
+ * Controlla che la data dell'attività
+ * rientri nelle date del template.
+ */
+private boolean activityDateIsValid(
+        Trip trip,
+        LocalDate date) {
+
+
+    if (date == null) {
+
+        return false;
+    }
+
+
+    if (trip.getStartDate() != null &&
+            date.isBefore(
+                    trip.getStartDate()
+            )) {
+
+        return false;
+    }
+
+
+    if (trip.getEndDate() != null &&
+            date.isAfter(
+                    trip.getEndDate()
+            )) {
+
+        return false;
+    }
+
+
+    return true;
+}
+
+
+
+
     /*
      * Converte la categoria dell'Activity
      * nella corrispondente categoria Expense.

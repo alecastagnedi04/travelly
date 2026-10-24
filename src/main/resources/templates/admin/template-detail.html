@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+
+<html
+    lang="it"
+    xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
+    <title>Itinerario Travelly</title>
+
+    <link
+        rel="stylesheet"
+        th:href="@{/css/style.css}">
+
+</head>
+
+
+<body>
+
+
+<main class="container">
+
+
+    <a
+        class="back-link"
+        th:href="@{/admin/templates}">
+
+        ← Torna agli itinerari
+
+    </a>
+
+
+
+    <!-- COPERTINA -->
+
+    <div class="trip-detail-cover">
+
+
+        <img
+            th:if="${trip.coverImage != null}"
+            th:src="@{/uploads/trips/{image}(image=${trip.coverImage})}"
+            th:alt="'Copertina di ' + ${trip.name}">
+
+
+        <img
+            th:if="${trip.coverImage == null}"
+            th:src="@{/images/default-trip.png}"
+            alt="Copertina Travelly">
+
+
+        <div class="trip-detail-cover-overlay">
+
+            <span>
+                ITINERARIO UFFICIALE TRAVELLY
+            </span>
+
+            <h1 th:text="${trip.name}">
+                Nome itinerario
+            </h1>
+
+        </div>
+
+
+    </div>
+
+
+
+    <!-- INFORMAZIONI -->
+
+    <div class="trip-detail-header">
+
+
+        <div>
+
+
+            <p
+                class="trip-description"
+                th:text="${trip.description}">
+
+                Descrizione
+
+            </p>
+
+
+            <p class="trip-info">
+
+                Dal
+
+                <strong th:text="${trip.startDate}">
+                    data
+                </strong>
+
+                al
+
+                <strong th:text="${trip.endDate}">
+                    data
+                </strong>
+
+            </p>
+
+
+        </div>
+
+
+        <a
+            class="button button-secondary"
+            th:href="@{/admin/templates/{id}/edit(id=${trip.id})}">
+
+            Modifica itinerario
+
+        </a>
+
+
+    </div>
+
+
+
+    <!-- RIEPILOGO -->
+
+    <div class="summary-grid">
+
+
+        <div class="summary-card">
+
+            <span class="summary-label">
+                Budget indicativo
+            </span>
+
+            <strong class="summary-value">
+
+                <span th:text="${trip.budget}">
+                    0
+                </span>
+
+                €
+
+            </strong>
+
+        </div>
+
+
+        <div class="summary-card">
+
+            <span class="summary-label">
+                Tipo
+            </span>
+
+            <strong class="summary-value">
+                Travelly Guide
+            </strong>
+
+        </div>
+
+
+        <div class="summary-card">
+
+            <span class="summary-label">
+                Visibilità
+            </span>
+
+            <strong class="summary-value">
+                Pubblico
+            </strong>
+
+        </div>
+
+
+    </div>
+
+
+
+    <!-- ================================================== -->
+    <!-- DESTINAZIONI -->
+    <!-- ================================================== -->
+
+    <section class="detail-section">
+
+
+        <div class="section-header">
+
+            <h2>
+                Destinazioni
+            </h2>
+
+
+            <a
+                class="button"
+                th:href="@{/admin/templates/{id}/destinations/new(id=${trip.id})}">
+
+                + Aggiungi destinazione
+
+            </a>
+
+        </div>
+
+
+
+        <div
+            class="empty-section"
+            th:if="${#lists.isEmpty(trip.destinations)}">
+
+            Nessuna destinazione ancora aggiunta.
+
+        </div>
+
+
+
+        <div
+            class="item-card"
+            th:each="destination : ${trip.destinations}">
+
+
+            <h3>
+
+                <span th:text="${destination.city}">
+                    Città
+                </span>,
+
+                <span th:text="${destination.country}">
+                    Paese
+                </span>
+
+            </h3>
+
+
+            <p>
+
+                Dal
+
+                <strong th:text="${destination.arrivalDate}">
+                    data
+                </strong>
+
+                al
+
+                <strong th:text="${destination.departureDate}">
+                    data
+                </strong>
+
+            </p>
+
+
+            <div class="expense-actions">
+
+
+                <a
+                    class="button button-secondary"
+                    th:href="@{/admin/templates/{templateId}/destinations/{destinationId}/edit(
+                        templateId=${trip.id},
+                        destinationId=${destination.id}
+                    )}">
+
+                    Modifica
+
+                </a>
+
+
+                <form
+                    th:action="@{/admin/templates/{templateId}/destinations/{destinationId}/delete(
+                        templateId=${trip.id},
+                        destinationId=${destination.id}
+                    )}"
+                    method="post">
+
+
+                    <button
+                        class="button button-danger"
+                        type="submit">
+
+                        Elimina
+
+                    </button>
+
+                </form>
+
+
+            </div>
+
+
+        </div>
+
+
+    </section>
+
+
+
+    <!-- ================================================== -->
+    <!-- ATTIVITÀ -->
+    <!-- ================================================== -->
+
+    <section class="detail-section">
+
+
+        <div class="section-header">
+
+            <h2>
+                Attività
+            </h2>
+
+
+            <a
+                class="button"
+                th:href="@{/admin/templates/{id}/activities/new(id=${trip.id})}">
+
+                + Aggiungi attività
+
+            </a>
+
+        </div>
+
+
+
+        <div
+            class="empty-section"
+            th:if="${#lists.isEmpty(trip.activities)}">
+
+            Nessuna attività ancora aggiunta.
+
+        </div>
+
+
+
+        <div
+            class="item-card"
+            th:each="activity : ${trip.activities}">
+
+
+            <h3 th:text="${activity.name}">
+                Attività
+            </h3>
+
+
+            <p th:text="${activity.description}">
+                Descrizione
+            </p>
+
+
+            <div class="item-details">
+
+
+                <span>
+
+                    <strong>Data:</strong>
+
+                    <span th:text="${activity.date}">
+                        data
+                    </span>
+
+                </span>
+
+
+                <span>
+
+                    <strong>Ora:</strong>
+
+                    <span th:text="${activity.time}">
+                        ora
+                    </span>
+
+                </span>
+
+
+                <span>
+
+                    <strong>Luogo:</strong>
+
+                    <span th:text="${activity.location}">
+                        luogo
+                    </span>
+
+                </span>
+
+
+                <span>
+
+                    <strong>Categoria:</strong>
+
+                    <span th:text="${activity.category}">
+                        categoria
+                    </span>
+
+                </span>
+
+
+                <span>
+
+                    <strong>Costo indicativo:</strong>
+
+                    <span th:text="${activity.cost}">
+                        0
+                    </span>
+
+                    €
+
+                </span>
+
+
+            </div>
+
+
+
+            <div class="expense-actions">
+
+
+                <a
+                    class="button button-secondary"
+                    th:href="@{/admin/templates/{templateId}/activities/{activityId}/edit(
+                        templateId=${trip.id},
+                        activityId=${activity.id}
+                    )}">
+
+                    Modifica
+
+                </a>
+
+
+                <form
+                    th:action="@{/admin/templates/{templateId}/activities/{activityId}/delete(
+                        templateId=${trip.id},
+                        activityId=${activity.id}
+                    )}"
+                    method="post">
+
+
+                    <button
+                        class="button button-danger"
+                        type="submit">
+
+                        Elimina
+
+                    </button>
+
+                </form>
+
+
+            </div>
+
+
+        </div>
+
+
+    </section>
+
+
+
+    <!-- GESTIONE TEMPLATE -->
+
+    <section class="detail-section">
+
+
+        <div class="section-header">
+
+            <h2>
+                Gestione itinerario
+            </h2>
+
+        </div>
+
+
+        <div class="expense-actions">
+
+
+            <a
+                class="button button-secondary"
+                th:href="@{/admin/templates/{id}/edit(id=${trip.id})}">
+
+                Modifica itinerario
+
+            </a>
+
+
+            <form
+                th:action="@{/admin/templates/{id}/delete(id=${trip.id})}"
+                method="post">
+
+
+                <button
+                    class="button button-danger"
+                    type="submit">
+
+                    Elimina itinerario
+
+                </button>
+
+
+            </form>
+
+
+        </div>
+
+
+    </section>
+
+
+</main>
+
+
+</body>
+
+</html>

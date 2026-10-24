@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+
+<html
+    lang="it"
+    xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
+    <title>Nuova destinazione - Travelly</title>
+
+    <link
+        rel="stylesheet"
+        th:href="@{/css/style.css}">
+
+</head>
+
+
+<body>
+
+
+<main class="trip-form-page">
+
+
+    <a
+        class="back-link"
+        th:href="@{/admin/templates/{id}(id=${trip.id})}">
+
+        ← Torna all'itinerario
+
+    </a>
+
+
+
+    <div class="trip-form-layout">
+
+
+        <section class="trip-form-intro">
+
+            <span class="trip-form-eyebrow">
+                TRAVELLY GUIDE
+            </span>
+
+            <h1>
+                Aggiungi una destinazione
+            </h1>
+
+            <p th:text="${trip.name}">
+                Itinerario
+            </p>
+
+        </section>
+
+
+
+        <section class="trip-form-panel">
+
+
+            <div class="trip-form-heading">
+
+                <span>
+                    NUOVA TAPPA
+                </span>
+
+                <h2>
+                    Destinazione
+                </h2>
+
+            </div>
+
+
+
+            <form
+                class="travelly-form"
+                th:action="@{/admin/templates/{id}/destinations(id=${trip.id})}"
+                method="post">
+
+
+                <div class="travelly-form-row">
+
+
+                    <div class="travelly-field">
+
+                        <label for="city">
+                            Città
+                        </label>
+
+                        <input
+                            id="city"
+                            name="city"
+                            type="text"
+                            placeholder="Es. Copenhagen"
+                            required>
+
+                    </div>
+
+
+                    <div class="travelly-field">
+
+                        <label for="country">
+                            Paese
+                        </label>
+
+                        <input
+                            id="country"
+                            name="country"
+                            type="text"
+                            placeholder="Es. Danimarca"
+                            required>
+
+                    </div>
+
+
+                </div>
+
+
+
+                <div class="travelly-form-row">
+
+
+                    <div class="travelly-field">
+
+                        <label for="arrivalDate">
+                            Arrivo
+                        </label>
+
+                        <input
+                            id="arrivalDate"
+                            name="arrivalDate"
+                            type="date"
+                            required>
+
+                    </div>
+
+
+                    <div class="travelly-field">
+
+                        <label for="departureDate">
+                            Partenza
+                        </label>
+
+                        <input
+                            id="departureDate"
+                            name="departureDate"
+                            type="date"
+                            required>
+
+                    </div>
+
+
+                </div>
+
+
+
+                <div class="travelly-form-actions">
+
+
+                    <a
+                        class="form-cancel-button"
+                        th:href="@{/admin/templates/{id}(id=${trip.id})}">
+
+                        Annulla
+
+                    </a>
+
+
+                    <button
+                        class="form-submit-button"
+                        type="submit">
+
+                        Aggiungi destinazione
+
+                        <span>→</span>
+
+                    </button>
+
+
+                </div>
+
+
+            </form>
+
+
+        </section>
+
+
+    </div>
+
+
+</main>
+
+
+</body>
+
+</html>

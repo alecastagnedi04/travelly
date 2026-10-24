@@ -31,20 +31,53 @@ public class SecurityConfig {
 
             .authorizeHttpRequests(authorize -> authorize
 
+
+                /*
+                 * =================================================
+                 * PAGINE PUBBLICHE
+                 * =================================================
+                 */
                 .requestMatchers(
                     "/",
                     "/login",
                     "/register",
+                    "/explore",
+                    "/explore/**",
                     "/css/**",
-                    "/images/**"
-                ).permitAll()
+                    "/images/**",
+                    "/uploads/**"
+                )
+                .permitAll()
 
-                .requestMatchers("/admin/**")
+
+                /*
+                 * =================================================
+                 * ADMIN
+                 * =================================================
+                 */
+                .requestMatchers(
+                    "/admin/**"
+                )
                 .hasRole("ADMIN")
 
-                .requestMatchers("/trips/**")
-                .hasAnyRole("USER", "ADMIN")
 
+                /*
+                 * =================================================
+                 * VIAGGI PERSONALI
+                 * =================================================
+                 */
+                .requestMatchers(
+                    "/trips/**"
+                )
+                .hasAnyRole(
+                    "USER",
+                    "ADMIN"
+                )
+
+
+                /*
+                 * Tutto il resto richiede login.
+                 */
                 .anyRequest()
                 .authenticated()
             )
@@ -52,11 +85,9 @@ public class SecurityConfig {
 
             .formLogin(form -> form
 
-                /*
-                 * Da ora Spring Security
-                 * usa la nostra pagina HTML.
-                 */
-                .loginPage("/login")
+                .loginPage(
+                    "/login"
+                )
 
                 .defaultSuccessUrl(
                     "/trips",
@@ -69,7 +100,9 @@ public class SecurityConfig {
 
             .logout(logout -> logout
 
-                .logoutSuccessUrl("/")
+                .logoutSuccessUrl(
+                    "/"
+                )
 
                 .permitAll()
             );
