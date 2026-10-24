@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import it.uniroma3.siw.travelly.model.Trip;
+import it.uniroma3.siw.travelly.model.TripVisibility;
 import it.uniroma3.siw.travelly.service.ImageStorageService;
 import it.uniroma3.siw.travelly.service.TripService;
 
@@ -43,11 +44,8 @@ public class TripController {
 
     /*
      * =====================================================
-     * LISTA VIAGGI
+     * LISTA VIAGGI PERSONALI
      * =====================================================
-     *
-     * Mostra solamente i viaggi appartenenti
-     * all'utente autenticato.
      */
     @GetMapping("/trips")
     public String showTrips(
@@ -123,11 +121,6 @@ public class TripController {
      * =====================================================
      * CREA VIAGGIO
      * =====================================================
-     *
-     * Crea un nuovo viaggio e lo associa
-     * all'utente autenticato.
-     *
-     * La foto di copertina è facoltativa.
      */
     @PostMapping("/trips")
     public String createTrip(
@@ -135,13 +128,11 @@ public class TripController {
             @RequestParam("name")
             String name,
 
-
             @RequestParam(
                     value = "description",
                     defaultValue = ""
             )
             String description,
-
 
             @RequestParam("startDate")
             @DateTimeFormat(
@@ -149,17 +140,14 @@ public class TripController {
             )
             LocalDate startDate,
 
-
             @RequestParam("endDate")
             @DateTimeFormat(
                     iso = DateTimeFormat.ISO.DATE
             )
             LocalDate endDate,
 
-
             @RequestParam("budget")
             Double budget,
-
 
             @RequestParam(
                     value = "coverImage",
@@ -167,14 +155,9 @@ public class TripController {
             )
             MultipartFile coverImage,
 
-
             Principal principal) {
 
 
-        /*
-         * Se l'utente non ha caricato una foto,
-         * saveTripCover restituisce null.
-         */
         String coverImageName =
                 imageStorageService
                         .saveTripCover(
@@ -200,11 +183,8 @@ public class TripController {
 
     /*
      * =====================================================
-     * DETTAGLIO VIAGGIO
+     * DETTAGLIO VIAGGIO PERSONALE
      * =====================================================
-     *
-     * Mostra il viaggio solamente se appartiene
-     * all'utente autenticato.
      */
     @GetMapping("/trips/{id}")
     public String showTrip(
@@ -276,7 +256,6 @@ public class TripController {
 
                     return "trips/show";
                 })
-
                 .orElse(
                         "redirect:/trips"
                 );
@@ -286,11 +265,8 @@ public class TripController {
 
     /*
      * =====================================================
-     * FORM MODIFICA VIAGGIO
+     * FORM MODIFICA
      * =====================================================
-     *
-     * Mostra la form solamente se il viaggio
-     * appartiene all'utente autenticato.
      */
     @GetMapping("/trips/{id}/edit")
     public String showEditForm(
@@ -325,7 +301,6 @@ public class TripController {
 
                     return "trips/edit";
                 })
-
                 .orElse(
                         "redirect:/trips"
                 );
@@ -337,17 +312,6 @@ public class TripController {
      * =====================================================
      * MODIFICA VIAGGIO
      * =====================================================
-     *
-     * Modifica il viaggio solamente se appartiene
-     * all'utente autenticato.
-     *
-     * Se viene caricata una nuova copertina:
-     *
-     * 1. salviamo la nuova foto
-     * 2. eliminiamo quella vecchia
-     *
-     * Se NON viene caricata una nuova foto,
-     * manteniamo quella già presente.
      */
     @PostMapping("/trips/{id}/edit")
     public String updateTrip(
@@ -355,10 +319,8 @@ public class TripController {
             @PathVariable("id")
             Long id,
 
-
             @RequestParam("name")
             String name,
-
 
             @RequestParam(
                     value = "description",
@@ -366,13 +328,11 @@ public class TripController {
             )
             String description,
 
-
             @RequestParam("startDate")
             @DateTimeFormat(
                     iso = DateTimeFormat.ISO.DATE
             )
             LocalDate startDate,
-
 
             @RequestParam("endDate")
             @DateTimeFormat(
@@ -380,10 +340,11 @@ public class TripController {
             )
             LocalDate endDate,
 
-
             @RequestParam("budget")
             Double budget,
 
+            @RequestParam("visibility")
+            TripVisibility visibility,
 
             @RequestParam(
                     value = "coverImage",
@@ -391,15 +352,13 @@ public class TripController {
             )
             MultipartFile coverImage,
 
-
             Principal principal) {
 
 
         /*
-         * Recuperiamo prima il viaggio attuale.
-         *
-         * Serve sia per controllare la proprietà,
-         * sia per conoscere la foto già presente.
+         * Recuperiamo il viaggio esistente
+         * per mantenere eventualmente
+         * la vecchia copertina.
          */
         Trip existingTrip =
                 tripService
@@ -417,35 +376,27 @@ public class TripController {
 
 
 
-        /*
-         * Per impostazione predefinita
-         * manteniamo la vecchia copertina.
-         */
         String coverImageName =
                 existingTrip.getCoverImage();
 
 
 
         /*
-         * Se l'utente ha scelto una nuova immagine,
-         * salviamo la nuova copertina.
+         * Se l'utente carica una nuova foto,
+         * sostituiamo quella precedente.
          */
         if (coverImage != null &&
                 !coverImage.isEmpty()) {
 
 
-            String newCoverImage =
+            String newImage =
                     imageStorageService
                             .saveTripCover(
                                     coverImage
                             );
 
 
-            /*
-             * Se il salvataggio è riuscito,
-             * eliminiamo la vecchia immagine.
-             */
-            if (newCoverImage != null) {
+            if (newImage != null) {
 
 
                 imageStorageService
@@ -456,15 +407,12 @@ public class TripController {
 
 
                 coverImageName =
-                        newCoverImage;
+                        newImage;
             }
         }
 
 
 
-        /*
-         * Aggiorniamo il Trip.
-         */
         if (tripService
                 .updateTrip(
                         id,
@@ -474,12 +422,14 @@ public class TripController {
                         endDate,
                         budget,
                         coverImageName,
+                        visibility,
                         principal.getName()
                 )
                 .isPresent()) {
 
 
-            return "redirect:/trips/" + id;
+            return "redirect:/trips/"
+                    + id;
         }
 
 
@@ -492,13 +442,6 @@ public class TripController {
      * =====================================================
      * ELIMINA VIAGGIO
      * =====================================================
-     *
-     * Elimina il viaggio solamente se appartiene
-     * all'utente autenticato.
-     *
-     * Prima di cancellare il Trip,
-     * eliminiamo anche l'eventuale immagine
-     * presente sul disco.
      */
     @PostMapping("/trips/{id}/delete")
     public String deleteTrip(
@@ -525,11 +468,7 @@ public class TripController {
 
 
 
-        /*
-         * Memorizziamo il nome prima di eliminare
-         * il Trip dal database.
-         */
-        String coverImageName =
+        String coverImage =
                 trip.getCoverImage();
 
 
@@ -542,20 +481,49 @@ public class TripController {
                         );
 
 
-
-        /*
-         * Eliminiamo il file solamente se
-         * il Trip è stato effettivamente cancellato.
-         */
         if (deleted) {
 
             imageStorageService
                     .deleteTripCover(
-                            coverImageName
+                            coverImage
                     );
         }
 
 
         return "redirect:/trips";
+    }
+
+
+
+    /*
+     * =====================================================
+     * USA QUESTO ITINERARIO
+     * =====================================================
+     */
+    @PostMapping(
+        "/trips/from-template/{templateId}"
+    )
+    public String createFromTemplate(
+
+            @PathVariable("templateId")
+            Long templateId,
+
+            Principal principal) {
+
+
+        return tripService
+                .cloneTemplateForUser(
+                        templateId,
+                        principal.getName()
+                )
+                .map(trip ->
+
+                        "redirect:/trips/"
+                                + trip.getId()
+                )
+                .orElse(
+                        "redirect:/explore/"
+                                + templateId
+                );
     }
 }

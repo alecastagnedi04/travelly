@@ -1,5 +1,7 @@
 package it.uniroma3.siw.travelly.controller;
 
+import java.security.Principal;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,17 +27,48 @@ public class HomeController {
 
     @GetMapping("/")
     public String home(
-            Model model) {
+            Model model,
+            Principal principal) {
 
 
         /*
-         * Mostriamo nella homepage
-         * gli itinerari ufficiali Travelly.
+         * Guide ufficiali Travelly.
          */
         model.addAttribute(
                 "templates",
                 tripService.findTemplates()
         );
+
+
+        /*
+         * Viaggi pubblici della community.
+         */
+        model.addAttribute(
+                "communityTrips",
+                tripService.findPublicCommunityTrips()
+        );
+
+
+        /*
+         * Informazioni sull'utente autenticato.
+         */
+        boolean loggedIn =
+                principal != null;
+
+
+        model.addAttribute(
+                "loggedIn",
+                loggedIn
+        );
+
+
+        if (loggedIn) {
+
+            model.addAttribute(
+                    "username",
+                    principal.getName()
+            );
+        }
 
 
         return "index";

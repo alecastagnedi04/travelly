@@ -8401,3 +8401,483 @@ textarea {
     }
 
 }
+
+/* =========================================================
+   BOTTONE USA ITINERARIO
+   ========================================================= */
+
+.explore-detail-cta form {
+    margin: 0;
+}
+
+
+.explore-detail-cta .home-cta-button {
+    border: none;
+
+    font-family: inherit;
+
+    cursor: pointer;
+
+    white-space: nowrap;
+}
+
+/* =========================================================
+   PROFILO - COPERTINE REALI DEI VIAGGI
+   ========================================================= */
+
+.profile-trip-cover {
+    position: relative;
+
+    height: 150px;
+
+    overflow: hidden;
+
+    background:
+        var(--travelly-cream-dark);
+}
+
+
+.profile-trip-cover-image {
+    width: 100%;
+    height: 100%;
+
+    display: block;
+
+    object-fit: cover;
+    object-position: center;
+}
+
+.profile-label-icon {
+    display: block;
+    margin-bottom: 5px;
+
+    font-size: 1.35rem;
+
+    line-height: 1;
+
+    letter-spacing: 0;
+}
+
+/* =========================================================
+   COMMUNITY
+   ========================================================= */
+
+.home-community-section {
+    padding:
+        50px
+        max(30px, calc((100vw - 1180px) / 2))
+        55px;
+
+    background:
+        rgba(223, 230, 217, 0.35);
+}
+
+
+.home-community-section
+.home-section-heading {
+    max-width: 720px;
+
+    margin:
+        0 auto 28px;
+
+    text-align: center;
+}
+
+
+.home-community-section
+.home-section-heading h2 {
+    margin:
+        5px 0 10px;
+
+    font-size:
+        clamp(1.9rem, 3vw, 2.8rem);
+}
+
+
+.community-explore-section {
+    margin-top: 55px;
+
+    padding-top: 40px;
+
+    border-top:
+        1px solid var(--travelly-border);
+}
+
+
+.community-heading {
+    max-width: 720px;
+
+    margin-bottom: 30px;
+}
+
+/* =========================================================
+   HOME NAVBAR - UTENTE LOGGATO
+   ========================================================= */
+
+.home-profile-link {
+    display: inline-flex;
+    align-items: center;
+
+    gap: 8px;
+
+    color:
+        var(--travelly-green-dark) !important;
+
+    font-weight: 750;
+}
+
+
+.home-navbar-avatar {
+    width: 32px;
+    height: 32px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background:
+        var(--travelly-green-dark);
+
+    color: white;
+
+    font-size: 0.78rem;
+    font-weight: 800;
+}
+
+
+.home-logout-form {
+    margin: 0;
+}
+
+
+.home-logout-button {
+    padding:
+        8px 15px;
+
+    border:
+        1px solid var(--travelly-border);
+
+    border-radius: 999px;
+
+    background:
+        transparent;
+
+    color:
+        var(--travelly-brown);
+
+    font-family: inherit;
+    font-size: 0.88rem;
+    font-weight: 700;
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s ease,
+        color 0.2s ease;
+}
+
+
+.home-logout-button:hover {
+    background:
+        var(--travelly-green-dark);
+
+    color: white;
+}
+
+/* =========================================================
+   PROFILO SEMPLIFICATO
+   ========================================================= */
+
+.profile-page-simple {
+    width: min(1180px, 92%);
+
+    margin: 0 auto;
+
+    padding:
+        45px 0 65px;
+}
+
+
+/* =========================================================
+   HEADER SENZA MONTAGNE
+   ========================================================= */
+
+.profile-header-simple {
+    overflow: hidden;
+
+    border:
+        1px solid var(--travelly-border);
+
+    border-radius: 24px;
+
+    background:
+        var(--travelly-white);
+
+    box-shadow:
+        var(--travelly-shadow);
+}
+
+
+.profile-simple-banner {
+    height: 125px;
+
+    display: flex;
+    align-items: flex-end;
+
+    padding:
+        22px 30px;
+
+    background:
+        linear-gradient(
+            120deg,
+            var(--travelly-green-dark),
+            var(--travelly-sage),
+            var(--travelly-peach)
+        );
+}
+
+
+.profile-simple-banner span {
+    color:
+        rgba(255,255,255,0.85);
+
+    font-size: 0.68rem;
+    font-weight: 800;
+
+    letter-spacing: 0.16em;
+}
+
+
+.profile-main-info-simple {
+    display: flex;
+    align-items: center;
+
+    gap: 28px;
+
+    padding:
+        0 35px 28px;
+}
+
+
+.profile-main-info-simple
+.profile-avatar {
+    flex-shrink: 0;
+
+    margin-top: -45px;
+}
+
+
+.profile-name-area h1 {
+    margin:
+        4px 0 2px;
+}
+
+
+.profile-name-area p {
+    margin: 0;
+
+    color:
+        var(--travelly-brown-light);
+}
+
+
+/* =========================================================
+   DASHBOARD PROFILO
+   ========================================================= */
+
+.profile-dashboard-section {
+    margin-top: 32px;
+}
+
+
+.profile-section-heading-simple {
+    margin-bottom: 20px;
+}
+
+
+.profile-section-heading-simple h2 {
+    margin:
+        4px 0;
+}
+
+
+.profile-section-heading-simple p {
+    margin: 0;
+
+    color:
+        var(--travelly-brown-light);
+}
+
+
+/* =========================================================
+   AZIONI PROFILO
+   ========================================================= */
+
+.profile-action-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, minmax(0, 1fr));
+
+    gap: 16px;
+}
+
+
+.profile-action-card {
+    min-height: 135px;
+
+    display: flex;
+    align-items: center;
+
+    gap: 15px;
+
+    padding: 20px;
+
+    border:
+        1px solid var(--travelly-border);
+
+    border-radius: 18px;
+
+    background:
+        var(--travelly-white);
+
+    color:
+        var(--travelly-brown) !important;
+
+    box-shadow:
+        0 5px 18px rgba(74,57,49,0.06);
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease,
+        border-color 0.2s ease;
+}
+
+
+.profile-action-card:hover {
+    transform:
+        translateY(-3px);
+
+    border-color:
+        rgba(201,111,74,0.35);
+
+    box-shadow:
+        var(--travelly-shadow);
+}
+
+
+.profile-action-icon {
+    width: 45px;
+    height: 45px;
+
+    flex-shrink: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 13px;
+
+    background:
+        var(--travelly-cream-dark);
+
+    font-size: 1.25rem;
+}
+
+
+.profile-action-card strong {
+    display: block;
+
+    margin-bottom: 4px;
+
+    color:
+        var(--travelly-green-dark);
+
+    font-size: 1rem;
+}
+
+
+.profile-action-card p {
+    margin: 0;
+
+    color:
+        var(--travelly-brown-light);
+
+    font-size: 0.8rem;
+
+    line-height: 1.4;
+}
+
+
+.profile-action-arrow {
+    margin-left: auto;
+
+    color:
+        var(--travelly-terracotta);
+
+    font-size: 1.3rem;
+}
+
+
+/* =========================================================
+   PROFILO ATTIVO NELLA NAVBAR
+   ========================================================= */
+
+.navbar-profile-active {
+    padding:
+        6px 12px;
+
+    border:
+        1px solid rgba(255,255,255,0.18);
+
+    border-radius: 999px;
+
+    background:
+        rgba(255,255,255,0.08);
+}
+
+
+@media (max-width: 850px) {
+
+    .profile-action-grid {
+        grid-template-columns: 1fr;
+    }
+
+}
+
+/* =========================================================
+   FORM VIAGGIO - INTRO SENZA MONTAGNE
+   ========================================================= */
+
+.trip-form-intro {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+
+.trip-form-intro::after {
+    content: "";
+
+    width: 110px;
+    height: 5px;
+
+    margin-top: 25px;
+
+    border-radius: 999px;
+
+    background:
+        linear-gradient(
+            90deg,
+            var(--travelly-terracotta),
+            var(--travelly-orange),
+            var(--travelly-sage)
+        );
+}
+
+
+.trip-form-note {
+    margin-top: 24px;
+}

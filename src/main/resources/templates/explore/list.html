@@ -262,6 +262,156 @@
 
     </section>
 
+    <!-- ================================================== -->
+<!-- COMMUNITY -->
+<!-- ================================================== -->
+
+<section
+    class="community-explore-section"
+    th:if="${!#lists.isEmpty(communityTrips)}">
+
+
+    <div class="home-section-heading community-heading">
+
+
+        <span>
+            DALLA COMMUNITY
+        </span>
+
+
+        <h2>
+            Viaggi creati dai viaggiatori.
+        </h2>
+
+
+        <p>
+            Scopri gli itinerari che gli utenti Travelly
+            hanno scelto di condividere.
+        </p>
+
+
+    </div>
+
+
+
+    <div class="trip-card-grid">
+
+
+        <article
+            class="travel-card"
+            th:each="trip : ${communityTrips}">
+
+
+            <div class="travel-card-cover has-cover-image">
+
+
+                <img
+                    th:if="${trip.coverImage != null}"
+                    class="travel-card-cover-image"
+                    th:src="@{/uploads/trips/{image}(image=${trip.coverImage})}"
+                    th:alt="'Copertina di ' + ${trip.name}">
+
+
+                <img
+                    th:if="${trip.coverImage == null}"
+                    class="travel-card-cover-image"
+                    th:src="@{/images/default-trip.png}"
+                    alt="Copertina Travelly">
+
+
+                <span class="travel-card-number">
+
+                    <span>
+                        COMMUNITY
+                    </span>
+
+                    <strong>
+                        TRIP
+                    </strong>
+
+                </span>
+
+
+            </div>
+
+
+
+            <div class="travel-card-content">
+
+
+                <span class="travel-card-label">
+                    VIAGGIO PUBBLICO
+                </span>
+
+
+                <h2 th:text="${trip.name}">
+                    Nome viaggio
+                </h2>
+
+
+                <p
+                    class="travel-card-description"
+                    th:text="${trip.description}">
+
+                    Descrizione
+
+                </p>
+
+
+                <div class="travel-card-details">
+
+
+                    <div>
+
+                        <span>
+                            Dal
+                        </span>
+
+                        <strong th:text="${trip.startDate}">
+                            data
+                        </strong>
+
+                    </div>
+
+
+                    <div>
+
+                        <span>
+                            Al
+                        </span>
+
+                        <strong th:text="${trip.endDate}">
+                            data
+                        </strong>
+
+                    </div>
+
+
+                </div>
+
+
+                <a
+                    class="travel-card-open"
+                    th:href="@{/explore/community/{id}(id=${trip.id})}">
+
+                    Scopri il viaggio
+
+                    <span>→</span>
+
+                </a>
+
+
+            </div>
+
+
+        </article>
+
+
+    </div>
+
+
+</section>
+
 
 </main>
 

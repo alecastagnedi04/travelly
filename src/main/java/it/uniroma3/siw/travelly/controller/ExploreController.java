@@ -1,5 +1,7 @@
 package it.uniroma3.siw.travelly.controller;
 
+import java.security.Principal;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,17 +28,36 @@ public class ExploreController {
 
     /*
      * =====================================================
-     * ELENCO PUBBLICO ITINERARI
+     * EXPLORE
      * =====================================================
      */
     @GetMapping("/explore")
     public String explore(
-            Model model) {
+            Model model,
+            Principal principal) {
 
 
+        /*
+         * Guide ufficiali.
+         */
         model.addAttribute(
                 "templates",
                 tripService.findTemplates()
+        );
+
+
+        /*
+         * Viaggi pubblici della community.
+         */
+        model.addAttribute(
+                "communityTrips",
+                tripService.findPublicCommunityTrips()
+        );
+
+
+        model.addAttribute(
+                "loggedIn",
+                principal != null
         );
 
 
@@ -47,7 +68,7 @@ public class ExploreController {
 
     /*
      * =====================================================
-     * DETTAGLIO PUBBLICO ITINERARIO
+     * DETTAGLIO TRAVELLY GUIDE
      * =====================================================
      */
     @GetMapping("/explore/{id}")
@@ -56,7 +77,9 @@ public class ExploreController {
             @PathVariable("id")
             Long id,
 
-            Model model) {
+            Model model,
+
+            Principal principal) {
 
 
         return tripService
@@ -72,7 +95,57 @@ public class ExploreController {
                     );
 
 
+                    model.addAttribute(
+                            "loggedIn",
+                            principal != null
+                    );
+
+
                     return "explore/detail";
+                })
+                .orElse(
+                        "redirect:/explore"
+                );
+    }
+
+
+
+    /*
+     * =====================================================
+     * DETTAGLIO VIAGGIO COMMUNITY
+     * =====================================================
+     */
+    @GetMapping("/explore/community/{id}")
+    public String showCommunityTrip(
+
+            @PathVariable("id")
+            Long id,
+
+            Model model,
+
+            Principal principal) {
+
+
+        return tripService
+                .findPublicCommunityTripById(
+                        id
+                )
+                .map(trip -> {
+
+
+                    model.addAttribute(
+                            "trip",
+                            trip
+                    );
+
+
+                    model.addAttribute(
+                            "loggedIn",
+                            principal != null
+                    );
+
+
+                    return "explore/community-detail";
                 })
                 .orElse(
                         "redirect:/explore"

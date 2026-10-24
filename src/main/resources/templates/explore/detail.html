@@ -467,52 +467,84 @@
     <!-- CTA -->
     <!-- ================================================== -->
 
-    <section class="explore-detail-cta">
+  <!-- ================================================== -->
+<!-- USA QUESTO ITINERARIO -->
+<!-- ================================================== -->
+
+<section class="explore-detail-cta">
 
 
-        <div>
+    <div>
 
+
+        <span>
+            TI PIACE QUESTO VIAGGIO?
+        </span>
+
+
+        <h2>
+            Rendilo tuo.
+        </h2>
+
+
+        <p>
+
+            Parti da questo itinerario Travelly
+            e personalizzalo come preferisci.
+
+        </p>
+
+
+    </div>
+
+
+
+    <!-- ============================================== -->
+    <!-- UTENTE LOGGATO -->
+    <!-- ============================================== -->
+
+    <form
+        th:if="${loggedIn}"
+        th:action="@{/trips/from-template/{id}(id=${trip.id})}"
+        method="post">
+
+
+        <button
+            class="home-cta-button"
+            type="submit">
+
+            Usa questo itinerario
 
             <span>
-                TI PIACE QUESTO VIAGGIO?
+                →
             </span>
 
-
-            <h2>
-                Rendilo tuo.
-            </h2>
+        </button>
 
 
-            <p>
-
-                Crea un account Travelly e organizza
-                il tuo viaggio partendo da questo itinerario.
-
-            </p>
+    </form>
 
 
-        </div>
+
+    <!-- ============================================== -->
+    <!-- UTENTE NON LOGGATO -->
+    <!-- ============================================== -->
+
+    <a
+        th:if="${!loggedIn}"
+        class="home-cta-button"
+        th:href="@{/login}">
+
+        Accedi per usarlo
+
+        <span>
+            →
+        </span>
+
+    </a>
 
 
-        <!--
-            PER ORA PORTA ALLA REGISTRAZIONE.
-
-            Nel prossimo passaggio questo diventerà:
-            "Usa questo itinerario"
-        -->
-
-        <a
-            class="home-cta-button"
-            th:href="@{/register}">
-
-            Inizia con Travelly
-
-            <span>→</span>
-
-        </a>
-
-
-    </section>
+</section>
 
 
 </main>

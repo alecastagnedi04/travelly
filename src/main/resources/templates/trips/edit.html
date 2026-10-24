@@ -301,6 +301,58 @@
                 </div>
 
 
+                <div class="travelly-field">
+
+    <label for="visibility">
+        Visibilità del viaggio
+    </label>
+
+
+    <select
+        id="visibility"
+        name="visibility"
+        required>
+
+
+        <option
+            value="PRIVATE"
+            th:selected="${
+                trip.visibility == null
+                or trip.visibility.name() == 'PRIVATE'
+            }">
+
+            Privato — solo tu puoi vederlo
+
+        </option>
+
+
+        <option
+            value="PUBLIC"
+            th:selected="${
+                trip.visibility != null
+                and trip.visibility.name() == 'PUBLIC'
+            }">
+
+            Pubblico — visibile su Travelly
+
+        </option>
+
+
+    </select>
+
+
+    <small class="field-help">
+
+        Se rendi pubblico il viaggio,
+        saranno visibili solo itinerario,
+        destinazioni e attività.
+        Partecipanti, spese e dashboard
+        rimarranno privati.
+
+    </small>
+
+</div>
+
 
                 <!-- ====================================== -->
                 <!-- AZIONI -->

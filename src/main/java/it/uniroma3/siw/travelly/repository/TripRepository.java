@@ -1,10 +1,12 @@
 package it.uniroma3.siw.travelly.repository;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.repository.CrudRepository;
 
 import it.uniroma3.siw.travelly.model.Trip;
+import it.uniroma3.siw.travelly.model.TripVisibility;
 
 
 public interface TripRepository
@@ -15,27 +17,13 @@ public interface TripRepository
      * =====================================================
      * VIAGGI PERSONALI
      * =====================================================
-     *
-     * Restituisce solamente i viaggi personali
-     * appartenenti all'utente.
-     *
-     * Gli itinerari ufficiali Travelly
-     * vengono esclusi.
      */
+
     Iterable<Trip> findByOwnerUsernameAndTemplateFalse(
             String username
     );
 
 
-    /*
-     * Cerca un Trip tramite:
-     *
-     * - id
-     * - username del proprietario
-     *
-     * Utilizzato per impedire ad un utente
-     * di accedere ai viaggi degli altri utenti.
-     */
     Optional<Trip> findByIdAndOwnerUsername(
             Long id,
             String username
@@ -45,21 +33,35 @@ public interface TripRepository
 
     /*
      * =====================================================
-     * ITINERARI UFFICIALI TRAVELLY
+     * TEMPLATE UFFICIALI TRAVELLY
      * =====================================================
-     *
-     * Restituisce tutti i Trip
-     * con template = true.
      */
+
     Iterable<Trip> findByTemplateTrue();
+
+
+    Optional<Trip> findByIdAndTemplateTrue(
+            Long id
+    );
 
 
 
     /*
-     * Cerca uno specifico itinerario
-     * ufficiale Travelly.
+     * =====================================================
+     * VIAGGI PUBBLICI DELLA COMMUNITY
+     * =====================================================
+     *
+     * template = false
+     * visibility = PUBLIC
      */
-    Optional<Trip> findByIdAndTemplateTrue(
-            Long id
+
+    List<Trip> findByTemplateFalseAndVisibilityOrderByIdDesc(
+            TripVisibility visibility
+    );
+
+
+    Optional<Trip> findByIdAndTemplateFalseAndVisibility(
+            Long id,
+            TripVisibility visibility
     );
 }

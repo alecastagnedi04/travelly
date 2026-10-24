@@ -56,7 +56,13 @@
         </a>
 
 
+
+        <!-- ============================================= -->
+        <!-- UTENTE NON LOGGATO -->
+        <!-- ============================================= -->
+
         <a
+            th:if="${!loggedIn}"
             class="home-login-link"
             th:href="@{/login}">
 
@@ -66,12 +72,71 @@
 
 
         <a
+            th:if="${!loggedIn}"
             class="home-nav-button"
             th:href="@{/register}">
 
             Registrati
 
         </a>
+
+
+
+        <!-- ============================================= -->
+        <!-- UTENTE LOGGATO -->
+        <!-- ============================================= -->
+
+        <a
+            th:if="${loggedIn}"
+            class="home-profile-link"
+            th:href="@{/profile}">
+
+
+            <span
+                class="home-navbar-avatar"
+                th:text="${#strings.substring(username,0,1).toUpperCase()}">
+
+                A
+
+            </span>
+
+
+            <span th:text="${username}">
+                username
+            </span>
+
+
+        </a>
+
+
+
+        <a
+            th:if="${loggedIn}"
+            th:href="@{/trips}">
+
+            I miei viaggi
+
+        </a>
+
+
+
+        <form
+            th:if="${loggedIn}"
+            class="home-logout-form"
+            th:action="@{/logout}"
+            method="post">
+
+
+            <button
+                class="home-logout-button"
+                type="submit">
+
+                Logout
+
+            </button>
+
+
+        </form>
 
 
     </nav>
@@ -334,7 +399,122 @@
 
     </section>
 
+<!-- ================================================== -->
+<!-- COMMUNITY -->
+<!-- ================================================== -->
 
+<section
+    class="home-community-section"
+    th:if="${!#lists.isEmpty(communityTrips)}">
+
+
+    <div class="home-section-heading">
+
+
+        <span>
+            DALLA COMMUNITY
+        </span>
+
+
+        <h2>
+            Viaggi veri, idee nuove.
+        </h2>
+
+
+        <p>
+            Scopri gli itinerari che altri viaggiatori
+            hanno scelto di condividere su Travelly.
+        </p>
+
+
+    </div>
+
+
+
+    <div class="trip-card-grid">
+
+
+        <article
+            class="travel-card"
+            th:each="trip : ${communityTrips}">
+
+
+            <div class="travel-card-cover has-cover-image">
+
+
+                <img
+                    th:if="${trip.coverImage != null}"
+                    class="travel-card-cover-image"
+                    th:src="@{/uploads/trips/{image}(image=${trip.coverImage})}"
+                    th:alt="'Copertina di ' + ${trip.name}">
+
+
+                <img
+                    th:if="${trip.coverImage == null}"
+                    class="travel-card-cover-image"
+                    th:src="@{/images/default-trip.png}"
+                    alt="Copertina Travelly">
+
+
+                <span class="travel-card-number">
+
+                    <span>
+                        COMMUNITY
+                    </span>
+
+                    <strong>
+                        TRIP
+                    </strong>
+
+                </span>
+
+
+            </div>
+
+
+            <div class="travel-card-content">
+
+
+                <span class="travel-card-label">
+                    VIAGGIO PUBBLICO
+                </span>
+
+
+                <h2 th:text="${trip.name}">
+                    Nome viaggio
+                </h2>
+
+
+                <p
+                    class="travel-card-description"
+                    th:text="${trip.description}">
+
+                    Descrizione
+
+                </p>
+
+
+                <a
+                    class="travel-card-open"
+                    th:href="@{/explore/community/{id}(id=${trip.id})}">
+
+                    Scopri il viaggio
+
+                    <span>→</span>
+
+                </a>
+
+
+            </div>
+
+
+        </article>
+
+
+    </div>
+
+
+</section>
 
     <!-- ================================================== -->
     <!-- COME FUNZIONA -->
@@ -547,7 +727,7 @@
 
 
         <p>
-            Pianifica. Viaggia. Ricorda.
+            Pianifica. Viaggia. Esplora.
         </p>
 
 

@@ -6,6 +6,8 @@ import java.util.List;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -35,23 +37,25 @@ public class Trip {
 
 
     /*
-     * Nome del file utilizzato come
-     * immagine di copertina.
-     *
-     * Nel database viene salvato solamente
-     * il nome del file.
+     * Nome del file della copertina.
      */
     private String coverImage;
 
 
     /*
-     * Indica se il viaggio è un itinerario
-     * ufficiale creato da Travelly.
-     *
      * false = viaggio personale
-     * true  = itinerario/template ufficiale
+     * true  = template ufficiale Travelly
      */
     private boolean template = false;
+
+
+    /*
+     * PRIVATE = visibile solo al proprietario
+     * PUBLIC  = itinerario pubblico
+     */
+    @Enumerated(EnumType.STRING)
+    private TripVisibility visibility =
+            TripVisibility.PRIVATE;
 
 
 
@@ -59,11 +63,6 @@ public class Trip {
      * =====================================================
      * DESTINAZIONI
      * =====================================================
-     *
-     * Un Trip può avere più Destination.
-     *
-     * Se il Trip viene eliminato,
-     * vengono eliminate anche le sue destinazioni.
      */
     @OneToMany(
             mappedBy = "trip",
@@ -125,14 +124,10 @@ public class Trip {
      * PROPRIETARIO
      * =====================================================
      *
-     * Molti Trip possono appartenere allo stesso User.
+     * Viaggio personale:
+     * owner = User
      *
-     * Per i normali viaggi personali:
-     *
-     * owner = utente
-     *
-     * Per gli itinerari ufficiali Travelly:
-     *
+     * Template:
      * owner = null
      */
     @ManyToOne
@@ -141,17 +136,10 @@ public class Trip {
 
 
 
-    /*
-     * Costruttore vuoto richiesto da JPA.
-     */
     public Trip() {
     }
 
 
-
-    /* =====================================================
-     * ID
-     * ===================================================== */
 
     public Long getId() {
 
@@ -162,14 +150,11 @@ public class Trip {
     public void setId(
             Long id) {
 
-        this.id = id;
+        this.id =
+                id;
     }
 
 
-
-    /* =====================================================
-     * NAME
-     * ===================================================== */
 
     public String getName() {
 
@@ -180,14 +165,11 @@ public class Trip {
     public void setName(
             String name) {
 
-        this.name = name;
+        this.name =
+                name;
     }
 
 
-
-    /* =====================================================
-     * DESCRIPTION
-     * ===================================================== */
 
     public String getDescription() {
 
@@ -204,10 +186,6 @@ public class Trip {
 
 
 
-    /* =====================================================
-     * START DATE
-     * ===================================================== */
-
     public LocalDate getStartDate() {
 
         return startDate;
@@ -222,10 +200,6 @@ public class Trip {
     }
 
 
-
-    /* =====================================================
-     * END DATE
-     * ===================================================== */
 
     public LocalDate getEndDate() {
 
@@ -242,10 +216,6 @@ public class Trip {
 
 
 
-    /* =====================================================
-     * BUDGET
-     * ===================================================== */
-
     public Double getBudget() {
 
         return budget;
@@ -260,10 +230,6 @@ public class Trip {
     }
 
 
-
-    /* =====================================================
-     * COVER IMAGE
-     * ===================================================== */
 
     public String getCoverImage() {
 
@@ -280,10 +246,6 @@ public class Trip {
 
 
 
-    /* =====================================================
-     * TEMPLATE
-     * ===================================================== */
-
     public boolean isTemplate() {
 
         return template;
@@ -299,9 +261,20 @@ public class Trip {
 
 
 
-    /* =====================================================
-     * DESTINATIONS
-     * ===================================================== */
+    public TripVisibility getVisibility() {
+
+        return visibility;
+    }
+
+
+    public void setVisibility(
+            TripVisibility visibility) {
+
+        this.visibility =
+                visibility;
+    }
+
+
 
     public List<Destination> getDestinations() {
 
@@ -318,10 +291,6 @@ public class Trip {
 
 
 
-    /* =====================================================
-     * ACTIVITIES
-     * ===================================================== */
-
     public List<Activity> getActivities() {
 
         return activities;
@@ -336,10 +305,6 @@ public class Trip {
     }
 
 
-
-    /* =====================================================
-     * PARTICIPANTS
-     * ===================================================== */
 
     public List<Participant> getParticipants() {
 
@@ -356,10 +321,6 @@ public class Trip {
 
 
 
-    /* =====================================================
-     * EXPENSES
-     * ===================================================== */
-
     public List<Expense> getExpenses() {
 
         return expenses;
@@ -374,10 +335,6 @@ public class Trip {
     }
 
 
-
-    /* =====================================================
-     * OWNER
-     * ===================================================== */
 
     public User getOwner() {
 
