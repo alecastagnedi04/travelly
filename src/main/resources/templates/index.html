@@ -30,120 +30,7 @@
 <!-- NAVBAR -->
 <!-- ====================================================== -->
 
-<header class="home-navbar">
-
-
-    <a
-        class="home-logo"
-        th:href="@{/}">
-
-        Travelly<span>.</span>
-
-    </a>
-
-
-
-    <nav class="home-nav-links">
-
-
-        <a th:href="@{/explore}">
-            Esplora
-        </a>
-
-
-        <a href="#features">
-            Come funziona
-        </a>
-
-
-
-        <!-- ============================================= -->
-        <!-- UTENTE NON LOGGATO -->
-        <!-- ============================================= -->
-
-        <a
-            th:if="${!loggedIn}"
-            class="home-login-link"
-            th:href="@{/login}">
-
-            Accedi
-
-        </a>
-
-
-        <a
-            th:if="${!loggedIn}"
-            class="home-nav-button"
-            th:href="@{/register}">
-
-            Registrati
-
-        </a>
-
-
-
-        <!-- ============================================= -->
-        <!-- UTENTE LOGGATO -->
-        <!-- ============================================= -->
-
-        <a
-            th:if="${loggedIn}"
-            class="home-profile-link"
-            th:href="@{/profile}">
-
-
-            <span
-                class="home-navbar-avatar"
-                th:text="${#strings.substring(username,0,1).toUpperCase()}">
-
-                A
-
-            </span>
-
-
-            <span th:text="${username}">
-                username
-            </span>
-
-
-        </a>
-
-
-
-        <a
-            th:if="${loggedIn}"
-            th:href="@{/trips}">
-
-            I miei viaggi
-
-        </a>
-
-
-
-        <form
-            th:if="${loggedIn}"
-            class="home-logout-form"
-            th:action="@{/logout}"
-            method="post">
-
-
-            <button
-                class="home-logout-button"
-                type="submit">
-
-                Logout
-
-            </button>
-
-
-        </form>
-
-
-    </nav>
-
-
-</header>
-
+<div th:replace="~{fragments/navbar :: siteNavbar}"></div>
 
 
 <main>
@@ -305,7 +192,7 @@
                     <img
                         th:if="${trip.coverImage == null}"
                         class="travel-card-cover-image"
-                        th:src="@{/images/default-trip.png}"
+                        th:src="@{/images/default-trip.jpg}"
                         alt="Copertina Travelly">
 
 
@@ -452,7 +339,7 @@
                 <img
                     th:if="${trip.coverImage == null}"
                     class="travel-card-cover-image"
-                    th:src="@{/images/default-trip.png}"
+                    th:src="@{/images/default-trip.jpg}"
                     alt="Copertina Travelly">
 
 

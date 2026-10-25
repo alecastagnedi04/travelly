@@ -1,22 +1,25 @@
 package it.uniroma3.siw.travelly.controller;
 
 import java.security.Principal;
-import java.time.LocalDate;
 
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
+import it.uniroma3.siw.travelly.dto.TripForm;
 import it.uniroma3.siw.travelly.model.Trip;
 import it.uniroma3.siw.travelly.model.TripVisibility;
 import it.uniroma3.siw.travelly.service.ImageStorageService;
 import it.uniroma3.siw.travelly.service.TripService;
+
+import jakarta.validation.Valid;
 
 
 @Controller
@@ -112,6 +115,12 @@ public class TripController {
         );
 
 
+        model.addAttribute(
+                "tripForm",
+                new TripForm()
+        );
+
+
         return "trips/form";
     }
 
@@ -119,35 +128,17 @@ public class TripController {
 
     /*
      * =====================================================
-     * CREA VIAGGIO
+     * CREA NUOVO VIAGGIO
      * =====================================================
      */
     @PostMapping("/trips")
     public String createTrip(
 
-            @RequestParam("name")
-            String name,
+            @Valid
+            @ModelAttribute("tripForm")
+            TripForm tripForm,
 
-            @RequestParam(
-                    value = "description",
-                    defaultValue = ""
-            )
-            String description,
-
-            @RequestParam("startDate")
-            @DateTimeFormat(
-                    iso = DateTimeFormat.ISO.DATE
-            )
-            LocalDate startDate,
-
-            @RequestParam("endDate")
-            @DateTimeFormat(
-                    iso = DateTimeFormat.ISO.DATE
-            )
-            LocalDate endDate,
-
-            @RequestParam("budget")
-            Double budget,
+            BindingResult bindingResult,
 
             @RequestParam(
                     value = "coverImage",
@@ -155,9 +146,51 @@ public class TripController {
             )
             MultipartFile coverImage,
 
-            Principal principal) {
+            Principal principal,
+
+            Model model) {
 
 
+        /*
+         * La data di ritorno non può essere
+         * precedente alla partenza.
+         */
+        if (tripForm.getStartDate() != null &&
+                tripForm.getEndDate() != null &&
+                tripForm
+                        .getEndDate()
+                        .isBefore(
+                                tripForm.getStartDate()
+                        )) {
+
+
+            bindingResult.rejectValue(
+                    "endDate",
+                    "trip.endDate.beforeStart",
+                    "La data di ritorno non può precedere la data di partenza"
+            );
+        }
+
+
+
+        if (bindingResult.hasErrors()) {
+
+
+            model.addAttribute(
+                    "username",
+                    principal.getName()
+            );
+
+
+            return "trips/form";
+        }
+
+
+
+        /*
+         * Salviamo la foto solamente
+         * dopo la validazione.
+         */
         String coverImageName =
                 imageStorageService
                         .saveTripCover(
@@ -165,12 +198,13 @@ public class TripController {
                         );
 
 
+
         tripService.createTrip(
-                name,
-                description,
-                startDate,
-                endDate,
-                budget,
+                tripForm.getName(),
+                tripForm.getDescription(),
+                tripForm.getStartDate(),
+                tripForm.getEndDate(),
+                tripForm.getBudget(),
                 coverImageName,
                 principal.getName()
         );
@@ -183,7 +217,7 @@ public class TripController {
 
     /*
      * =====================================================
-     * DETTAGLIO VIAGGIO PERSONALE
+     * DETTAGLIO VIAGGIO
      * =====================================================
      */
     @GetMapping("/trips/{id}")
@@ -265,7 +299,7 @@ public class TripController {
 
     /*
      * =====================================================
-     * FORM MODIFICA
+     * FORM MODIFICA VIAGGIO
      * =====================================================
      */
     @GetMapping("/trips/{id}/edit")
@@ -287,9 +321,83 @@ public class TripController {
                 .map(trip -> {
 
 
+                    /*
+                     * Creiamo il form partendo dai dati
+                     * già salvati nel Trip.
+                     */
+                    TripForm tripForm =
+                            new TripForm();
+
+
+
+                    tripForm.setName(
+                            trip.getName()
+                    );
+
+
+                    tripForm.setDescription(
+                            trip.getDescription()
+                    );
+
+
+
+                    /*
+                     * IMPORTANTE:
+                     *
+                     * Le date già presenti nel database
+                     * vengono copiate nel TripForm.
+                     *
+                     * In questo modo gli input type="date"
+                     * saranno già compilati.
+                     */
+                    tripForm.setStartDate(
+                            trip.getStartDate()
+                    );
+
+
+                    tripForm.setEndDate(
+                            trip.getEndDate()
+                    );
+
+
+
+                    tripForm.setBudget(
+                            trip.getBudget()
+                    );
+
+
+
+                    /*
+                     * Manteniamo anche la visibilità
+                     * attualmente salvata.
+                     */
+                    if (trip.getVisibility() != null) {
+
+
+                        tripForm.setVisibility(
+                                trip.getVisibility()
+                        );
+
+
+                    } else {
+
+
+                        tripForm.setVisibility(
+                                TripVisibility.PRIVATE
+                        );
+                    }
+
+
+
                     model.addAttribute(
                             "trip",
                             trip
+                    );
+
+
+                    model.addAttribute(
+                            "tripForm",
+                            tripForm
                     );
 
 
@@ -310,7 +418,7 @@ public class TripController {
 
     /*
      * =====================================================
-     * MODIFICA VIAGGIO
+     * SALVA MODIFICA VIAGGIO
      * =====================================================
      */
     @PostMapping("/trips/{id}/edit")
@@ -319,29 +427,11 @@ public class TripController {
             @PathVariable("id")
             Long id,
 
-            @RequestParam("name")
-            String name,
+            @Valid
+            @ModelAttribute("tripForm")
+            TripForm tripForm,
 
-            @RequestParam(
-                    value = "description",
-                    defaultValue = ""
-            )
-            String description,
-
-            @RequestParam("startDate")
-            @DateTimeFormat(
-                    iso = DateTimeFormat.ISO.DATE
-            )
-            LocalDate startDate,
-
-            @RequestParam("endDate")
-            @DateTimeFormat(
-                    iso = DateTimeFormat.ISO.DATE
-            )
-            LocalDate endDate,
-
-            @RequestParam("budget")
-            Double budget,
+            BindingResult bindingResult,
 
             @RequestParam("visibility")
             TripVisibility visibility,
@@ -352,14 +442,11 @@ public class TripController {
             )
             MultipartFile coverImage,
 
-            Principal principal) {
+            Principal principal,
+
+            Model model) {
 
 
-        /*
-         * Recuperiamo il viaggio esistente
-         * per mantenere eventualmente
-         * la vecchia copertina.
-         */
         Trip existingTrip =
                 tripService
                         .findByIdAndOwnerUsername(
@@ -369,6 +456,7 @@ public class TripController {
                         .orElse(null);
 
 
+
         if (existingTrip == null) {
 
             return "redirect:/trips";
@@ -376,15 +464,72 @@ public class TripController {
 
 
 
+        /*
+         * Salviamo esplicitamente
+         * la visibility ricevuta dal form.
+         */
+        tripForm.setVisibility(
+                visibility
+        );
+
+
+
+        /*
+         * Validazione intervallo date.
+         */
+        if (tripForm.getStartDate() != null &&
+                tripForm.getEndDate() != null &&
+                tripForm
+                        .getEndDate()
+                        .isBefore(
+                                tripForm.getStartDate()
+                        )) {
+
+
+            bindingResult.rejectValue(
+                    "endDate",
+                    "trip.endDate.beforeStart",
+                    "La data di ritorno non può precedere la data di partenza"
+            );
+        }
+
+
+
+        /*
+         * Se il form contiene errori,
+         * torniamo alla stessa pagina.
+         *
+         * I valori inseriti restano nel TripForm.
+         */
+        if (bindingResult.hasErrors()) {
+
+
+            model.addAttribute(
+                    "trip",
+                    existingTrip
+            );
+
+
+            model.addAttribute(
+                    "username",
+                    principal.getName()
+            );
+
+
+            return "trips/edit";
+        }
+
+
+
+        /*
+         * Manteniamo la copertina esistente
+         * finché non ne viene caricata una nuova.
+         */
         String coverImageName =
                 existingTrip.getCoverImage();
 
 
 
-        /*
-         * Se l'utente carica una nuova foto,
-         * sostituiamo quella precedente.
-         */
         if (coverImage != null &&
                 !coverImage.isEmpty()) {
 
@@ -413,14 +558,17 @@ public class TripController {
 
 
 
+        /*
+         * Salvataggio effettivo.
+         */
         if (tripService
                 .updateTrip(
                         id,
-                        name,
-                        description,
-                        startDate,
-                        endDate,
-                        budget,
+                        tripForm.getName(),
+                        tripForm.getDescription(),
+                        tripForm.getStartDate(),
+                        tripForm.getEndDate(),
+                        tripForm.getBudget(),
                         coverImageName,
                         visibility,
                         principal.getName()
@@ -431,6 +579,7 @@ public class TripController {
             return "redirect:/trips/"
                     + id;
         }
+
 
 
         return "redirect:/trips";
@@ -461,6 +610,7 @@ public class TripController {
                         .orElse(null);
 
 
+
         if (trip == null) {
 
             return "redirect:/trips";
@@ -481,13 +631,16 @@ public class TripController {
                         );
 
 
+
         if (deleted) {
+
 
             imageStorageService
                     .deleteTripCover(
                             coverImage
                     );
         }
+
 
 
         return "redirect:/trips";
@@ -497,7 +650,7 @@ public class TripController {
 
     /*
      * =====================================================
-     * USA QUESTO ITINERARIO
+     * USA ITINERARIO UFFICIALE
      * =====================================================
      */
     @PostMapping(

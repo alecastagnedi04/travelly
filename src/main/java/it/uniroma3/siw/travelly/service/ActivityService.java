@@ -43,303 +43,488 @@ public class ActivityService {
      * viene creata automaticamente anche una Expense.
      */
     @Transactional
-    public Optional<Activity> createActivity(
-            Long tripId,
-            String name,
-            String description,
-            LocalDate date,
-            LocalTime time,
-            String location,
-            ActivityCategory category,
-            Double cost,
-            String ownerUsername) {
+public Optional<Activity> createActivity(
+        Long tripId,
+        String name,
+        String description,
+        LocalDate date,
+        LocalTime time,
+        String location,
+        ActivityCategory category,
+        Double cost,
+        String ownerUsername) {
+
+
+    /*
+     * Il costo non può essere negativo.
+     */
+    if (cost == null || cost < 0) {
+
+        return Optional.empty();
+    }
+
+
+
+    /*
+     * Recuperiamo il viaggio verificando
+     * contemporaneamente che appartenga
+     * all'utente autenticato.
+     */
+    Optional<Trip> tripOptional =
+            tripRepository
+                    .findByIdAndOwnerUsername(
+                            tripId,
+                            ownerUsername
+                    );
+
+
+    if (tripOptional.isEmpty()) {
+
+        return Optional.empty();
+    }
+
+
+
+    Trip trip =
+            tripOptional.get();
+
+
+
+    /*
+     * La data dell'attività deve essere
+     * compresa tra la partenza e il ritorno
+     * del viaggio.
+     */
+    if (!activityDateIsValid(
+            trip,
+            date)) {
+
+        return Optional.empty();
+    }
+
+
+
+    Activity activity =
+            new Activity();
+
+
+    activity.setName(
+            name
+    );
+
+
+    activity.setDescription(
+            description
+    );
+
+
+    activity.setDate(
+            date
+    );
+
+
+    activity.setTime(
+            time
+    );
+
+
+    activity.setLocation(
+            location
+    );
+
+
+    activity.setCategory(
+            category
+    );
+
+
+    activity.setCost(
+            cost
+    );
+
+
+    activity.setTrip(
+            trip
+    );
+
+
+
+    Activity savedActivity =
+            activityRepository.save(
+                    activity
+            );
+
+
+
+    /*
+     * Se l'attività costa più di 0 €,
+     * viene creata automaticamente
+     * anche una Expense collegata.
+     */
+    if (cost > 0) {
+
+
+        Expense expense =
+                new Expense();
+
+
+        expense.setDescription(
+                name
+        );
+
+
+        expense.setAmount(
+                cost
+        );
+
+
+        expense.setDate(
+                date
+        );
+
+
+        expense.setCategory(
+                convertActivityCategory(
+                        category
+                )
+        );
+
+
+        expense.setTrip(
+                trip
+        );
 
 
         /*
-         * Il costo non può essere negativo.
+         * Il pagatore verrà scelto
+         * successivamente.
          */
-        if (cost == null || cost < 0) {
-            return Optional.empty();
-        }
+        expense.setPaidBy(
+                null
+        );
 
 
-        return tripRepository
-                .findByIdAndOwnerUsername(
-                        tripId,
-                        ownerUsername
-                )
-                .map(trip -> {
-
-                    Activity activity = new Activity();
-
-                    activity.setName(name);
-                    activity.setDescription(description);
-                    activity.setDate(date);
-                    activity.setTime(time);
-                    activity.setLocation(location);
-                    activity.setCategory(category);
-                    activity.setCost(cost);
-                    activity.setTrip(trip);
+        /*
+         * Colleghiamo Activity ed Expense.
+         */
+        expense.setActivity(
+                savedActivity
+        );
 
 
-                    Activity savedActivity =
-                            activityRepository.save(activity);
-
-
-                    /*
-                     * Se l'attività ha un costo,
-                     * creiamo automaticamente una Expense.
-                     */
-                    if (cost > 0) {
-
-                        Expense expense = new Expense();
-
-                        expense.setDescription(name);
-                        expense.setAmount(cost);
-                        expense.setDate(date);
-
-                        expense.setCategory(
-                                convertActivityCategory(category)
-                        );
-
-                        expense.setTrip(trip);
-
-                        /*
-                         * Appena creata la spesa non ha
-                         * ancora un partecipante assegnato.
-                         */
-                        expense.setPaidBy(null);
-
-                        /*
-                         * Colleghiamo la spesa all'attività.
-                         */
-                        expense.setActivity(savedActivity);
-
-                        expenseRepository.save(expense);
-                    }
-
-
-                    return savedActivity;
-                });
+        expenseRepository.save(
+                expense
+        );
     }
 
+
+
+    return Optional.of(
+            savedActivity
+    );
+}
 
     /*
      * Modifica un'attività e mantiene sincronizzata
      * l'eventuale Expense collegata.
      */
     @Transactional
-    public Optional<Activity> updateActivity(
-            Long tripId,
-            Long activityId,
-            String name,
-            String description,
-            LocalDate date,
-            LocalTime time,
-            String location,
-            ActivityCategory category,
-            Double cost,
-            String ownerUsername) {
+public Optional<Activity> updateActivity(
+        Long tripId,
+        Long activityId,
+        String name,
+        String description,
+        LocalDate date,
+        LocalTime time,
+        String location,
+        ActivityCategory category,
+        Double cost,
+        String ownerUsername) {
+
+
+    /*
+     * Il costo non può essere negativo.
+     */
+    if (cost == null || cost < 0) {
+
+        return Optional.empty();
+    }
+
+
+
+    /*
+     * Il viaggio deve appartenere
+     * all'utente autenticato.
+     */
+    Optional<Trip> tripOptional =
+            tripRepository
+                    .findByIdAndOwnerUsername(
+                            tripId,
+                            ownerUsername
+                    );
+
+
+    if (tripOptional.isEmpty()) {
+
+        return Optional.empty();
+    }
+
+
+
+    Trip trip =
+            tripOptional.get();
+
+
+
+    /*
+     * Anche durante una modifica
+     * l'attività deve restare all'interno
+     * delle date del viaggio.
+     */
+    if (!activityDateIsValid(
+            trip,
+            date)) {
+
+        return Optional.empty();
+    }
+
+
+
+    /*
+     * Recuperiamo l'attività.
+     */
+    Optional<Activity> activityOptional =
+            activityRepository
+                    .findById(
+                            activityId
+                    );
+
+
+    if (activityOptional.isEmpty()) {
+
+        return Optional.empty();
+    }
+
+
+
+    Activity activity =
+            activityOptional.get();
+
+
+
+    /*
+     * Controlliamo che l'Activity appartenga
+     * realmente al Trip indicato nell'URL.
+     */
+    if (activity.getTrip() == null ||
+            !activity.getTrip()
+                    .getId()
+                    .equals(
+                            tripId
+                    )) {
+
+        return Optional.empty();
+    }
+
+
+
+    /*
+     * =====================================================
+     * AGGIORNAMENTO ACTIVITY
+     * =====================================================
+     */
+
+    activity.setName(
+            name
+    );
+
+
+    activity.setDescription(
+            description
+    );
+
+
+    activity.setDate(
+            date
+    );
+
+
+    activity.setTime(
+            time
+    );
+
+
+    activity.setLocation(
+            location
+    );
+
+
+    activity.setCategory(
+            category
+    );
+
+
+    activity.setCost(
+            cost
+    );
+
+
+
+    Activity savedActivity =
+            activityRepository.save(
+                    activity
+            );
+
+
+
+    /*
+     * Cerchiamo l'eventuale Expense
+     * già collegata all'Activity.
+     */
+    Optional<Expense> expenseOptional =
+            expenseRepository
+                    .findByActivityId(
+                            activityId
+                    );
+
+
+
+    /*
+     * =====================================================
+     * COSTO > 0
+     * =====================================================
+     *
+     * Deve esistere una Expense.
+     */
+    if (cost > 0) {
 
 
         /*
-         * Il costo non può essere negativo.
+         * Expense già presente:
+         * la sincronizziamo con l'Activity.
          */
-        if (cost == null || cost < 0) {
-            return Optional.empty();
-        }
+        if (expenseOptional.isPresent()) {
 
 
-        /*
-         * Controlliamo che il viaggio appartenga
-         * all'utente autenticato.
-         */
-        Optional<Trip> tripOptional =
-                tripRepository.findByIdAndOwnerUsername(
-                        tripId,
-                        ownerUsername
-                );
+            Expense expense =
+                    expenseOptional.get();
 
 
-        if (tripOptional.isEmpty()) {
-            return Optional.empty();
-        }
+            expense.setDescription(
+                    name
+            );
 
 
-        /*
-         * Recuperiamo l'attività.
-         */
-        Optional<Activity> activityOptional =
-                activityRepository.findById(activityId);
+            expense.setAmount(
+                    cost
+            );
 
 
-        if (activityOptional.isEmpty()) {
-            return Optional.empty();
-        }
+            expense.setDate(
+                    date
+            );
 
 
-        Activity activity =
-                activityOptional.get();
-
-
-        /*
-         * Controlliamo che l'attività appartenga
-         * realmente al viaggio indicato.
-         */
-        if (activity.getTrip() == null ||
-                !activity.getTrip()
-                        .getId()
-                        .equals(tripId)) {
-
-            return Optional.empty();
-        }
-
-
-        /*
-         * Aggiorniamo i dati dell'Activity.
-         */
-        activity.setName(name);
-        activity.setDescription(description);
-        activity.setDate(date);
-        activity.setTime(time);
-        activity.setLocation(location);
-        activity.setCategory(category);
-        activity.setCost(cost);
-
-
-        Activity savedActivity =
-                activityRepository.save(activity);
-
-
-        /*
-         * Cerchiamo la Expense collegata
-         * a questa Activity.
-         */
-        Optional<Expense> expenseOptional =
-                expenseRepository.findByActivityId(
-                        activityId
-                );
-
-
-        /*
-         * CASO 1:
-         *
-         * Il nuovo costo è maggiore di zero.
-         *
-         * Deve esistere una Expense.
-         */
-        if (cost > 0) {
+            expense.setCategory(
+                    convertActivityCategory(
+                            category
+                    )
+            );
 
 
             /*
-             * La Expense esiste già.
-             *
-             * Aggiorniamo solamente:
-             *
-             * - descrizione
-             * - importo
-             * - data
-             * - categoria
-             *
-             * NON tocchiamo paidBy.
+             * NON tocchiamo paidBy:
+             * se era già stato scelto
+             * un pagatore, rimane.
              */
-            if (expenseOptional.isPresent()) {
-
-                Expense expense =
-                        expenseOptional.get();
-
-
-                expense.setDescription(name);
-                expense.setAmount(cost);
-                expense.setDate(date);
-
-                expense.setCategory(
-                        convertActivityCategory(category)
-                );
-
-
-                /*
-                 * IMPORTANTE:
-                 *
-                 * Qui NON facciamo:
-                 *
-                 * expense.setPaidBy(null);
-                 *
-                 * quindi se la spesa era stata pagata
-                 * da Gabriele, Gabriele rimane.
-                 */
-
-
-                expenseRepository.save(expense);
-            }
-
-
-            /*
-             * La Expense NON esiste.
-             *
-             * Per esempio:
-             *
-             * prima Activity costava 0 €
-             * ora Activity costa 20 €
-             *
-             * quindi dobbiamo creare una nuova Expense.
-             */
-            else {
-
-                Expense expense =
-                        new Expense();
-
-
-                expense.setDescription(name);
-                expense.setAmount(cost);
-                expense.setDate(date);
-
-                expense.setCategory(
-                        convertActivityCategory(category)
-                );
-
-
-                expense.setTrip(
-                        tripOptional.get()
-                );
-
-
-                /*
-                 * Essendo una nuova Expense,
-                 * inizialmente non sappiamo chi ha pagato.
-                 */
-                expense.setPaidBy(null);
-
-
-                expense.setActivity(
-                        savedActivity
-                );
-
-
-                expenseRepository.save(expense);
-            }
-        }
-
-
-        /*
-         * CASO 2:
-         *
-         * Il costo è diventato 0.
-         *
-         * L'Activity rimane,
-         * ma la Expense automatica viene eliminata.
-         */
-        else {
-
-            expenseOptional.ifPresent(
-                    expenseRepository::delete
+            expenseRepository.save(
+                    expense
             );
         }
 
 
-        return Optional.of(savedActivity);
+        /*
+         * Non esiste ancora una Expense.
+         *
+         * Esempio:
+         *
+         * Activity prima = 0 €
+         * Activity ora   = 20 €
+         */
+        else {
+
+
+            Expense expense =
+                    new Expense();
+
+
+            expense.setDescription(
+                    name
+            );
+
+
+            expense.setAmount(
+                    cost
+            );
+
+
+            expense.setDate(
+                    date
+            );
+
+
+            expense.setCategory(
+                    convertActivityCategory(
+                            category
+                    )
+            );
+
+
+            expense.setTrip(
+                    trip
+            );
+
+
+            expense.setPaidBy(
+                    null
+            );
+
+
+            expense.setActivity(
+                    savedActivity
+            );
+
+
+            expenseRepository.save(
+                    expense
+            );
+        }
     }
 
+
+
+    /*
+     * =====================================================
+     * COSTO = 0
+     * =====================================================
+     *
+     * L'Activity rimane,
+     * l'eventuale Expense automatica sparisce.
+     */
+    else {
+
+
+        expenseOptional.ifPresent(
+                expenseRepository::delete
+        );
+    }
+
+
+
+    return Optional.of(
+            savedActivity
+    );
+}
 
 
 /*
@@ -670,20 +855,35 @@ public boolean deleteTemplateActivity(
 
 
 /*
- * Controlla che la data dell'attività
- * rientri nelle date del template.
+ * =====================================================
+ * VALIDAZIONE DATA ATTIVITÀ
+ * =====================================================
+ *
+ * Una Activity deve cadere all'interno
+ * dell'intervallo temporale del Trip.
+ *
+ * Vale sia per:
+ *
+ * - viaggi personali
+ * - itinerari ufficiali Travelly
  */
 private boolean activityDateIsValid(
         Trip trip,
         LocalDate date) {
 
 
-    if (date == null) {
+    if (trip == null ||
+            date == null) {
 
         return false;
     }
 
 
+
+    /*
+     * Non può avvenire prima
+     * dell'inizio del viaggio.
+     */
     if (trip.getStartDate() != null &&
             date.isBefore(
                     trip.getStartDate()
@@ -693,6 +893,11 @@ private boolean activityDateIsValid(
     }
 
 
+
+    /*
+     * Non può avvenire dopo
+     * la fine del viaggio.
+     */
     if (trip.getEndDate() != null &&
             date.isAfter(
                     trip.getEndDate()
@@ -702,9 +907,9 @@ private boolean activityDateIsValid(
     }
 
 
+
     return true;
 }
-
 
 
 

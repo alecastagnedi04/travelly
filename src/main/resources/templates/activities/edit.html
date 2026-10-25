@@ -25,6 +25,8 @@
 
 <body>
 
+<div th:replace="~{fragments/navbar :: siteNavbar}"></div>
+
 
 <main class="compact-form-page">
 
@@ -68,7 +70,14 @@
 
         </div>
 
+<div
+    class="form-error-box"
+    th:if="${activityError != null}"
+    th:text="${activityError}">
 
+    Errore attività
+
+</div>
 
         <form
             class="travelly-form"

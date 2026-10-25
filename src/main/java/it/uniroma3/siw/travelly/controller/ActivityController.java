@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import it.uniroma3.siw.travelly.model.ActivityCategory;
 import it.uniroma3.siw.travelly.service.ActivityService;
 import it.uniroma3.siw.travelly.service.TripService;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 public class ActivityController {
@@ -72,61 +73,78 @@ public class ActivityController {
      * Creazione Activity.
      */
     @PostMapping("/trips/{tripId}/activities")
-    public String createActivity(
-            @PathVariable("tripId")
-            Long tripId,
+public String createActivity(
+        @PathVariable("tripId")
+        Long tripId,
 
-            @RequestParam("name")
-            String name,
+        @RequestParam("name")
+        String name,
 
-            @RequestParam(
-                    value = "description",
-                    defaultValue = ""
-            )
-            String description,
+        @RequestParam(
+                value = "description",
+                defaultValue = ""
+        )
+        String description,
 
-            @RequestParam("date")
-            @DateTimeFormat(
-                    iso = DateTimeFormat.ISO.DATE
-            )
-            LocalDate date,
+        @RequestParam("date")
+        @DateTimeFormat(
+                iso = DateTimeFormat.ISO.DATE
+        )
+        LocalDate date,
 
-            @RequestParam("time")
-            @DateTimeFormat(
-                    iso = DateTimeFormat.ISO.TIME
-            )
-            LocalTime time,
+        @RequestParam("time")
+        @DateTimeFormat(
+                iso = DateTimeFormat.ISO.TIME
+        )
+        LocalTime time,
 
-            @RequestParam("location")
-            String location,
+        @RequestParam("location")
+        String location,
 
-            @RequestParam("category")
-            ActivityCategory category,
+        @RequestParam("category")
+        ActivityCategory category,
 
-            @RequestParam("cost")
-            Double cost,
+        @RequestParam("cost")
+        Double cost,
 
-            Principal principal) {
+        Principal principal,
 
-
-        if (activityService.createActivity(
-                tripId,
-                name,
-                description,
-                date,
-                time,
-                location,
-                category,
-                cost,
-                principal.getName()
-        ).isPresent()) {
-
-            return "redirect:/trips/" + tripId;
-        }
+        RedirectAttributes redirectAttributes) {
 
 
-        return "redirect:/trips";
+    if (activityService.createActivity(
+            tripId,
+            name,
+            description,
+            date,
+            time,
+            location,
+            category,
+            cost,
+            principal.getName()
+    ).isPresent()) {
+
+
+        return "redirect:/trips/" + tripId;
     }
+
+
+    /*
+     * L'Activity non è stata creata.
+     *
+     * Per esempio:
+     * - data fuori dal viaggio
+     * - costo negativo
+     */
+    redirectAttributes.addFlashAttribute(
+        "activityError",
+        "Attività non valida. Verifica che la data sia compresa nelle date del viaggio e che il costo sia maggiore o uguale a 0."
+);
+
+    return "redirect:/trips/"
+            + tripId
+            + "/activities/new";
+}
 
 
     /*
@@ -199,65 +217,80 @@ public class ActivityController {
      * Salva le modifiche dell'Activity.
      */
     @PostMapping(
-        "/trips/{tripId}/activities/{activityId}/edit"
-    )
-    public String updateActivity(
-            @PathVariable("tripId")
-            Long tripId,
+    "/trips/{tripId}/activities/{activityId}/edit"
+)
+public String updateActivity(
+        @PathVariable("tripId")
+        Long tripId,
 
-            @PathVariable("activityId")
-            Long activityId,
+        @PathVariable("activityId")
+        Long activityId,
 
-            @RequestParam("name")
-            String name,
+        @RequestParam("name")
+        String name,
 
-            @RequestParam(
-                    value = "description",
-                    defaultValue = ""
-            )
-            String description,
+        @RequestParam(
+                value = "description",
+                defaultValue = ""
+        )
+        String description,
 
-            @RequestParam("date")
-            @DateTimeFormat(
-                    iso = DateTimeFormat.ISO.DATE
-            )
-            LocalDate date,
+        @RequestParam("date")
+        @DateTimeFormat(
+                iso = DateTimeFormat.ISO.DATE
+        )
+        LocalDate date,
 
-            @RequestParam("time")
-            @DateTimeFormat(
-                    iso = DateTimeFormat.ISO.TIME
-            )
-            LocalTime time,
+        @RequestParam("time")
+        @DateTimeFormat(
+                iso = DateTimeFormat.ISO.TIME
+        )
+        LocalTime time,
 
-            @RequestParam("location")
-            String location,
+        @RequestParam("location")
+        String location,
 
-            @RequestParam("category")
-            ActivityCategory category,
+        @RequestParam("category")
+        ActivityCategory category,
 
-            @RequestParam("cost")
-            Double cost,
+        @RequestParam("cost")
+        Double cost,
 
-            Principal principal) {
+        Principal principal,
+
+        RedirectAttributes redirectAttributes) {
 
 
-        activityService.updateActivity(
-                tripId,
-                activityId,
-                name,
-                description,
-                date,
-                time,
-                location,
-                category,
-                cost,
-                principal.getName()
-        );
+    if (activityService.updateActivity(
+            tripId,
+            activityId,
+            name,
+            description,
+            date,
+            time,
+            location,
+            category,
+            cost,
+            principal.getName()
+    ).isPresent()) {
 
 
         return "redirect:/trips/" + tripId;
     }
 
+
+    redirectAttributes.addFlashAttribute(
+        "activityError",
+        "Modifica non valida. Verifica che la data sia compresa nelle date del viaggio e che il costo sia maggiore o uguale a 0."
+);
+
+
+    return "redirect:/trips/"
+            + tripId
+            + "/activities/"
+            + activityId
+            + "/edit";
+}
 
     /*
      * Eliminazione Activity.

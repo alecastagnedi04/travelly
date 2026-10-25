@@ -18,56 +18,7 @@
 
 
     <!-- NAVBAR -->
-
-    <nav class="navbar">
-
-        <div class="navbar-left">
-
-            <a
-                class="logo"
-                th:href="@{/}">
-                Travelly
-            </a>
-
-            <a th:href="@{/trips}">
-                I miei viaggi
-            </a>
-
-            <a th:href="@{/trips/new}">
-                + Nuovo viaggio
-            </a>
-
-            <a
-                th:if="${isAdmin}"
-                th:href="@{/admin}">
-                Dashboard Admin
-            </a>
-
-        </div>
-
-
-        <div class="navbar-right">
-
-            <span th:text="${username}">
-                username
-            </span>
-
-            <form
-                class="logout-form"
-                th:action="@{/logout}"
-                method="post">
-
-                <button
-                    class="logout-button"
-                    type="submit">
-                    Logout
-                </button>
-
-            </form>
-
-        </div>
-
-    </nav>
+<div th:replace="~{fragments/navbar :: siteNavbar}"></div>
 
 
 
@@ -138,13 +89,13 @@
 
                     Dal
 
-                    <strong th:text="${trip.startDate}">
+                    <strong th:text="${#temporals.format(trip.startDate, 'dd/MM/yyyy')}">
                         data partenza
                     </strong>
 
                     al
 
-                    <strong th:text="${trip.endDate}">
+                    <strong th:text="${#temporals.format(trip.endDate, 'dd/MM/yyyy')}">
                         data ritorno
                     </strong>
 

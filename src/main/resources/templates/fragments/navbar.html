@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+
+<html
+    lang="it"
+    xmlns:th="http://www.thymeleaf.org">
+
+
+<body>
+
+
+<!-- ====================================================== -->
+<!-- NAVBAR GLOBALE TRAVELLY -->
+<!-- ====================================================== -->
+
+<nav
+    class="navbar"
+    th:fragment="siteNavbar">
+
+
+    <!-- ================================================== -->
+    <!-- SINISTRA -->
+    <!-- ================================================== -->
+
+    <div class="navbar-left">
+
+
+        <!-- LOGO -->
+
+        <a
+            class="logo"
+            th:href="@{/}">
+
+            Travelly
+
+        </a>
+
+
+
+        <!-- HOME -->
+
+        <a th:href="@{/}">
+
+            Home
+
+        </a>
+
+
+
+        <!-- EXPLORE -->
+
+        <a th:href="@{/explore}">
+
+            Esplora
+
+        </a>
+
+
+
+        <!-- SOLO UTENTI AUTENTICATI -->
+
+        <a
+            th:if="${loggedIn}"
+            th:href="@{/trips}">
+
+            I miei viaggi
+
+        </a>
+
+
+
+        <a
+            th:if="${loggedIn}"
+            th:href="@{/trips/new}">
+
+            Nuovo viaggio
+
+        </a>
+
+
+
+        <!-- SOLO ADMIN -->
+
+        <a
+            th:if="${isAdmin}"
+            th:href="@{/admin}">
+
+            Dashboard Admin
+
+        </a>
+
+
+    </div>
+
+
+
+    <!-- ================================================== -->
+    <!-- DESTRA -->
+    <!-- ================================================== -->
+
+    <div class="navbar-right">
+
+
+        <!-- ============================================== -->
+        <!-- UTENTE AUTENTICATO -->
+        <!-- ============================================== -->
+
+        <a
+            th:if="${loggedIn}"
+            class="navbar-profile-link"
+            th:href="@{/profile}">
+
+
+            <!-- INIZIALE -->
+
+            <span
+                class="navbar-avatar"
+                th:text="${#strings.substring(username, 0, 1).toUpperCase()}">
+
+                U
+
+            </span>
+
+
+
+            <!-- USERNAME -->
+
+            <span th:text="${username}">
+
+                username
+
+            </span>
+
+
+        </a>
+
+
+
+        <!-- LOGOUT -->
+
+        <form
+            th:if="${loggedIn}"
+            class="logout-form"
+            th:action="@{/logout}"
+            method="post">
+
+
+            <button
+                class="logout-button"
+                type="submit">
+
+                Logout
+
+            </button>
+
+
+        </form>
+
+
+
+        <!-- ============================================== -->
+        <!-- VISITATORE NON AUTENTICATO -->
+        <!-- ============================================== -->
+
+        <div
+            class="navbar-auth-actions"
+            th:if="${!loggedIn}">
+
+
+            <a
+                class="navbar-login-link"
+                th:href="@{/login}">
+
+                Accedi
+
+            </a>
+
+
+            <a
+                class="navbar-register-link"
+                th:href="@{/register}">
+
+                Registrati
+
+            </a>
+
+
+        </div>
+
+
+    </div>
+
+
+</nav>
+
+
+</body>
+
+</html>

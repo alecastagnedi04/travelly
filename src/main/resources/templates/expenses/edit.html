@@ -25,6 +25,7 @@
 
 <body>
 
+    <div th:replace="~{fragments/navbar :: siteNavbar}"></div>
 
 <main class="compact-form-page">
 
@@ -41,6 +42,10 @@
 
     <section class="compact-form-card">
 
+
+        <!-- ============================================== -->
+        <!-- HEADER -->
+        <!-- ============================================== -->
 
         <div class="compact-form-header">
 
@@ -70,6 +75,25 @@
 
 
 
+        <!-- ============================================== -->
+        <!-- ERRORE -->
+        <!-- ============================================== -->
+
+        <div
+            class="form-error-box"
+            th:if="${expenseError != null}"
+            th:text="${expenseError}">
+
+            Errore spesa
+
+        </div>
+
+
+
+        <!-- ============================================== -->
+        <!-- FORM -->
+        <!-- ============================================== -->
+
         <form
             class="travelly-form"
             th:action="@{/trips/{tripId}/expenses/{expenseId}/edit(
@@ -79,11 +103,17 @@
             method="post">
 
 
+            <!-- ========================================== -->
+            <!-- DESCRIZIONE -->
+            <!-- ========================================== -->
+
             <div class="travelly-field">
+
 
                 <label for="description">
                     Descrizione
                 </label>
+
 
                 <input
                     type="text"
@@ -92,18 +122,25 @@
                     th:value="${expense.description}"
                     required>
 
+
             </div>
 
 
+
+            <!-- ========================================== -->
+            <!-- IMPORTO + DATA -->
+            <!-- ========================================== -->
 
             <div class="travelly-form-row">
 
 
                 <div class="travelly-field">
 
+
                     <label for="amount">
                         Importo (€)
                     </label>
+
 
                     <input
                         type="number"
@@ -114,15 +151,23 @@
                         th:value="${expense.amount}"
                         required>
 
+
+                    <small class="field-help">
+                        L'importo deve essere maggiore di 0 €.
+                    </small>
+
+
                 </div>
 
 
 
                 <div class="travelly-field">
 
+
                     <label for="date">
                         Data
                     </label>
+
 
                     <input
                         type="date"
@@ -131,6 +176,7 @@
                         th:value="${expense.date}"
                         required>
 
+
                 </div>
 
 
@@ -138,14 +184,20 @@
 
 
 
+            <!-- ========================================== -->
+            <!-- CATEGORIA + PAGATORE -->
+            <!-- ========================================== -->
+
             <div class="travelly-form-row">
 
 
                 <div class="travelly-field">
 
+
                     <label for="category">
                         Categoria
                     </label>
+
 
                     <select
                         id="category"
@@ -163,15 +215,18 @@
 
                     </select>
 
+
                 </div>
 
 
 
                 <div class="travelly-field">
 
+
                     <label for="participantId">
                         Pagata da
                     </label>
+
 
                     <select
                         id="participantId"
@@ -196,12 +251,25 @@
 
                     </select>
 
+
+                    <small class="field-help">
+
+                        Puoi lasciare la spesa
+                        temporaneamente senza pagatore.
+
+                    </small>
+
+
                 </div>
 
 
             </div>
 
 
+
+            <!-- ========================================== -->
+            <!-- AZIONI -->
+            <!-- ========================================== -->
 
             <div class="travelly-form-actions">
 
@@ -221,7 +289,9 @@
 
                     Salva modifiche
 
-                    <span>→</span>
+                    <span>
+                        →
+                    </span>
 
                 </button>
 

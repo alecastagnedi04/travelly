@@ -25,6 +25,8 @@
 
 <body>
 
+    <div th:replace="~{fragments/navbar :: siteNavbar}"></div>
+
 
 <main class="compact-form-page">
 
@@ -70,17 +72,32 @@
 
 
 
+        <div
+            class="form-error-box"
+            th:if="${expenseError != null}"
+            th:text="${expenseError}">
+
+            Errore spesa
+
+        </div>
+
+
+
         <form
             class="travelly-form"
             th:action="@{/trips/{tripId}/expenses(tripId=${trip.id})}"
             method="post">
 
 
+            <!-- DESCRIZIONE -->
+
             <div class="travelly-field">
+
 
                 <label for="description">
                     Descrizione
                 </label>
+
 
                 <input
                     type="text"
@@ -89,36 +106,45 @@
                     placeholder="Es. Cena ristorante"
                     required>
 
+
             </div>
 
 
+
+            <!-- IMPORTO + DATA -->
 
             <div class="travelly-form-row">
 
 
                 <div class="travelly-field">
 
+
                     <label for="amount">
                         Importo (€)
                     </label>
+
 
                     <input
                         type="number"
                         id="amount"
                         name="amount"
-                        min="0"
+                        min="0.01"
                         step="0.01"
                         placeholder="0.00"
                         required>
 
+
                 </div>
+
 
 
                 <div class="travelly-field">
 
+
                     <label for="date">
                         Data
                     </label>
+
 
                     <input
                         type="date"
@@ -126,6 +152,7 @@
                         name="date"
                         required>
 
+
                 </div>
 
 
@@ -133,14 +160,18 @@
 
 
 
+            <!-- CATEGORIA + PAGATORE -->
+
             <div class="travelly-form-row">
 
 
                 <div class="travelly-field">
 
+
                     <label for="category">
                         Categoria
                     </label>
+
 
                     <select
                         id="category"
@@ -157,20 +188,27 @@
 
                     </select>
 
+
                 </div>
 
 
 
                 <div class="travelly-field">
 
+
                     <label for="paidById">
                         Pagata da
                     </label>
 
+
                     <select
                         id="paidById"
-                        name="paidById"
-                        required>
+                        name="paidById">
+
+
+                        <option value="">
+                            Da assegnare
+                        </option>
 
 
                         <option
@@ -182,12 +220,25 @@
 
                     </select>
 
+
+                    <small
+                        class="field-help"
+                        th:if="${#lists.isEmpty(participants)}">
+
+                        Nessun partecipante ancora inserito.
+                        Potrai assegnare il pagatore in seguito.
+
+                    </small>
+
+
                 </div>
 
 
             </div>
 
 
+
+            <!-- AZIONI -->
 
             <div class="travelly-form-actions">
 
@@ -207,7 +258,9 @@
 
                     Aggiungi spesa
 
-                    <span>→</span>
+                    <span>
+                        →
+                    </span>
 
                 </button>
 

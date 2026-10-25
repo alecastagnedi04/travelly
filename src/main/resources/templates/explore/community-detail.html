@@ -29,60 +29,7 @@
 <body>
 
 
-<header class="home-navbar">
-
-
-    <a
-        class="home-logo"
-        th:href="@{/}">
-
-        Travelly<span>.</span>
-
-    </a>
-
-
-    <nav class="home-nav-links">
-
-
-        <a th:href="@{/explore}">
-            Esplora
-        </a>
-
-
-        <a
-            th:if="${!loggedIn}"
-            th:href="@{/login}">
-
-            Accedi
-
-        </a>
-
-
-        <a
-            th:if="${!loggedIn}"
-            class="home-nav-button"
-            th:href="@{/register}">
-
-            Registrati
-
-        </a>
-
-
-        <a
-            th:if="${loggedIn}"
-            class="home-nav-button"
-            th:href="@{/trips}">
-
-            I miei viaggi
-
-        </a>
-
-
-    </nav>
-
-
-</header>
-
+<div th:replace="~{fragments/navbar :: siteNavbar}"></div>
 
 
 <main class="container explore-detail-page">
@@ -111,7 +58,7 @@
 
         <img
             th:if="${trip.coverImage == null}"
-            th:src="@{/images/default-trip.png}"
+            th:src="@{/images/default-trip.jpg}"
             alt="Copertina Travelly">
 
 
