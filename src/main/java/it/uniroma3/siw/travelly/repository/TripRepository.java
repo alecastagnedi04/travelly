@@ -33,7 +33,7 @@ public interface TripRepository
 
     /*
      * =====================================================
-     * TEMPLATE UFFICIALI TRAVELLY
+     * TEMPLATE UFFICIALI
      * =====================================================
      */
 
@@ -50,9 +50,6 @@ public interface TripRepository
      * =====================================================
      * VIAGGI PUBBLICI DELLA COMMUNITY
      * =====================================================
-     *
-     * template = false
-     * visibility = PUBLIC
      */
 
     List<Trip> findByTemplateFalseAndVisibilityOrderByIdDesc(
@@ -63,5 +60,50 @@ public interface TripRepository
     Optional<Trip> findByIdAndTemplateFalseAndVisibility(
             Long id,
             TripVisibility visibility
+    );
+
+
+
+    /*
+     * =====================================================
+     * RICERCA TEMPLATE PER NOME ESATTO
+     * =====================================================
+     *
+     * IgnoreCase:
+     * non distingue maiuscole e minuscole.
+     *
+     * Esempio:
+     *
+     * Copenhagen in 3 giorni
+     *
+     * viene trovato anche cercando:
+     *
+     * copenhagen in 3 giorni
+     *
+     * La ricerca NON è parziale.
+     */
+    List<Trip> findByTemplateTrueAndNameIgnoreCase(
+            String name
+    );
+
+
+
+    /*
+     * =====================================================
+     * RICERCA VIAGGI PUBBLICI PER NOME ESATTO
+     * =====================================================
+     *
+     * Filtriamo SEMPRE:
+     *
+     * template = false
+     * visibility = PUBLIC
+     *
+     * In questo modo non esponiamo
+     * i viaggi privati.
+     */
+    List<Trip>
+    findByTemplateFalseAndVisibilityAndNameIgnoreCaseOrderByIdDesc(
+            TripVisibility visibility,
+            String name
     );
 }

@@ -11,12 +11,17 @@ import it.uniroma3.siw.travelly.repository.ExpenseRepository;
 import it.uniroma3.siw.travelly.repository.ParticipantRepository;
 import it.uniroma3.siw.travelly.repository.TripRepository;
 
+
 @Service
 public class ParticipantService {
 
+
     private final ParticipantRepository participantRepository;
+
     private final TripRepository tripRepository;
+
     private final ExpenseRepository expenseRepository;
+
 
 
     public ParticipantService(
@@ -24,15 +29,23 @@ public class ParticipantService {
             TripRepository tripRepository,
             ExpenseRepository expenseRepository) {
 
-        this.participantRepository = participantRepository;
-        this.tripRepository = tripRepository;
-        this.expenseRepository = expenseRepository;
+
+        this.participantRepository =
+                participantRepository;
+
+        this.tripRepository =
+                tripRepository;
+
+        this.expenseRepository =
+                expenseRepository;
     }
 
 
+
     /*
-     * Crea un partecipante solamente se
-     * il viaggio appartiene all'utente autenticato.
+     * =====================================================
+     * CREA PARTECIPANTE
+     * =====================================================
      */
     @Transactional
     public Optional<Participant> createParticipant(
@@ -43,11 +56,14 @@ public class ParticipantService {
 
 
         /*
-         * Validazione minima.
+         * Nome obbligatorio.
          */
-        if (name == null || name.isBlank()) {
+        if (name == null ||
+                name.isBlank()) {
+
             return Optional.empty();
         }
+
 
 
         return tripRepository
@@ -57,12 +73,25 @@ public class ParticipantService {
                 )
                 .map(trip -> {
 
+
                     Participant participant =
                             new Participant();
 
-                    participant.setName(name);
-                    participant.setEmail(email);
-                    participant.setTrip(trip);
+
+                    participant.setName(
+                            name
+                    );
+
+
+                    participant.setEmail(
+                            email
+                    );
+
+
+                    participant.setTrip(
+                            trip
+                    );
+
 
                     return participantRepository.save(
                             participant
@@ -71,12 +100,15 @@ public class ParticipantService {
     }
 
 
+
     /*
-     * Recupera un partecipante solamente se:
+     * =====================================================
+     * RECUPERA PARTECIPANTE
+     * =====================================================
      *
-     * - il Trip appartiene all'utente autenticato
-     * - il Participant appartiene proprio a quel Trip
+     * Metodo di sola lettura.
      */
+    @Transactional(readOnly = true)
     public Optional<Participant> findByIdAndOwnerUsername(
             Long tripId,
             Long participantId,
@@ -84,7 +116,8 @@ public class ParticipantService {
 
 
         /*
-         * Controlliamo prima la proprietà del Trip.
+         * Il Trip deve appartenere
+         * all'utente autenticato.
          */
         if (tripRepository
                 .findByIdAndOwnerUsername(
@@ -97,40 +130,54 @@ public class ParticipantService {
         }
 
 
+
         Optional<Participant> participantOptional =
-                participantRepository.findById(
-                        participantId
-                );
+                participantRepository
+                        .findById(
+                                participantId
+                        );
 
 
         if (participantOptional.isEmpty()) {
+
             return Optional.empty();
         }
+
 
 
         Participant participant =
                 participantOptional.get();
 
 
+
         /*
          * Il Participant deve appartenere
-         * proprio al Trip dell'URL.
+         * realmente al viaggio indicato.
          */
         if (participant.getTrip() == null ||
-                !participant.getTrip()
+                !participant
+                        .getTrip()
                         .getId()
-                        .equals(tripId)) {
+                        .equals(
+                                tripId
+                        )) {
 
             return Optional.empty();
         }
 
 
-        return Optional.of(participant);
+
+        return Optional.of(
+                participant
+        );
     }
 
 
+
     /*
-     * Modifica un partecipante.
+     * =====================================================
+     * MODIFICA PARTECIPANTE
+     * =====================================================
      */
     @Transactional
     public Optional<Participant> updateParticipant(
@@ -141,12 +188,12 @@ public class ParticipantService {
             String ownerUsername) {
 
 
-        /*
-         * Il nome è obbligatorio.
-         */
-        if (name == null || name.isBlank()) {
+        if (name == null ||
+                name.isBlank()) {
+
             return Optional.empty();
         }
+
 
 
         /*
@@ -164,58 +211,73 @@ public class ParticipantService {
         }
 
 
-        /*
-         * Recuperiamo il partecipante.
-         */
+
         Optional<Participant> participantOptional =
-                participantRepository.findById(
-                        participantId
-                );
+                participantRepository
+                        .findById(
+                                participantId
+                        );
 
 
         if (participantOptional.isEmpty()) {
+
             return Optional.empty();
         }
+
 
 
         Participant participant =
                 participantOptional.get();
 
 
+
         /*
-         * Controlliamo che appartenga
-         * proprio al Trip indicato.
+         * Deve appartenere al Trip indicato.
          */
         if (participant.getTrip() == null ||
-                !participant.getTrip()
+                !participant
+                        .getTrip()
                         .getId()
-                        .equals(tripId)) {
+                        .equals(
+                                tripId
+                        )) {
 
             return Optional.empty();
         }
 
 
-        /*
-         * Aggiorniamo solamente i dati
-         * del partecipante.
-         *
-         * NON cambiamo il Trip.
-         */
-        participant.setName(name);
-        participant.setEmail(email);
+
+        participant.setName(
+                name
+        );
+
+
+        participant.setEmail(
+                email
+        );
+
 
 
         return Optional.of(
-                participantRepository.save(participant)
+                participantRepository.save(
+                        participant
+                )
         );
     }
 
 
+
     /*
-     * Elimina un partecipante.
+     * =====================================================
+     * ELIMINA PARTECIPANTE
+     * =====================================================
      *
-     * Le Expense che aveva pagato NON vengono eliminate.
-     * Viene solamente rimosso il riferimento paidBy.
+     * IMPORTANTE:
+     *
+     * le Expense NON vengono eliminate.
+     *
+     * Se il Participant era il pagatore,
+     * paidBy viene semplicemente impostato a null.
      */
     @Transactional
     public boolean deleteParticipant(
@@ -224,6 +286,9 @@ public class ParticipantService {
             String ownerUsername) {
 
 
+        /*
+         * Controllo proprietà del Trip.
+         */
         if (tripRepository
                 .findByIdAndOwnerUsername(
                         tripId,
@@ -235,57 +300,77 @@ public class ParticipantService {
         }
 
 
+
         Optional<Participant> participantOptional =
-                participantRepository.findById(
-                        participantId
-                );
+                participantRepository
+                        .findById(
+                                participantId
+                        );
 
 
         if (participantOptional.isEmpty()) {
+
             return false;
         }
+
 
 
         Participant participant =
                 participantOptional.get();
 
 
+
         /*
-         * Controllo di appartenenza.
+         * Controllo appartenenza al viaggio.
          */
         if (participant.getTrip() == null ||
-                !participant.getTrip()
+                !participant
+                        .getTrip()
                         .getId()
-                        .equals(tripId)) {
+                        .equals(
+                                tripId
+                        )) {
 
             return false;
         }
 
 
+
         /*
          * Recuperiamo tutte le Expense
-         * pagate da questo partecipante.
+         * pagate dal partecipante.
          */
         Iterable<Expense> expenses =
-                expenseRepository.findByPaidById(
-                        participantId
-                );
+                expenseRepository
+                        .findByPaidById(
+                                participantId
+                        );
+
 
 
         /*
-         * Le Expense restano nel viaggio.
+         * Le Expense rimangono.
          *
-         * Viene solamente rimosso il pagatore.
+         * Il pagatore diventa "Da assegnare".
          */
         for (Expense expense : expenses) {
 
-            expense.setPaidBy(null);
 
-            expenseRepository.save(expense);
+            expense.setPaidBy(
+                    null
+            );
+
+
+            expenseRepository.save(
+                    expense
+            );
         }
 
 
-        participantRepository.delete(participant);
+
+        participantRepository.delete(
+                participant
+        );
 
 
         return true;

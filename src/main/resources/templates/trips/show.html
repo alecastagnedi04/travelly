@@ -1,114 +1,566 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="it" xmlns:th="http://www.thymeleaf.org">
 
 <head>
-
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>Dettaglio viaggio - Travelly</title>
 
-    <link
-        rel="stylesheet"
-        th:href="@{/css/style.css}">
-
+    <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
-
 
 <body>
 
-
-    <!-- NAVBAR -->
 <div th:replace="~{fragments/navbar :: siteNavbar}"></div>
 
 
+<main class="container trip-detail-page">
 
-    <!-- CONTENUTO -->
-
-    <main class="container">
-
-
-        <a
-            class="back-link"
-            th:href="@{/trips}">
-
-            ← Torna ai miei viaggi
-
-        </a>
-
-<!-- ====================================================== -->
-<!-- COPERTINA VIAGGIO -->
-<!-- ====================================================== -->
-
-<div class="trip-detail-cover">
+    <a class="back-link" th:href="@{/trips}">
+        ← Torna ai miei viaggi
+    </a>
 
 
-    <!-- FOTO CARICATA DALL'UTENTE -->
+    <!-- ================================================== -->
+    <!-- COPERTINA -->
+    <!-- ================================================== -->
 
-    <img
-        th:if="${trip.coverImage != null}"
-        th:src="@{/uploads/trips/{image}(image=${trip.coverImage})}"
-        th:alt="'Copertina di ' + ${trip.name}">
+    <div class="trip-detail-cover">
 
+        <img
+            th:if="${trip.coverImage != null}"
+            th:src="@{/uploads/trips/{image}(image=${trip.coverImage})}"
+            th:alt="'Copertina di ' + ${trip.name}">
 
-    <!-- FOTO DEFAULT -->
+        <img
+            th:if="${trip.coverImage == null}"
+            th:src="@{/images/default-trip.jpg}"
+            alt="Copertina Travelly">
 
-    <img
-        th:if="${trip.coverImage == null}"
-        th:src="@{/images/default-trip.jpg}"
-        alt="Copertina Travelly">
+        <div class="trip-detail-cover-overlay">
 
+            <span>IL TUO VIAGGIO</span>
 
-    <div class="trip-detail-cover-overlay">
+            <h1 th:text="${trip.name}">
+                Nome viaggio
+            </h1>
 
-        <span>
-            IL TUO VIAGGIO
-        </span>
-
-        <h1 th:text="${trip.name}">
-            Nome viaggio
-        </h1>
+        </div>
 
     </div>
 
 
-</div>
+    <!-- ================================================== -->
+    <!-- INFORMAZIONI GENERALI -->
+    <!-- ================================================== -->
 
-        <!-- INTESTAZIONE VIAGGIO -->
+    <div class="trip-detail-header">
 
-        <div class="trip-detail-header">
+        <div>
 
-            <div>
+            <p
+                class="trip-description"
+                th:text="${trip.description}">
+                Descrizione viaggio
+            </p>
 
-                <p
-                    class="trip-description"
-                    th:text="${trip.description}">
-                    Descrizione viaggio
-                </p>
+            <p class="trip-info">
 
-                <p class="trip-info">
+                Dal
 
-                    Dal
+                <strong
+                    th:text="${#temporals.format(trip.startDate, 'dd/MM/yyyy')}">
+                    Data inizio
+                </strong>
 
-                    <strong th:text="${#temporals.format(trip.startDate, 'dd/MM/yyyy')}">
-                        data partenza
-                    </strong>
+                al
 
-                    al
+                <strong
+                    th:text="${#temporals.format(trip.endDate, 'dd/MM/yyyy')}">
+                    Data fine
+                </strong>
 
-                    <strong th:text="${#temporals.format(trip.endDate, 'dd/MM/yyyy')}">
-                        data ritorno
-                    </strong>
+            </p>
 
-                </p>
+        </div>
+
+        <a
+            class="button button-secondary"
+            th:href="@{/trips/{id}/edit(id=${trip.id})}">
+            Modifica viaggio
+        </a>
+
+    </div>
+
+
+    <!-- ================================================== -->
+    <!-- RIEPILOGO BUDGET -->
+    <!-- ================================================== -->
+
+    <div class="summary-grid">
+
+        <div class="summary-card">
+
+            <span class="summary-label">
+                Budget
+            </span>
+
+            <strong class="summary-value">
+                <span th:text="${trip.budget}">0</span> €
+            </strong>
+
+        </div>
+
+
+        <div class="summary-card">
+
+            <span class="summary-label">
+                Spese totali
+            </span>
+
+            <strong class="summary-value">
+                <span th:text="${totalExpenses}">0</span> €
+            </strong>
+
+        </div>
+
+
+        <div class="summary-card">
+
+            <span class="summary-label">
+                Budget rimanente
+            </span>
+
+            <strong class="summary-value">
+                <span th:text="${remainingBudget}">0</span> €
+            </strong>
+
+        </div>
+
+    </div>
+
+
+    <!-- DASHBOARD REACT -->
+
+    <div class="dashboard-link">
+
+        <a
+            class="button"
+            th:href="@{/react-dashboard/index.html(tripId=${trip.id})}">
+
+            📊 Dashboard spese
+
+        </a>
+
+    </div>
+
+
+
+    <!-- ================================================== -->
+    <!-- DESTINAZIONI -->
+    <!-- ================================================== -->
+
+    <section class="detail-section trip-entity-section trip-entity-section--destinations">
+
+        <div class="section-header">
+
+            <h2>Destinazioni</h2>
+
+            <a
+                class="button"
+                th:href="@{/trips/{id}/destinations/new(id=${trip.id})}">
+
+                + Aggiungi destinazione
+
+            </a>
+
+        </div>
+
+
+        <div
+            class="empty-section"
+            th:if="${#lists.isEmpty(trip.destinations)}">
+
+            Nessuna destinazione aggiunta.
+
+        </div>
+
+
+        <article
+            class="item-card trip-entity-card"
+            th:each="destination : ${trip.destinations}">
+
+
+            <h3>
+
+                <span th:text="${destination.city}">Città</span>,
+                <span th:text="${destination.country}">Paese</span>
+
+            </h3>
+
+
+            <!-- DATI -->
+
+            <div class="trip-entity-meta">
+
+                <span class="trip-entity-meta-item">
+
+                    <strong>Arrivo:</strong>
+
+                    <span
+                        th:text="${#temporals.format(destination.arrivalDate, 'dd/MM/yyyy')}">
+                        Data arrivo
+                    </span>
+
+                </span>
+
+
+                <span class="trip-entity-meta-item">
+
+                    <strong>Partenza:</strong>
+
+                    <span
+                        th:text="${#temporals.format(destination.departureDate, 'dd/MM/yyyy')}">
+                        Data partenza
+                    </span>
+
+                </span>
 
             </div>
 
 
-            <a
-                class="button button-secondary"
-                th:href="@{/trips/{id}/edit(id=${trip.id})}">
+            <!-- AZIONI -->
 
-                Modifica viaggio
+            <div class="trip-entity-actions">
+
+                <a
+                    class="button button-secondary trip-entity-btn trip-entity-btn--edit"
+                    th:href="@{/trips/{tripId}/destinations/{destinationId}/edit(
+                        tripId=${trip.id},
+                        destinationId=${destination.id}
+                    )}">
+
+                    Modifica destinazione
+
+                </a>
+
+
+                <form
+                    th:action="@{/trips/{tripId}/destinations/{destinationId}/delete(
+                        tripId=${trip.id},
+                        destinationId=${destination.id}
+                    )}"
+                    method="post">
+
+                    <button
+                        class="button button-danger trip-entity-btn trip-entity-btn--delete"
+                        type="submit">
+
+                        Elimina destinazione
+
+                    </button>
+
+                </form>
+
+            </div>
+
+        </article>
+
+    </section>
+
+
+
+    <!-- ================================================== -->
+    <!-- PARTECIPANTI -->
+    <!-- ================================================== -->
+
+    <section class="detail-section trip-entity-section trip-entity-section--participants">
+
+        <div class="section-header">
+
+            <h2>Partecipanti</h2>
+
+            <a
+                class="button"
+                th:href="@{/trips/{id}/participants/new(id=${trip.id})}">
+
+                + Aggiungi partecipante
+
+            </a>
+
+        </div>
+
+
+        <div
+            class="empty-section"
+            th:if="${#lists.isEmpty(trip.participants)}">
+
+            Nessun partecipante aggiunto.
+
+        </div>
+
+
+        <article
+            class="item-card trip-entity-card"
+            th:each="participant : ${trip.participants}">
+
+
+            <h3 th:text="${participant.name}">
+                Nome partecipante
+            </h3>
+
+
+            <!-- DATI -->
+
+            <div class="trip-entity-meta">
+
+                <span class="trip-entity-meta-item">
+
+                    <strong>Email:</strong>
+
+                    <span th:text="${participant.email}">
+                        email
+                    </span>
+
+                </span>
+
+            </div>
+
+
+            <!-- AZIONI -->
+
+            <div class="trip-entity-actions">
+
+                <a
+                    class="button button-secondary trip-entity-btn trip-entity-btn--edit"
+                    th:href="@{/trips/{tripId}/participants/{participantId}/edit(
+                        tripId=${trip.id},
+                        participantId=${participant.id}
+                    )}">
+
+                    Modifica partecipante
+
+                </a>
+
+
+                <form
+                    th:action="@{/trips/{tripId}/participants/{participantId}/delete(
+                        tripId=${trip.id},
+                        participantId=${participant.id}
+                    )}"
+                    method="post">
+
+                    <button
+                        class="button button-danger trip-entity-btn trip-entity-btn--delete"
+                        type="submit">
+
+                        Elimina partecipante
+
+                    </button>
+
+                </form>
+
+            </div>
+
+        </article>
+
+    </section>
+
+
+
+    <!-- ================================================== -->
+    <!-- ATTIVITÀ -->
+    <!-- ================================================== -->
+
+    <section class="detail-section trip-entity-section trip-entity-section--activities">
+
+        <div class="section-header">
+
+            <h2>Attività</h2>
+
+            <a
+                class="button"
+                th:href="@{/trips/{id}/activities/new(id=${trip.id})}">
+
+                + Aggiungi attività
+
+            </a>
+
+        </div>
+
+
+        <div
+            class="empty-section"
+            th:if="${#lists.isEmpty(trip.activities)}">
+
+            Nessuna attività aggiunta.
+
+        </div>
+
+
+        <article
+            class="item-card trip-entity-card"
+            th:each="activity : ${trip.activities}">
+
+
+            <h3 th:text="${activity.name}">
+                Nome attività
+            </h3>
+
+
+            <!-- DESCRIZIONE -->
+
+            <p
+                class="trip-entity-description"
+                th:if="${activity.description != null and !#strings.isEmpty(activity.description)}"
+                th:text="${activity.description}">
+
+                Descrizione attività
+
+            </p>
+
+
+            <!-- ================================================= -->
+            <!-- DATI DELL'ATTIVITÀ -->
+            <!-- ================================================= -->
+
+            <div class="trip-entity-meta">
+
+
+                <span class="trip-entity-meta-item">
+
+                    <strong>Data:</strong>
+
+                    <span
+                        th:text="${#temporals.format(activity.date, 'dd/MM/yyyy')}">
+                        Data
+                    </span>
+
+                </span>
+
+
+
+                <span class="trip-entity-meta-item">
+
+                    <strong>Ora:</strong>
+
+                    <span th:text="${activity.time}">
+                        Ora
+                    </span>
+
+                </span>
+
+
+
+                <span class="trip-entity-meta-item">
+
+                    <strong>Luogo:</strong>
+
+                    <span th:text="${activity.location}">
+                        Luogo
+                    </span>
+
+                </span>
+
+
+
+                <span class="trip-entity-meta-item">
+
+                    <strong>Categoria:</strong>
+
+                    <span
+                        class="trip-entity-category"
+                        th:text="${activity.category}">
+                        Categoria
+                    </span>
+
+                </span>
+
+
+
+                <!-- COSTO: ORA ALLINEATO AGLI ALTRI DATI -->
+
+                <span class="trip-entity-meta-item">
+
+                    <strong>Costo:</strong>
+
+                    <span th:text="${activity.cost}">
+                        0
+                    </span>
+
+                    <span>€</span>
+
+                </span>
+
+
+            </div>
+
+
+
+            <!-- ================================================= -->
+            <!-- PULSANTI SEPARATI DAL COSTO -->
+            <!-- ================================================= -->
+
+            <div class="trip-entity-actions">
+
+
+                <a
+                    class="button button-secondary trip-entity-btn trip-entity-btn--edit"
+                    th:href="@{/trips/{tripId}/activities/{activityId}/edit(
+                        tripId=${trip.id},
+                        activityId=${activity.id}
+                    )}">
+
+                    Modifica attività
+
+                </a>
+
+
+
+                <form
+                    th:action="@{/trips/{tripId}/activities/{activityId}/delete(
+                        tripId=${trip.id},
+                        activityId=${activity.id}
+                    )}"
+                    method="post">
+
+                    <button
+                        class="button button-danger trip-entity-btn trip-entity-btn--delete"
+                        type="submit">
+
+                        Elimina attività
+
+                    </button>
+
+                </form>
+
+
+            </div>
+
+
+        </article>
+
+    </section>
+
+
+
+    <!-- ================================================== -->
+    <!-- SPESE -->
+    <!-- ================================================== -->
+
+    <section class="detail-section trip-entity-section trip-entity-section--expenses">
+
+
+        <div class="section-header">
+
+            <h2>Spese</h2>
+
+            <a
+                class="button"
+                th:href="@{/trips/{id}/expenses/new(id=${trip.id})}">
+
+                + Aggiungi spesa
 
             </a>
 
@@ -116,597 +568,98 @@
 
 
 
-        <!-- RIEPILOGO BUDGET -->
+        <div
+            class="empty-section"
+            th:if="${#lists.isEmpty(trip.expenses)}">
 
-        <div class="summary-grid">
-
-
-            <div class="summary-card">
-
-                <span class="summary-label">
-                    Budget
-                </span>
-
-                <strong class="summary-value">
-
-                    <span th:text="${trip.budget}">
-                        0
-                    </span>
-
-                    €
-
-                </strong>
-
-            </div>
-
-
-
-            <div class="summary-card">
-
-                <span class="summary-label">
-                    Spese totali
-                </span>
-
-                <strong class="summary-value">
-
-                    <span th:text="${totalExpenses}">
-                        0
-                    </span>
-
-                    €
-
-                </strong>
-
-            </div>
-
-
-
-            <div class="summary-card">
-
-                <span class="summary-label">
-                    Budget rimanente
-                </span>
-
-                <strong class="summary-value">
-
-                    <span th:text="${remainingBudget}">
-                        0
-                    </span>
-
-                    €
-
-                </strong>
-
-            </div>
-
+            Nessuna spesa registrata.
 
         </div>
 
-<div class="dashboard-link">
 
-    <a
-        class="button"
-        th:href="@{/react-dashboard/index.html(
-            tripId=${trip.id}
-        )}">
 
-        📊 Dashboard spese
+        <article
+            class="item-card trip-entity-card"
+            th:each="expense : ${trip.expenses}">
 
-    </a>
 
-</div>
+            <!-- NOME SPESA -->
 
-   <!-- DESTINAZIONI -->
+            <h3 th:text="${expense.description}">
+                Descrizione spesa
+            </h3>
 
-<section class="detail-section">
 
-    <div class="section-header">
 
-        <h2>Destinazioni</h2>
+            <!-- DATI SPESA -->
 
-        <a
-            class="button"
-            th:href="@{/trips/{id}/destinations/new(id=${trip.id})}">
+            <div class="trip-entity-meta">
 
-            + Aggiungi destinazione
 
-        </a>
+                <span class="trip-entity-meta-item">
 
-    </div>
+                    <strong>Importo:</strong>
 
-
-    <!-- Nessuna destinazione -->
-
-    <div
-        class="empty-section"
-        th:if="${#lists.isEmpty(trip.destinations)}">
-
-        Nessuna destinazione aggiunta.
-
-    </div>
-
-
-    <!-- Lista destinazioni -->
-
-    <div
-        class="item-card"
-        th:each="destination : ${trip.destinations}">
-
-
-        <h3>
-
-            <span th:text="${destination.city}">
-                Città
-            </span>,
-
-            <span th:text="${destination.country}">
-                Paese
-            </span>
-
-        </h3>
-
-
-        <p>
-
-            Dal
-
-            <strong th:text="${destination.arrivalDate}">
-                data arrivo
-            </strong>
-
-            al
-
-            <strong th:text="${destination.departureDate}">
-                data partenza
-            </strong>
-
-        </p>
-
-<a
-    class="button button-secondary"
-    th:href="@{/trips/{tripId}/destinations/{destinationId}/edit(
-        tripId=${trip.id},
-        destinationId=${destination.id}
-    )}">
-
-    Modifica destinazione
-
-</a>
-
-
-        <!-- ELIMINA DESTINAZIONE -->
-
-        <form
-            th:action="@{/trips/{tripId}/destinations/{destinationId}/delete(
-                tripId=${trip.id},
-                destinationId=${destination.id}
-            )}"
-            method="post">
-
-            <button
-                class="button button-danger"
-                type="submit">
-
-                Elimina destinazione
-
-            </button>
-
-        </form>
-
-
-    </div>
-
-</section>
-
-
-<!-- PARTECIPANTI -->
-
-<section class="detail-section">
-
-    <div class="section-header">
-
-        <h2>Partecipanti</h2>
-
-        <a
-            class="button"
-            th:href="@{/trips/{id}/participants/new(id=${trip.id})}">
-
-            + Aggiungi partecipante
-
-        </a>
-
-    </div>
-
-
-    <!-- Nessun partecipante -->
-
-    <div
-        class="empty-section"
-        th:if="${#lists.isEmpty(trip.participants)}">
-
-        Nessun partecipante aggiunto.
-
-    </div>
-
-
-    <!-- Lista partecipanti -->
-
-    <div
-        class="item-card"
-        th:each="participant : ${trip.participants}">
-
-
-        <h3 th:text="${participant.name}">
-            Nome partecipante
-        </h3>
-
-
-        <p>
-
-            <strong>Email:</strong>
-
-            <span th:text="${participant.email}">
-                email
-            </span>
-
-        </p>
-
-        <a
-    class="button button-secondary"
-    th:href="@{/trips/{tripId}/participants/{participantId}/edit(
-        tripId=${trip.id},
-        participantId=${participant.id}
-    )}">
-
-    Modifica partecipante
-
-</a>
-
-
-        <!-- ELIMINA PARTECIPANTE -->
-
-        <form
-            th:action="@{/trips/{tripId}/participants/{participantId}/delete(
-                tripId=${trip.id},
-                participantId=${participant.id}
-            )}"
-            method="post">
-
-            <button
-                class="button button-danger"
-                type="submit">
-
-                Elimina partecipante
-
-            </button>
-
-        </form>
-
-
-    </div>
-
-</section>
-
-        
- <!-- ATTIVITÀ -->
-
-        <section class="detail-section">
-
-
-            <div class="section-header">
-
-                <h2>Attività</h2>
-
-                <a
-                    class="button"
-                    th:href="@{/trips/{id}/activities/new(id=${trip.id})}">
-
-                    + Aggiungi attività
-
-                </a>
-
-            </div>
-
-
-            <div
-                class="empty-section"
-                th:if="${#lists.isEmpty(trip.activities)}">
-
-                Nessuna attività aggiunta.
-
-            </div>
-
-
-            <div
-                class="item-card"
-                th:each="activity : ${trip.activities}">
-
-
-                <h3 th:text="${activity.name}">
-                    Nome attività
-                </h3>
-
-
-                <p th:text="${activity.description}">
-                    Descrizione
-                </p>
-
-
-                <div class="item-details">
-
-                    <span>
-                        <strong>Data:</strong>
-                        <span th:text="${activity.date}">
-                            data
-                        </span>
+                    <span th:text="${expense.amount}">
+                        0
                     </span>
 
-                    <span>
-                        <strong>Ora:</strong>
-                        <span th:text="${activity.time}">
-                            ora
-                        </span>
+                    <span>€</span>
+
+                </span>
+
+
+
+                <span class="trip-entity-meta-item">
+
+                    <strong>Data:</strong>
+
+                    <span
+                        th:text="${#temporals.format(expense.date, 'dd/MM/yyyy')}">
+                        Data
                     </span>
 
-                    <span>
-                        <strong>Luogo:</strong>
-                        <span th:text="${activity.location}">
-                            luogo
-                        </span>
+                </span>
+
+
+
+                <span class="trip-entity-meta-item">
+
+                    <strong>Categoria:</strong>
+
+                    <span
+                        class="trip-entity-category"
+                        th:text="${expense.category}">
+                        Categoria
                     </span>
 
-                    <span>
-                        <strong>Categoria:</strong>
-                        <span th:text="${activity.category}">
-                            categoria
-                        </span>
-                    </span>
+                </span>
 
-                    <span>
-                        <strong>Costo:</strong>
-
-                        <span th:text="${activity.cost}">
-                            0
-                    </span>
-
-                    €
-
-<a
-    class="button button-secondary"
-    th:href="@{/trips/{tripId}/activities/{activityId}/edit(
-        tripId=${trip.id},
-        activityId=${activity.id}
-    )}">
-
-    Modifica attività
-
-</a>
-
-                    <form
-    th:action="@{/trips/{tripId}/activities/{activityId}/delete(
-        tripId=${trip.id},
-        activityId=${activity.id}
-    )}"
-    method="post">
-
-    <button
-        class="button button-danger"
-        type="submit">
-
-        Elimina attività
-
-    </button>
-
-</form>
-</span>
-
-                </div>
-
-            </div>
-
-
-        </section>
-
-
-<!-- ====================================================== -->
-<!-- SPESE -->
-<!-- ====================================================== -->
-
-<section class="detail-section">
-
-    <!-- Titolo sezione + aggiunta nuova spesa -->
-
-    <div class="section-header">
-
-        <h2>Spese</h2>
-
-        <a
-            class="button"
-            th:href="@{/trips/{id}/expenses/new(id=${trip.id})}">
-
-            + Aggiungi spesa
-
-        </a>
-
-    </div>
-
-
-    <!-- ================================================== -->
-    <!-- NESSUNA SPESA -->
-    <!-- ================================================== -->
-
-    <div
-        class="empty-section"
-        th:if="${#lists.isEmpty(trip.expenses)}">
-
-        Nessuna spesa registrata.
-
-    </div>
-
-
-    <!-- ================================================== -->
-    <!-- LISTA DELLE SPESE -->
-    <!-- ================================================== -->
-
-    <div
-        class="item-card"
-        th:each="expense : ${trip.expenses}">
-
-
-        <!-- ============================================== -->
-        <!-- NOME / DESCRIZIONE SPESA -->
-        <!-- ============================================== -->
-
-        <h3 th:text="${expense.description}">
-            Descrizione spesa
-        </h3>
-
-
-
-        <!-- ============================================== -->
-        <!-- DATI PRINCIPALI -->
-        <!-- ============================================== -->
-
-        <p>
-
-            <strong>
-                Importo:
-            </strong>
-
-            <span th:text="${expense.amount}">
-                0
-            </span>
-
-            €
-
-
-            &nbsp;&nbsp;&nbsp;
-
-
-            <strong>
-                Data:
-            </strong>
-
-            <span th:text="${expense.date}">
-                data
-            </span>
-
-
-            &nbsp;&nbsp;&nbsp;
-
-
-            <strong>
-                Categoria:
-            </strong>
-
-            <span th:text="${expense.category}">
-                categoria
-            </span>
-
-        </p>
-
-
-
-        <!-- ================================================== -->
-        <!-- PAGATORE -->
-        <!-- ================================================== -->
-
-        <div class="payer-section">
-
-
-            <!-- ============================================== -->
-            <!-- PAGATORE NON ANCORA ASSEGNATO -->
-            <!-- ============================================== -->
-
-            <div th:if="${expense.paidBy == null}">
-
-                <p>
-
-                    <strong>
-                        Pagata da:
-                    </strong>
-
-                    Da assegnare
-
-                </p>
-
-
-                <form
-                    th:action="@{/trips/{tripId}/expenses/{expenseId}/payer(
-                        tripId=${trip.id},
-                        expenseId=${expense.id}
-                    )}"
-                    method="post">
-
-
-                    <select
-                        name="participantId"
-                        onchange="this.form.submit()">
-
-
-                        <option
-                            value=""
-                            selected
-                            disabled>
-
-                            Seleziona partecipante
-
-                        </option>
-
-
-                        <option
-                            th:each="participant : ${trip.participants}"
-                            th:value="${participant.id}"
-                            th:text="${participant.name}">
-
-                        </option>
-
-
-                    </select>
-
-
-                </form>
 
             </div>
 
 
 
-            <!-- ============================================== -->
-            <!-- PAGATORE GIÀ ASSEGNATO -->
-            <!-- ============================================== -->
+            <!-- ================================================= -->
+            <!-- PAGATORE -->
+            <!-- ================================================= -->
 
-            <div th:if="${expense.paidBy != null}">
-
-
-                <p>
-
-                    <strong>
-                        Pagata da:
-                    </strong>
+            <div class="payer-section">
 
 
-                    <span th:text="${expense.paidBy.name}">
-                        partecipante
-                    </span>
+                <!-- PAGATORE NON ASSEGNATO -->
 
-                </p>
+                <div th:if="${expense.paidBy == null}">
 
 
-                <!--
-                    Il pulsante rimane chiuso normalmente.
-                    Cliccando "Cambia pagatore" compare
-                    solamente la tendina.
-                -->
+                    <p class="trip-payer-label">
 
-                <details class="payer-change">
+                        <strong>Pagata da:</strong>
 
+                        Da assegnare
 
-                    <summary
-                        class="button button-secondary">
+                    </p>
 
-                        Cambia pagatore
-
-                    </summary>
 
 
                     <form
@@ -719,31 +672,25 @@
 
                         <select
                             name="participantId"
+                            aria-label="Seleziona pagatore"
                             onchange="this.form.submit()">
 
 
-                            <!--
-                                Permette di rimuovere
-                                il pagatore attuale
-                            -->
+                            <option
+                                value=""
+                                selected
+                                disabled>
 
-                            <option value="">
-
-                                Da assegnare
+                                Seleziona partecipante
 
                             </option>
 
 
-                            <!-- Partecipanti del viaggio -->
 
                             <option
                                 th:each="participant : ${trip.participants}"
                                 th:value="${participant.id}"
-                                th:text="${participant.name}"
-                                th:selected="${
-                                    expense.paidBy.id == participant.id
-                                }">
-
+                                th:text="${participant.name}">
                             </option>
 
 
@@ -753,135 +700,245 @@
                     </form>
 
 
-                </details>
+                    <small
+                        class="field-help"
+                        th:if="${#lists.isEmpty(trip.participants)}">
+
+                        Aggiungi un partecipante per assegnare la spesa.
+
+                    </small>
+
+
+                </div>
+
+
+
+                <!-- PAGATORE ASSEGNATO -->
+
+                <div th:if="${expense.paidBy != null}">
+
+
+                    <p class="trip-payer-label">
+
+                        <strong>Pagata da:</strong>
+
+                        <span th:text="${expense.paidBy.name}">
+                            Partecipante
+                        </span>
+
+                    </p>
+
+
+
+                    <details class="payer-change">
+
+
+                        <summary
+                            class="button button-secondary trip-entity-btn trip-entity-btn--edit">
+
+                            Cambia pagatore
+
+                        </summary>
+
+
+
+                        <form
+                            th:action="@{/trips/{tripId}/expenses/{expenseId}/payer(
+                                tripId=${trip.id},
+                                expenseId=${expense.id}
+                            )}"
+                            method="post">
+
+
+                            <select
+                                name="participantId"
+                                aria-label="Cambia pagatore"
+                                onchange="this.form.submit()">
+
+
+                                <option value="">
+                                    Da assegnare
+                                </option>
+
+
+
+                                <option
+                                    th:each="participant : ${trip.participants}"
+                                    th:value="${participant.id}"
+                                    th:text="${participant.name}"
+                                    th:selected="${expense.paidBy.id == participant.id}">
+                                </option>
+
+
+                            </select>
+
+
+                        </form>
+
+
+                    </details>
+
+
+                </div>
 
 
             </div>
 
 
-        </div>
+
+            <!-- ================================================= -->
+            <!-- SPESA MANUALE -->
+            <!-- ================================================= -->
+
+            <div
+                class="trip-entity-actions"
+                th:if="${expense.activity == null}">
+
+
+                <a
+                    class="button button-secondary trip-entity-btn trip-entity-btn--edit"
+                    th:href="@{/trips/{tripId}/expenses/{expenseId}/edit(
+                        tripId=${trip.id},
+                        expenseId=${expense.id}
+                    )}">
+
+                    Modifica spesa
+
+                </a>
 
 
 
-        <!-- ================================================== -->
-        <!-- AZIONI PER SPESA MANUALE -->
-        <!-- ================================================== -->
-
-        <!--
-            Se activity == null significa che questa Expense
-            è stata inserita manualmente.
-
-            Esempi:
-            - hotel
-            - volo
-            - taxi
-            - assicurazione
-            - altre spese
-
-            Può quindi essere modificata direttamente.
-        -->
-
-        <div
-            class="expense-actions"
-            th:if="${expense.activity == null}">
+                <form
+                    th:action="@{/trips/{tripId}/expenses/{expenseId}/delete(
+                        tripId=${trip.id},
+                        expenseId=${expense.id}
+                    )}"
+                    method="post">
 
 
-            <!-- MODIFICA SPESA -->
+                    <button
+                        class="button button-danger trip-entity-btn trip-entity-btn--delete"
+                        type="submit">
 
-            <a
-                class="button button-secondary"
-                th:href="@{/trips/{tripId}/expenses/{expenseId}/edit(
-                    tripId=${trip.id},
-                    expenseId=${expense.id}
-                )}">
+                        Elimina spesa
 
-                Modifica spesa
-
-            </a>
+                    </button>
 
 
-            <!-- ELIMINA SPESA -->
-
-            <form
-                th:action="@{/trips/{tripId}/expenses/{expenseId}/delete(
-                    tripId=${trip.id},
-                    expenseId=${expense.id}
-                )}"
-                method="post">
+                </form>
 
 
-                <button
-                    class="button button-danger"
-                    type="submit">
-
-                    Elimina spesa
-
-                </button>
+            </div>
 
 
-            </form>
+
+            <!-- ================================================= -->
+            <!-- SPESA GENERATA DA ATTIVITÀ -->
+            <!-- ================================================= -->
+
+            <div th:if="${expense.activity != null}">
 
 
-        </div>
+                <p class="trip-automatic-expense-label">
 
-        <!-- ================================================== -->
-        <!-- AZIONI PER SPESA AUTOMATICA DA ACTIVITY -->
-        <!-- ================================================== -->
-
-        <!--
-            Se activity != null significa che la Expense
-            è stata generata automaticamente da un'Activity.
-
-            Non modifichiamo direttamente importo, data,
-            descrizione o categoria della Expense.
-
-            Modifichiamo invece l'Activity collegata.
-        -->
-
-        <div
-            class="expense-actions"
-            th:if="${expense.activity != null}">
-
-
-            <p>
-
-                <strong>
                     Spesa generata automaticamente da un'attività
-                </strong>
 
-            </p>
+                </p>
 
 
-            <!-- MODIFICA ATTIVITÀ COLLEGATA -->
+
+                <div class="trip-entity-actions">
+
+
+                    <a
+                        class="button button-secondary trip-entity-btn trip-entity-btn--edit"
+                        th:href="@{/trips/{tripId}/activities/{activityId}/edit(
+                            tripId=${trip.id},
+                            activityId=${expense.activity.id}
+                        )}">
+
+                        Modifica attività collegata
+
+                    </a>
+
+
+
+                    <form
+                        th:action="@{/trips/{tripId}/activities/{activityId}/delete(
+                            tripId=${trip.id},
+                            activityId=${expense.activity.id}
+                        )}"
+                        method="post">
+
+
+                        <button
+                            class="button button-danger trip-entity-btn trip-entity-btn--delete"
+                            type="submit">
+
+                            Elimina attività e spesa
+
+                        </button>
+
+
+                    </form>
+
+
+                </div>
+
+
+            </div>
+
+
+        </article>
+
+
+    </section>
+
+
+
+    <!-- ================================================== -->
+    <!-- GESTIONE VIAGGIO -->
+    <!-- ================================================== -->
+
+    <section class="detail-section">
+
+
+        <div class="section-header">
+
+            <h2>
+                Gestione viaggio
+            </h2>
+
+        </div>
+
+
+
+        <div class="expense-actions">
+
 
             <a
                 class="button button-secondary"
-                th:href="@{/trips/{tripId}/activities/{activityId}/edit(
-                    tripId=${trip.id},
-                    activityId=${expense.activity.id}
-                )}">
+                th:href="@{/trips/{id}/edit(id=${trip.id})}">
 
-                Modifica attività collegata
+                Modifica viaggio
 
             </a>
 
 
-            <!-- ELIMINA ATTIVITÀ + SPESA -->
 
             <form
-                th:action="@{/trips/{tripId}/activities/{activityId}/delete(
-                    tripId=${trip.id},
-                    activityId=${expense.activity.id}
-                )}"
+                th:action="@{/trips/{id}/delete(id=${trip.id})}"
                 method="post">
+
 
                 <button
                     class="button button-danger"
                     type="submit">
 
-                    Elimina attività e spesa
+                    Elimina viaggio
 
                 </button>
+
 
             </form>
 
@@ -889,66 +946,10 @@
         </div>
 
 
-    </div>
-
-</section>
-
-
-
-<!-- ====================================================== -->
-<!-- GESTIONE VIAGGIO -->
-<!-- ====================================================== -->
-
-<section class="detail-section">
-
-    <div class="section-header">
-
-        <h2>
-            Gestione viaggio
-        </h2>
-
-    </div>
-
-
-    <div class="expense-actions">
-
-
-        <!-- MODIFICA VIAGGIO -->
-
-        <a
-            class="button button-secondary"
-            th:href="@{/trips/{id}/edit(id=${trip.id})}">
-
-            Modifica viaggio
-
-        </a>
-
-
-        <!-- ELIMINA VIAGGIO -->
-
-        <form
-            th:action="@{/trips/{id}/delete(id=${trip.id})}"
-            method="post">
-
-            <button
-                class="button button-danger"
-                type="submit">
-
-                Elimina viaggio
-
-            </button>
-
-        </form>
-
-
-    </div>
-
-</section>
+    </section>
 
 
 </main>
 
-
 </body>
-
 </html>

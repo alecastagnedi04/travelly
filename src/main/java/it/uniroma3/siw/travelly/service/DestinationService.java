@@ -11,26 +11,38 @@ import it.uniroma3.siw.travelly.model.Trip;
 import it.uniroma3.siw.travelly.repository.DestinationRepository;
 import it.uniroma3.siw.travelly.repository.TripRepository;
 
+
 @Service
 public class DestinationService {
 
+
     private final DestinationRepository destinationRepository;
+
     private final TripRepository tripRepository;
+
 
 
     public DestinationService(
             DestinationRepository destinationRepository,
             TripRepository tripRepository) {
 
-        this.destinationRepository = destinationRepository;
-        this.tripRepository = tripRepository;
+        this.destinationRepository =
+                destinationRepository;
+
+        this.tripRepository =
+                tripRepository;
     }
 
 
+
     /*
-     * Crea una destinazione solamente se:
+     * =====================================================
+     * CREA DESTINAZIONE PERSONALE
+     * =====================================================
      *
-     * - il viaggio appartiene all'utente autenticato
+     * La destinazione viene creata solamente se:
+     *
+     * - il viaggio appartiene all'utente
      * - le date sono valide
      */
     @Transactional
@@ -44,20 +56,29 @@ public class DestinationService {
 
 
         Optional<Trip> tripOptional =
-                tripRepository.findByIdAndOwnerUsername(
-                        tripId,
-                        ownerUsername
-                );
+                tripRepository
+                        .findByIdAndOwnerUsername(
+                                tripId,
+                                ownerUsername
+                        );
 
 
         if (tripOptional.isEmpty()) {
+
             return Optional.empty();
         }
 
 
-        Trip trip = tripOptional.get();
+
+        Trip trip =
+                tripOptional.get();
 
 
+
+        /*
+         * Controlliamo che le date
+         * siano coerenti con il viaggio.
+         */
         if (!datesAreValid(
                 trip,
                 arrivalDate,
@@ -67,27 +88,54 @@ public class DestinationService {
         }
 
 
+
         Destination destination =
                 new Destination();
 
 
-        destination.setCity(city);
-        destination.setCountry(country);
-        destination.setArrivalDate(arrivalDate);
-        destination.setDepartureDate(departureDate);
-        destination.setTrip(trip);
+        destination.setCity(
+                city
+        );
+
+
+        destination.setCountry(
+                country
+        );
+
+
+        destination.setArrivalDate(
+                arrivalDate
+        );
+
+
+        destination.setDepartureDate(
+                departureDate
+        );
+
+
+        destination.setTrip(
+                trip
+        );
+
 
 
         return Optional.of(
-                destinationRepository.save(destination)
+                destinationRepository.save(
+                        destination
+                )
         );
     }
 
 
+
     /*
-     * Recupera una Destination solamente se
-     * appartiene a un viaggio dell'utente autenticato.
+     * =====================================================
+     * RECUPERA DESTINAZIONE PERSONALE
+     * =====================================================
+     *
+     * Metodo di sola lettura.
      */
+    @Transactional(readOnly = true)
     public Optional<Destination> findByIdAndOwnerUsername(
             Long tripId,
             Long destinationId,
@@ -95,7 +143,8 @@ public class DestinationService {
 
 
         /*
-         * Prima verifichiamo la proprietà del Trip.
+         * Il viaggio deve appartenere
+         * all'utente autenticato.
          */
         if (tripRepository
                 .findByIdAndOwnerUsername(
@@ -108,44 +157,54 @@ public class DestinationService {
         }
 
 
+
         Optional<Destination> destinationOptional =
-                destinationRepository.findById(
-                        destinationId
-                );
+                destinationRepository
+                        .findById(
+                                destinationId
+                        );
 
 
         if (destinationOptional.isEmpty()) {
+
             return Optional.empty();
         }
+
 
 
         Destination destination =
                 destinationOptional.get();
 
 
+
         /*
          * La Destination deve appartenere
-         * proprio al Trip indicato.
+         * realmente al Trip indicato.
          */
         if (destination.getTrip() == null ||
-                !destination.getTrip()
+                !destination
+                        .getTrip()
                         .getId()
-                        .equals(tripId)) {
+                        .equals(
+                                tripId
+                        )) {
 
             return Optional.empty();
         }
 
 
-        return Optional.of(destination);
+
+        return Optional.of(
+                destination
+        );
     }
 
 
+
     /*
-     * Modifica una Destination solamente se:
-     *
-     * - il Trip appartiene all'utente autenticato
-     * - la Destination appartiene a quel Trip
-     * - le nuove date sono valide
+     * =====================================================
+     * MODIFICA DESTINAZIONE PERSONALE
+     * =====================================================
      */
     @Transactional
     public Optional<Destination> updateDestination(
@@ -159,23 +218,28 @@ public class DestinationService {
 
 
         Optional<Trip> tripOptional =
-                tripRepository.findByIdAndOwnerUsername(
-                        tripId,
-                        ownerUsername
-                );
+                tripRepository
+                        .findByIdAndOwnerUsername(
+                                tripId,
+                                ownerUsername
+                        );
 
 
         if (tripOptional.isEmpty()) {
+
             return Optional.empty();
         }
+
 
 
         Trip trip =
                 tripOptional.get();
 
 
+
         /*
-         * Controlliamo la coerenza delle date.
+         * Le nuove date devono continuare
+         * ad essere valide.
          */
         if (!datesAreValid(
                 trip,
@@ -186,53 +250,77 @@ public class DestinationService {
         }
 
 
+
         Optional<Destination> destinationOptional =
-                destinationRepository.findById(
-                        destinationId
-                );
+                destinationRepository
+                        .findById(
+                                destinationId
+                        );
 
 
         if (destinationOptional.isEmpty()) {
+
             return Optional.empty();
         }
+
 
 
         Destination destination =
                 destinationOptional.get();
 
 
+
         /*
-         * Sicurezza:
-         *
-         * la Destination deve appartenere
-         * proprio al Trip indicato nell'URL.
+         * La Destination deve appartenere
+         * proprio al viaggio indicato.
          */
         if (destination.getTrip() == null ||
-                !destination.getTrip()
+                !destination
+                        .getTrip()
                         .getId()
-                        .equals(tripId)) {
+                        .equals(
+                                tripId
+                        )) {
 
             return Optional.empty();
         }
 
 
-        destination.setCity(city);
-        destination.setCountry(country);
-        destination.setArrivalDate(arrivalDate);
-        destination.setDepartureDate(departureDate);
+
+        destination.setCity(
+                city
+        );
+
+
+        destination.setCountry(
+                country
+        );
+
+
+        destination.setArrivalDate(
+                arrivalDate
+        );
+
+
+        destination.setDepartureDate(
+                departureDate
+        );
+
 
 
         return Optional.of(
-                destinationRepository.save(destination)
+                destinationRepository.save(
+                        destination
+                )
         );
     }
 
 
+
     /*
-     * Elimina una Destination solamente se:
-     *
-     * - il Trip appartiene all'utente autenticato
-     * - la Destination appartiene a quel Trip
+     * =====================================================
+     * ELIMINA DESTINAZIONE PERSONALE
+     * =====================================================
      */
     @Transactional
     public boolean deleteDestination(
@@ -252,297 +340,333 @@ public class DestinationService {
         }
 
 
+
         Optional<Destination> destinationOptional =
-                destinationRepository.findById(
-                        destinationId
-                );
+                destinationRepository
+                        .findById(
+                                destinationId
+                        );
 
 
         if (destinationOptional.isEmpty()) {
+
             return false;
         }
+
 
 
         Destination destination =
                 destinationOptional.get();
 
 
+
         if (destination.getTrip() == null ||
-                !destination.getTrip()
+                !destination
+                        .getTrip()
                         .getId()
-                        .equals(tripId)) {
+                        .equals(
+                                tripId
+                        )) {
 
             return false;
         }
 
 
-        destinationRepository.delete(destination);
+
+        destinationRepository.delete(
+                destination
+        );
+
 
         return true;
     }
 
 
-/*
- * =====================================================
- * DESTINAZIONI DEGLI ITINERARI TRAVELLY
- * =====================================================
- */
 
-
-/*
- * Crea una destinazione dentro
- * un itinerario ufficiale Travelly.
- */
-@Transactional
-public Optional<Destination> createTemplateDestination(
-        Long templateId,
-        String city,
-        String country,
-        LocalDate arrivalDate,
-        LocalDate departureDate) {
-
-
-    Optional<Trip> tripOptional =
-            tripRepository
-                    .findByIdAndTemplateTrue(
-                            templateId
-                    );
-
-
-    if (tripOptional.isEmpty()) {
-
-        return Optional.empty();
-    }
-
-
-    Trip trip =
-            tripOptional.get();
-
-
-    if (!datesAreValid(
-            trip,
-            arrivalDate,
-            departureDate)) {
-
-        return Optional.empty();
-    }
-
-
-    Destination destination =
-            new Destination();
-
-
-    destination.setCity(
-            city
-    );
-
-
-    destination.setCountry(
-            country
-    );
-
-
-    destination.setArrivalDate(
-            arrivalDate
-    );
-
-
-    destination.setDepartureDate(
-            departureDate
-    );
-
-
-    destination.setTrip(
-            trip
-    );
-
-
-    return Optional.of(
-            destinationRepository.save(
-                    destination
-            )
-    );
-}
-
-
-/*
- * Recupera una destinazione verificando
- * che appartenga proprio al template indicato.
- */
-@Transactional(readOnly = true)
-public Optional<Destination> findTemplateDestination(
-        Long templateId,
-        Long destinationId) {
-
-
-    if (tripRepository
-            .findByIdAndTemplateTrue(
-                    templateId
-            )
-            .isEmpty()) {
-
-        return Optional.empty();
-    }
-
-
-    Optional<Destination> destinationOptional =
-            destinationRepository.findById(
-                    destinationId
-            );
-
-
-    if (destinationOptional.isEmpty()) {
-
-        return Optional.empty();
-    }
-
-
-    Destination destination =
-            destinationOptional.get();
-
-
-    if (destination.getTrip() == null ||
-            !destination.getTrip()
-                    .getId()
-                    .equals(templateId)) {
-
-        return Optional.empty();
-    }
-
-
-    return Optional.of(
-            destination
-    );
-}
-
-
-/*
- * Modifica una destinazione
- * di un itinerario Travelly.
- */
-@Transactional
-public Optional<Destination> updateTemplateDestination(
-        Long templateId,
-        Long destinationId,
-        String city,
-        String country,
-        LocalDate arrivalDate,
-        LocalDate departureDate) {
-
-
-    Optional<Trip> tripOptional =
-            tripRepository
-                    .findByIdAndTemplateTrue(
-                            templateId
-                    );
-
-
-    if (tripOptional.isEmpty()) {
-
-        return Optional.empty();
-    }
-
-
-    Trip trip =
-            tripOptional.get();
-
-
-    if (!datesAreValid(
-            trip,
-            arrivalDate,
-            departureDate)) {
-
-        return Optional.empty();
-    }
-
-
-    Optional<Destination> destinationOptional =
-            findTemplateDestination(
-                    templateId,
-                    destinationId
-            );
-
-
-    if (destinationOptional.isEmpty()) {
-
-        return Optional.empty();
-    }
-
-
-    Destination destination =
-            destinationOptional.get();
-
-
-    destination.setCity(
-            city
-    );
-
-
-    destination.setCountry(
-            country
-    );
-
-
-    destination.setArrivalDate(
-            arrivalDate
-    );
-
-
-    destination.setDepartureDate(
-            departureDate
-    );
-
-
-    return Optional.of(
-            destinationRepository.save(
-                    destination
-            )
-    );
-}
-
-
-/*
- * Elimina una destinazione
- * da un itinerario Travelly.
- */
-@Transactional
-public boolean deleteTemplateDestination(
-        Long templateId,
-        Long destinationId) {
-
-
-    Optional<Destination> destinationOptional =
-            findTemplateDestination(
-                    templateId,
-                    destinationId
-            );
-
-
-    if (destinationOptional.isEmpty()) {
-
-        return false;
-    }
-
-
-    destinationRepository.delete(
-            destinationOptional.get()
-    );
-
-
-    return true;
-}
-
-
+    /*
+     * =====================================================
+     * DESTINAZIONI DEI TEMPLATE TRAVELLY
+     * =====================================================
+     */
 
 
 
     /*
-     * Regola di business sulle date.
+     * Crea una destinazione all'interno
+     * di una guida ufficiale Travelly.
+     */
+    @Transactional
+    public Optional<Destination> createTemplateDestination(
+            Long templateId,
+            String city,
+            String country,
+            LocalDate arrivalDate,
+            LocalDate departureDate) {
+
+
+        Optional<Trip> tripOptional =
+                tripRepository
+                        .findByIdAndTemplateTrue(
+                                templateId
+                        );
+
+
+        if (tripOptional.isEmpty()) {
+
+            return Optional.empty();
+        }
+
+
+
+        Trip trip =
+                tripOptional.get();
+
+
+
+        if (!datesAreValid(
+                trip,
+                arrivalDate,
+                departureDate)) {
+
+            return Optional.empty();
+        }
+
+
+
+        Destination destination =
+                new Destination();
+
+
+        destination.setCity(
+                city
+        );
+
+
+        destination.setCountry(
+                country
+        );
+
+
+        destination.setArrivalDate(
+                arrivalDate
+        );
+
+
+        destination.setDepartureDate(
+                departureDate
+        );
+
+
+        destination.setTrip(
+                trip
+        );
+
+
+
+        return Optional.of(
+                destinationRepository.save(
+                        destination
+                )
+        );
+    }
+
+
+
+    /*
+     * Recupera una destinazione del template.
+     *
+     * Metodo di sola lettura.
+     */
+    @Transactional(readOnly = true)
+    public Optional<Destination> findTemplateDestination(
+            Long templateId,
+            Long destinationId) {
+
+
+        if (tripRepository
+                .findByIdAndTemplateTrue(
+                        templateId
+                )
+                .isEmpty()) {
+
+            return Optional.empty();
+        }
+
+
+
+        Optional<Destination> destinationOptional =
+                destinationRepository
+                        .findById(
+                                destinationId
+                        );
+
+
+        if (destinationOptional.isEmpty()) {
+
+            return Optional.empty();
+        }
+
+
+
+        Destination destination =
+                destinationOptional.get();
+
+
+
+        if (destination.getTrip() == null ||
+                !destination
+                        .getTrip()
+                        .getId()
+                        .equals(
+                                templateId
+                        )) {
+
+            return Optional.empty();
+        }
+
+
+
+        return Optional.of(
+                destination
+        );
+    }
+
+
+
+    /*
+     * Modifica destinazione template.
+     */
+    @Transactional
+    public Optional<Destination> updateTemplateDestination(
+            Long templateId,
+            Long destinationId,
+            String city,
+            String country,
+            LocalDate arrivalDate,
+            LocalDate departureDate) {
+
+
+        Optional<Trip> tripOptional =
+                tripRepository
+                        .findByIdAndTemplateTrue(
+                                templateId
+                        );
+
+
+        if (tripOptional.isEmpty()) {
+
+            return Optional.empty();
+        }
+
+
+
+        Trip trip =
+                tripOptional.get();
+
+
+
+        if (!datesAreValid(
+                trip,
+                arrivalDate,
+                departureDate)) {
+
+            return Optional.empty();
+        }
+
+
+
+        Optional<Destination> destinationOptional =
+                findTemplateDestination(
+                        templateId,
+                        destinationId
+                );
+
+
+        if (destinationOptional.isEmpty()) {
+
+            return Optional.empty();
+        }
+
+
+
+        Destination destination =
+                destinationOptional.get();
+
+
+
+        destination.setCity(
+                city
+        );
+
+
+        destination.setCountry(
+                country
+        );
+
+
+        destination.setArrivalDate(
+                arrivalDate
+        );
+
+
+        destination.setDepartureDate(
+                departureDate
+        );
+
+
+
+        return Optional.of(
+                destinationRepository.save(
+                        destination
+                )
+        );
+    }
+
+
+
+    /*
+     * Elimina destinazione template.
+     */
+    @Transactional
+    public boolean deleteTemplateDestination(
+            Long templateId,
+            Long destinationId) {
+
+
+        Optional<Destination> destinationOptional =
+                findTemplateDestination(
+                        templateId,
+                        destinationId
+                );
+
+
+        if (destinationOptional.isEmpty()) {
+
+            return false;
+        }
+
+
+
+        destinationRepository.delete(
+                destinationOptional.get()
+        );
+
+
+        return true;
+    }
+
+
+
+    /*
+     * =====================================================
+     * VALIDAZIONE DATE
+     * =====================================================
+     *
+     * Regole:
      *
      * 1. arrivo e partenza devono esistere
      * 2. arrivo <= partenza
-     * 3. la destinazione deve essere compresa
-     *    nelle date del viaggio
+     * 3. destinazione dentro le date del viaggio
      */
     private boolean datesAreValid(
             Trip trip,
@@ -550,25 +674,30 @@ public boolean deleteTemplateDestination(
             LocalDate departureDate) {
 
 
-        if (arrivalDate == null ||
+        if (trip == null ||
+                arrivalDate == null ||
                 departureDate == null) {
 
             return false;
         }
 
 
+
         /*
-         * Non posso partire dalla destinazione
+         * Non posso lasciare una destinazione
          * prima di esserci arrivato.
          */
-        if (arrivalDate.isAfter(departureDate)) {
+        if (arrivalDate.isAfter(
+                departureDate
+        )) {
+
             return false;
         }
 
 
+
         /*
-         * La destinazione non può iniziare
-         * prima del viaggio.
+         * Non può iniziare prima del Trip.
          */
         if (trip.getStartDate() != null &&
                 arrivalDate.isBefore(
@@ -579,9 +708,9 @@ public boolean deleteTemplateDestination(
         }
 
 
+
         /*
-         * La destinazione non può terminare
-         * dopo la fine del viaggio.
+         * Non può terminare dopo il Trip.
          */
         if (trip.getEndDate() != null &&
                 departureDate.isAfter(
@@ -590,6 +719,7 @@ public boolean deleteTemplateDestination(
 
             return false;
         }
+
 
 
         return true;

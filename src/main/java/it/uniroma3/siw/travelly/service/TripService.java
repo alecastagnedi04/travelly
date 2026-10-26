@@ -8,10 +8,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import it.uniroma3.siw.travelly.model.Activity;
 import it.uniroma3.siw.travelly.model.Destination;
-import it.uniroma3.siw.travelly.model.Expense;
 import it.uniroma3.siw.travelly.model.Trip;
 import it.uniroma3.siw.travelly.model.TripVisibility;
 import it.uniroma3.siw.travelly.model.User;
+
+import it.uniroma3.siw.travelly.repository.ExpenseRepository;
 import it.uniroma3.siw.travelly.repository.TripRepository;
 import it.uniroma3.siw.travelly.repository.UserRepository;
 
@@ -24,6 +25,8 @@ public class TripService {
 
     private final UserRepository userRepository;
 
+    private final ExpenseRepository expenseRepository;
+
     private final ImageStorageService imageStorageService;
 
 
@@ -31,13 +34,21 @@ public class TripService {
     public TripService(
             TripRepository tripRepository,
             UserRepository userRepository,
+            ExpenseRepository expenseRepository,
             ImageStorageService imageStorageService) {
+
 
         this.tripRepository =
                 tripRepository;
 
+
         this.userRepository =
                 userRepository;
+
+
+        this.expenseRepository =
+                expenseRepository;
+
 
         this.imageStorageService =
                 imageStorageService;
@@ -54,6 +65,7 @@ public class TripService {
     public Trip save(
             Trip trip) {
 
+
         return tripRepository.save(
                 trip
         );
@@ -69,6 +81,7 @@ public class TripService {
     @Transactional(readOnly = true)
     public Iterable<Trip> findAll() {
 
+
         return tripRepository.findAll();
     }
 
@@ -76,12 +89,13 @@ public class TripService {
 
     /*
      * =====================================================
-     * CERCA PER ID
+     * CERCA VIAGGIO PER ID
      * =====================================================
      */
     @Transactional(readOnly = true)
     public Optional<Trip> findById(
             Long id) {
+
 
         return tripRepository.findById(
                 id
@@ -95,11 +109,12 @@ public class TripService {
      * VIAGGI PERSONALI DELL'UTENTE
      * =====================================================
      *
-     * Esclude i template Travelly.
+     * Esclude i template ufficiali Travelly.
      */
     @Transactional(readOnly = true)
     public Iterable<Trip> findByOwnerUsername(
             String username) {
+
 
         return tripRepository
                 .findByOwnerUsernameAndTemplateFalse(
@@ -111,13 +126,14 @@ public class TripService {
 
     /*
      * =====================================================
-     * VIAGGIO PERSONALE + CONTROLLO PROPRIETARIO
+     * VIAGGIO PERSONALE + PROPRIETARIO
      * =====================================================
      */
     @Transactional(readOnly = true)
     public Optional<Trip> findByIdAndOwnerUsername(
             Long id,
             String username) {
+
 
         return tripRepository
                 .findByIdAndOwnerUsername(
@@ -136,15 +152,20 @@ public class TripService {
     @Transactional(readOnly = true)
     public Iterable<Trip> findTemplates() {
 
+
         return tripRepository
                 .findByTemplateTrue();
     }
 
 
 
+    /*
+     * Recupera un singolo template.
+     */
     @Transactional(readOnly = true)
     public Optional<Trip> findTemplateById(
             Long id) {
+
 
         return tripRepository
                 .findByIdAndTemplateTrue(
@@ -182,8 +203,10 @@ public class TripService {
                         );
 
 
+
         Trip trip =
                 new Trip();
+
 
 
         trip.setName(
@@ -216,28 +239,32 @@ public class TripService {
         );
 
 
+
         /*
-         * È un normale viaggio personale.
+         * È un viaggio personale.
          */
         trip.setTemplate(
                 false
         );
 
 
+
         /*
-         * I viaggi personali nascono privati.
+         * Un viaggio personale nasce privato.
          */
         trip.setVisibility(
                 TripVisibility.PRIVATE
         );
 
 
+
         /*
-         * Proprietario = utente autenticato.
+         * Proprietario del viaggio.
          */
         trip.setOwner(
                 owner
         );
+
 
 
         return tripRepository.save(
@@ -308,12 +335,15 @@ public class TripService {
                     );
 
 
+
                     /*
-                     * Rimane comunque un viaggio personale.
+                     * Continua ad essere
+                     * un viaggio personale.
                      */
                     trip.setTemplate(
                             false
                     );
+
 
 
                     return tripRepository.save(
@@ -326,7 +356,7 @@ public class TripService {
 
     /*
      * =====================================================
-     * CREA TEMPLATE UFFICIALE TRAVELLY
+     * CREA TEMPLATE UFFICIALE
      * =====================================================
      */
     @Transactional
@@ -341,6 +371,7 @@ public class TripService {
 
         Trip trip =
                 new Trip();
+
 
 
         trip.setName(
@@ -373,28 +404,33 @@ public class TripService {
         );
 
 
+
         /*
-         * È un itinerario ufficiale Travelly.
+         * Template ufficiale Travelly.
          */
         trip.setTemplate(
                 true
         );
 
 
+
         /*
-         * Gli itinerari ufficiali sono pubblici.
+         * I template ufficiali sono pubblici.
          */
         trip.setVisibility(
                 TripVisibility.PUBLIC
         );
 
 
+
         /*
-         * Non appartiene a un normale utente.
+         * Un template non appartiene
+         * ad un normale User.
          */
         trip.setOwner(
                 null
         );
+
 
 
         return tripRepository.save(
@@ -457,23 +493,30 @@ public class TripService {
                     );
 
 
+
                     /*
-                     * Un template deve restare sempre
-                     * template pubblico.
+                     * Un template deve rimanere
+                     * sempre template.
                      */
                     trip.setTemplate(
                             true
                     );
 
 
+
+                    /*
+                     * E deve rimanere pubblico.
+                     */
                     trip.setVisibility(
                             TripVisibility.PUBLIC
                     );
 
 
+
                     trip.setOwner(
                             null
                     );
+
 
 
                     return tripRepository.save(
@@ -503,8 +546,10 @@ public class TripService {
 
         if (tripOptional.isEmpty()) {
 
+
             return false;
         }
+
 
 
         tripRepository.delete(
@@ -522,7 +567,8 @@ public class TripService {
      * USA QUESTO ITINERARIO
      * =====================================================
      *
-     * Crea una copia personale di un template.
+     * Crea una copia personale indipendente
+     * di un template ufficiale.
      *
      * Copia:
      *
@@ -552,6 +598,7 @@ public class TripService {
 
         if (templateOptional.isEmpty()) {
 
+
             return Optional.empty();
         }
 
@@ -565,6 +612,7 @@ public class TripService {
 
 
         if (ownerOptional.isEmpty()) {
+
 
             return Optional.empty();
         }
@@ -582,12 +630,13 @@ public class TripService {
 
         /*
          * =================================================
-         * NUOVO VIAGGIO PERSONALE
+         * NUOVO VIAGGIO
          * =================================================
          */
 
         Trip newTrip =
                 new Trip();
+
 
 
         newTrip.setName(
@@ -615,6 +664,7 @@ public class TripService {
         );
 
 
+
         /*
          * Non è più un template.
          */
@@ -623,13 +673,14 @@ public class TripService {
         );
 
 
+
         /*
-         * La copia personale nasce PRIVATA,
-         * anche se il template era pubblico.
+         * La copia personale nasce privata.
          */
         newTrip.setVisibility(
                 TripVisibility.PRIVATE
         );
+
 
 
         newTrip.setOwner(
@@ -640,7 +691,7 @@ public class TripService {
 
         /*
          * =================================================
-         * COPIA INDIPENDENTE DELLA COPERTINA
+         * COPIA COPERTINA
          * =================================================
          */
 
@@ -671,6 +722,7 @@ public class TripService {
                     new Destination();
 
 
+
             newDestination.setCity(
                     originalDestination.getCity()
             );
@@ -696,6 +748,7 @@ public class TripService {
             );
 
 
+
             newTrip
                     .getDestinations()
                     .add(
@@ -710,10 +763,8 @@ public class TripService {
          * COPIA ATTIVITÀ
          * =================================================
          *
-         * Non utilizziamo ActivityService.
-         *
-         * In questo modo NON viene creata
-         * nessuna Expense automatica.
+         * Non utilizziamo ActivityService
+         * perché non vogliamo generare Expense.
          */
 
         for (Activity originalActivity :
@@ -722,6 +773,7 @@ public class TripService {
 
             Activity newActivity =
                     new Activity();
+
 
 
             newActivity.setName(
@@ -764,6 +816,7 @@ public class TripService {
             );
 
 
+
             newTrip
                     .getActivities()
                     .add(
@@ -777,11 +830,11 @@ public class TripService {
          * CascadeType.ALL salva anche
          * Destination e Activity.
          */
-
         Trip savedTrip =
                 tripRepository.save(
                         newTrip
                 );
+
 
 
         return Optional.of(
@@ -799,6 +852,7 @@ public class TripService {
     @Transactional
     public void deleteById(
             Long id) {
+
 
         tripRepository.deleteById(
                 id
@@ -828,8 +882,10 @@ public class TripService {
 
         if (tripOptional.isEmpty()) {
 
+
             return false;
         }
+
 
 
         tripRepository.delete(
@@ -840,36 +896,40 @@ public class TripService {
         return true;
     }
 
-/*
- * =====================================================
- * VIAGGI PUBBLICI DELLA COMMUNITY
- * =====================================================
- */
-
-@Transactional(readOnly = true)
-public Iterable<Trip> findPublicCommunityTrips() {
-
-    return tripRepository
-            .findByTemplateFalseAndVisibilityOrderByIdDesc(
-                    TripVisibility.PUBLIC
-            );
-}
 
 
-/*
- * Recupera un singolo viaggio personale
- * solamente se è stato reso pubblico.
- */
-@Transactional(readOnly = true)
-public Optional<Trip> findPublicCommunityTripById(
-        Long id) {
+    /*
+     * =====================================================
+     * VIAGGI PUBBLICI DELLA COMMUNITY
+     * =====================================================
+     */
+    @Transactional(readOnly = true)
+    public Iterable<Trip> findPublicCommunityTrips() {
 
-    return tripRepository
-            .findByIdAndTemplateFalseAndVisibility(
-                    id,
-                    TripVisibility.PUBLIC
-            );
-}
+
+        return tripRepository
+                .findByTemplateFalseAndVisibilityOrderByIdDesc(
+                        TripVisibility.PUBLIC
+                );
+    }
+
+
+
+    /*
+     * Recupera un singolo viaggio personale
+     * solamente se pubblico.
+     */
+    @Transactional(readOnly = true)
+    public Optional<Trip> findPublicCommunityTripById(
+            Long id) {
+
+
+        return tripRepository
+                .findByIdAndTemplateFalseAndVisibility(
+                        id,
+                        TripVisibility.PUBLIC
+                );
+    }
 
 
 
@@ -877,25 +937,53 @@ public Optional<Trip> findPublicCommunityTripById(
      * =====================================================
      * TOTALE SPESE
      * =====================================================
+     *
+     * PRIMA:
+     *
+     * caricavamo tutte le Expense del Trip
+     * e le sommavamo con un ciclo Java.
+     *
+     * ORA:
+     *
+     * chiediamo direttamente al database
+     * di eseguire SUM(e.amount).
+     *
+     * La query JPQL si trova in
+     * ExpenseRepository.
      */
+    @Transactional(readOnly = true)
     public Double calculateTotalExpenses(
             Trip trip) {
 
 
-        double total =
-                0.0;
+        if (trip == null ||
+                trip.getId() == null) {
 
 
-        for (Expense expense :
-                trip.getExpenses()) {
-
-
-            if (expense.getAmount() != null) {
-
-                total +=
-                        expense.getAmount();
-            }
+            return 0.0;
         }
+
+
+
+        Double total =
+                expenseRepository
+                        .sumAmountByTripId(
+                                trip.getId()
+                        );
+
+
+
+        /*
+         * La query utilizza già COALESCE,
+         * ma manteniamo comunque questo controllo
+         * per robustezza.
+         */
+        if (total == null) {
+
+
+            return 0.0;
+        }
+
 
 
         return total;
@@ -908,24 +996,71 @@ public Optional<Trip> findPublicCommunityTripById(
      * BUDGET RIMANENTE
      * =====================================================
      */
+    @Transactional(readOnly = true)
     public Double calculateRemainingBudget(
             Trip trip) {
+
+
+        if (trip == null) {
+
+
+            return 0.0;
+        }
+
 
 
         double budget =
                 0.0;
 
 
+
         if (trip.getBudget() != null) {
+
 
             budget =
                     trip.getBudget();
         }
 
 
+
         return budget -
                 calculateTotalExpenses(
                         trip
+                );
+    }
+
+        /*
+     * =====================================================
+     * RICERCA TEMPLATE PER NOME ESATTO
+     * =====================================================
+     */
+    @Transactional(readOnly = true)
+    public Iterable<Trip> findTemplatesByExactName(
+            String name) {
+
+        return tripRepository
+                .findByTemplateTrueAndNameIgnoreCase(
+                        name
+                );
+    }
+
+
+
+    /*
+     * =====================================================
+     * RICERCA VIAGGI PUBBLICI PER NOME ESATTO
+     * =====================================================
+     *
+     * Esclude i template e i viaggi privati.
+     */
+    @Transactional(readOnly = true)
+    public Iterable<Trip> findPublicCommunityTripsByExactName(
+            String name) {
+
+        return tripRepository
+                .findByTemplateFalseAndVisibilityAndNameIgnoreCaseOrderByIdDesc(
+                        TripVisibility.PUBLIC,
+                        name
                 );
     }
 }

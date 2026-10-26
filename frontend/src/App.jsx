@@ -18,17 +18,28 @@ import './App.css'
 
 function App() {
 
+
   /*
-   * Per ora usiamo il viaggio 52
-   * che stiamo utilizzando per i test.
+   * =====================================================
+   * ID DEL VIAGGIO
+   * =====================================================
    *
-   * Successivamente lo renderemo dinamico.
+   * Spring/Thymeleaf apre la dashboard con:
+   *
+   * /react-dashboard/index.html?tripId=123
+   *
+   * React recupera dinamicamente il tripId
+   * dalla query string.
    */
   const searchParams =
-  new URLSearchParams(window.location.search)
+    new URLSearchParams(
+      window.location.search
+    )
 
-const tripId =
-  searchParams.get('tripId')
+
+  const tripId =
+    searchParams.get('tripId')
+
 
 
   const [dashboard, setDashboard] =
@@ -45,63 +56,153 @@ const tripId =
 
 
   /*
-   * Al caricamento del componente React
-   * chiediamo i dati a Spring Boot.
+   * =====================================================
+   * CARICAMENTO DATI
+   * =====================================================
    */
   useEffect(() => {
 
+
+    /*
+     * Se qualcuno apre direttamente:
+     *
+     * /react-dashboard/index.html
+     *
+     * senza specificare il viaggio,
+     * non facciamo una richiesta verso:
+     *
+     * /api/trips/null/...
+     */
+    if (!tripId) {
+
+
+      setError(
+        'Viaggio non specificato.'
+      )
+
+
+      setLoading(
+        false
+      )
+
+
+      return
+    }
+
+
+
+    /*
+     * AbortController permette di annullare
+     * la richiesta se il componente viene
+     * smontato prima della risposta.
+     */
+    const controller =
+      new AbortController()
+
+
+
     fetch(
-      `/api/trips/${tripId}/expense-dashboard`
+      `/api/trips/${tripId}/expense-dashboard`,
+      {
+        signal: controller.signal
+      }
     )
 
       .then(response => {
 
+
         if (!response.ok) {
+
 
           throw new Error(
             'Errore nel caricamento della dashboard'
           )
         }
 
+
         return response.json()
       })
 
       .then(data => {
 
-        setDashboard(data)
 
-        setLoading(false)
+        setDashboard(
+          data
+        )
+
+
+        setLoading(
+          false
+        )
       })
 
       .catch(error => {
 
-        console.error(error)
 
-        setError(error.message)
+        /*
+         * Se la richiesta è stata annullata
+         * volontariamente non mostriamo errori.
+         */
+        if (error.name === 'AbortError') {
 
-        setLoading(false)
+
+          return
+        }
+
+
+        console.error(
+          error
+        )
+
+
+        setError(
+          error.message
+        )
+
+
+        setLoading(
+          false
+        )
       })
+
+
+
+    /*
+     * Cleanup dell'effect.
+     */
+    return () => {
+
+
+      controller.abort()
+    }
+
 
   }, [tripId])
 
 
 
   /*
-   * Durante il caricamento.
+   * =====================================================
+   * CARICAMENTO
+   * =====================================================
    */
   if (loading) {
+
 
     return (
 
       <div className="dashboard-page">
 
+
         <h1>
           Dashboard spese
         </h1>
 
+
         <p>
           Caricamento...
         </p>
+
 
       </div>
     )
@@ -110,17 +211,22 @@ const tripId =
 
 
   /*
-   * In caso di errore.
+   * =====================================================
+   * ERRORE
+   * =====================================================
    */
   if (error) {
+
 
     return (
 
       <div className="dashboard-page">
 
+
         <h1>
           Dashboard spese
         </h1>
+
 
         <div className="error-box">
 
@@ -128,6 +234,7 @@ const tripId =
 
         </div>
 
+
       </div>
     )
   }
@@ -135,9 +242,10 @@ const tripId =
 
 
   /*
-   * Se non abbiamo ricevuto dati.
+   * Nessun dato ricevuto.
    */
   if (!dashboard) {
+
 
     return null
   }
@@ -145,16 +253,16 @@ const tripId =
 
 
   /*
-   * Dati del grafico a torta.
+   * =====================================================
+   * DATI GRAFICI
+   * =====================================================
    */
+
   const categoryData =
     dashboard.categories || []
 
 
 
-  /*
-   * Dati del grafico dei partecipanti.
-   */
   const participantData =
     (dashboard.participants || [])
       .filter(
@@ -165,11 +273,8 @@ const tripId =
 
 
   /*
-   * Colori delle fette.
-   *
-   * Per ora sono definiti qui.
-   * Successivamente possiamo uniformarli
-   * ancora meglio allo stile di Travelly.
+   * Palette utilizzata dal grafico
+   * delle categorie.
    */
   const pieColors = [
     '#5f8178',
@@ -193,17 +298,22 @@ const tripId =
 
       <div className="dashboard-header">
 
+
         <div>
+
 
           <h1>
             Riepilogo spese
           </h1>
 
+
           <p>
             Analisi economica del viaggio
           </p>
 
+
         </div>
+
 
       </div>
 
@@ -218,9 +328,11 @@ const tripId =
 
         <div className="summary-card">
 
+
           <span>
             Spese totali
           </span>
+
 
           <strong>
 
@@ -228,15 +340,18 @@ const tripId =
 
           </strong>
 
+
         </div>
 
 
 
         <div className="summary-card">
 
+
           <span>
             Spese da assegnare
           </span>
+
 
           <strong>
 
@@ -244,15 +359,18 @@ const tripId =
 
           </strong>
 
+
         </div>
 
 
 
         <div className="summary-card">
 
+
           <span>
             Divisione spese
           </span>
+
 
           <strong>
 
@@ -263,6 +381,7 @@ const tripId =
             }
 
           </strong>
+
 
         </div>
 
@@ -279,18 +398,23 @@ const tripId =
 
 
         {/* ================================= */}
-        {/* GRAFICO A TORTA */}
+        {/* SPESE PER CATEGORIA */}
         {/* ================================= */}
 
         <section className="chart-card">
+
 
           <h2>
             Spese per categoria
           </h2>
 
+
           <p className="chart-description">
+
             Come è distribuito il budget del viaggio
+
           </p>
+
 
 
           {
@@ -311,18 +435,15 @@ const tripId =
                   height={360}
                 >
 
+
                   <PieChart>
 
 
                     {/*
-                     * Questa prima torta più scura
-                     * viene disegnata leggermente
-                     * più in basso.
-                     *
-                     * Serve a creare un piccolo
-                     * effetto di profondità / 3D.
+                     * Torta inferiore utilizzata
+                     * per creare un leggero
+                     * effetto di profondità.
                      */}
-
                     <Pie
                       data={categoryData}
                       dataKey="amount"
@@ -337,10 +458,10 @@ const tripId =
                     />
 
 
+
                     {/*
                      * Torta principale.
                      */}
-
                     <Pie
                       data={categoryData}
                       dataKey="amount"
@@ -350,14 +471,17 @@ const tripId =
                       outerRadius={115}
                       innerRadius={45}
                       paddingAngle={2}
-                      label={entry =>
-                        `${entry.category}`
+                      label={
+                        entry =>
+                          `${entry.category}`
                       }
                     >
+
 
                       {
                         categoryData.map(
                           (entry, index) => (
+
 
                             <Cell
                               key={
@@ -371,11 +495,14 @@ const tripId =
                               }
                             />
 
+
                           )
                         )
                       }
 
+
                     </Pie>
+
 
 
                     <Tooltip
@@ -391,6 +518,7 @@ const tripId =
 
                   </PieChart>
 
+
                 </ResponsiveContainer>
 
 
@@ -398,18 +526,22 @@ const tripId =
           }
 
 
+
           {/* LEGENDA CATEGORIE */}
 
           <div className="category-list">
+
 
             {
               categoryData.map(
                 (category, index) => (
 
+
                   <div
                     className="category-row"
                     key={category.category}
                   >
+
 
                     <span
                       className="category-dot"
@@ -422,11 +554,13 @@ const tripId =
                       }}
                     />
 
+
                     <span>
 
                       {category.category}
 
                     </span>
+
 
                     <strong>
 
@@ -434,11 +568,14 @@ const tripId =
 
                     </strong>
 
+
                   </div>
+
 
                 )
               )
             }
+
 
           </div>
 
@@ -448,18 +585,23 @@ const tripId =
 
 
         {/* ================================= */}
-        {/* GRAFICO SALDO PARTECIPANTI */}
+        {/* SALDO PARTECIPANTI */}
         {/* ================================= */}
 
         <section className="chart-card">
+
 
           <h2>
             Saldo partecipanti
           </h2>
 
+
           <p className="chart-description">
+
             Chi deve pagare e chi deve ricevere
+
           </p>
+
 
 
           {
@@ -471,6 +613,7 @@ const tripId =
                 height={360}
               >
 
+
                 <BarChart
                   data={participantData}
                   layout="vertical"
@@ -481,6 +624,7 @@ const tripId =
                     bottom: 20
                   }}
                 >
+
 
                   <CartesianGrid
                     strokeDasharray="3 3"
@@ -517,11 +661,17 @@ const tripId =
                   <Bar
                     dataKey="balance"
                     fill="#5f8178"
-                    radius={[0, 6, 6, 0]}
+                    radius={[
+                      0,
+                      6,
+                      6,
+                      0
+                    ]}
                   />
 
 
                 </BarChart>
+
 
               </ResponsiveContainer>
 
@@ -545,114 +695,130 @@ const tripId =
 
 
       {/* ================================= */}
-      {/* DETTAGLIO PARTECIPANTI */}
+      {/* PARTECIPANTI */}
       {/* ================================= */}
 
       <section className="participants-card">
+
 
         <h2>
           Riepilogo partecipanti
         </h2>
 
 
+
         <div className="participant-list">
 
 
           {
-            dashboard.participants.map(
-              participant => (
-
-                <div
-                  className="participant-row"
-                  key={participant.participantId}
-                >
+            (dashboard.participants || [])
+              .map(
+                participant => (
 
 
-                  <div>
-
-                    <strong>
-
-                      {
-                        participant.participantName
-                      }
-
-                    </strong>
+                  <div
+                    className="participant-row"
+                    key={participant.participantId}
+                  >
 
 
-                    <span>
+                    <div>
 
-                      Ha pagato:
 
-                      {' '}
+                      <strong>
 
-                      {
-                        participant
-                          .paidAmount
-                          .toFixed(2)
-                      }
+                        {
+                          participant
+                            .participantName
+                        }
 
-                      €
+                      </strong>
 
-                    </span>
+
+                      <span>
+
+                        Ha pagato:
+
+                        {' '}
+
+                        {
+                          participant
+                            .paidAmount
+                            .toFixed(2)
+                        }
+
+                        €
+
+                      </span>
+
+
+                    </div>
+
+
+
+                    {
+                      participant.balance !== null
+                      &&
+
+
+                      <div
+                        className={
+                          participant.balance > 0
+                            ? 'balance-positive'
+                            :
+                            participant.balance < 0
+                              ? 'balance-negative'
+                              : 'balance-zero'
+                        }
+                      >
+
+
+                        {
+                          participant.balance > 0
+                            ?
+
+                            `Deve ricevere ${participant.balance.toFixed(2)} €`
+
+                            :
+
+                            participant.balance < 0
+                              ?
+
+                              `Deve pagare ${Math.abs(participant.balance).toFixed(2)} €`
+
+                              :
+
+                              'In pari'
+                        }
+
+
+                      </div>
+                    }
+
 
                   </div>
 
 
-                  {
-                    participant.balance !== null
-                    &&
-
-                    <div
-                      className={
-                        participant.balance > 0
-                          ? 'balance-positive'
-                          :
-                          participant.balance < 0
-                            ? 'balance-negative'
-                            : 'balance-zero'
-                      }
-                    >
-
-                      {
-                        participant.balance > 0
-                          ?
-                          `Deve ricevere ${participant.balance.toFixed(2)} €`
-
-                          :
-
-                          participant.balance < 0
-                            ?
-                            `Deve pagare ${Math.abs(participant.balance).toFixed(2)} €`
-
-                            :
-
-                            'In pari'
-                      }
-
-                    </div>
-                  }
-
-
-                </div>
-
+                )
               )
-            )
           }
 
 
         </div>
+
 
       </section>
 
 
 
       {/* ================================= */}
-      {/* CHI DEVE PAGARE CHI */}
+      {/* REGOLAMENTO SPESE */}
       {/* ================================= */}
 
       {
         dashboard.settlementAvailable
         &&
+
 
         <section className="settlement-card">
 
@@ -662,62 +828,79 @@ const tripId =
           </h2>
 
 
+
           {
-            dashboard.settlements.length === 0
+            (dashboard.settlements || [])
+              .length === 0
               ?
 
               <p>
+
                 Tutti i partecipanti sono già in pari.
+
               </p>
 
               :
 
-              dashboard.settlements.map(
-                (settlement, index) => (
+              (dashboard.settlements || [])
+                .map(
+                  (settlement, index) => (
 
-                  <div
-                    className="settlement-row"
-                    key={index}
-                  >
 
-                    <strong>
+                    <div
+                      className="settlement-row"
+                      key={index}
+                    >
 
-                      {
-                        settlement.fromParticipantName
-                      }
 
-                    </strong>
+                      <strong>
 
-                    <span>
-                      deve
-                    </span>
+                        {
+                          settlement
+                            .fromParticipantName
+                        }
 
-                    <strong>
+                      </strong>
 
-                      {
-                        settlement.amount.toFixed(2)
-                      }
 
-                      €
+                      <span>
+                        deve
+                      </span>
 
-                    </strong>
 
-                    <span>
-                      a
-                    </span>
+                      <strong>
 
-                    <strong>
+                        {
+                          settlement
+                            .amount
+                            .toFixed(2)
+                        }
 
-                      {
-                        settlement.toParticipantName
-                      }
+                        €
 
-                    </strong>
+                      </strong>
 
-                  </div>
 
+                      <span>
+                        a
+                      </span>
+
+
+                      <strong>
+
+                        {
+                          settlement
+                            .toParticipantName
+                        }
+
+                      </strong>
+
+
+                    </div>
+
+
+                  )
                 )
-              )
           }
 
 

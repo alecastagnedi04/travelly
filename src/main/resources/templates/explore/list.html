@@ -31,11 +31,12 @@
 <div th:replace="~{fragments/navbar :: siteNavbar}"></div>
 
 
+
 <main class="explore-main">
 
 
     <!-- ================================================== -->
-    <!-- HERO -->
+    <!-- INTRO -->
     <!-- ================================================== -->
 
     <section class="explore-hero">
@@ -54,9 +55,9 @@
 
         <p>
 
-            Itinerari creati da Travelly per aiutarti
-            a scoprire nuove destinazioni e organizzare
-            ogni giornata del tuo viaggio.
+            Itinerari creati da Travelly e viaggi condivisi
+            dalla community per aiutarti a scoprire
+            nuove destinazioni.
 
         </p>
 
@@ -66,10 +67,101 @@
 
 
     <!-- ================================================== -->
-    <!-- CARD -->
+    <!-- BARRA DI RICERCA -->
     <!-- ================================================== -->
 
-    <section class="trip-card-grid">
+    <section class="explore-search-section">
+
+
+        <form
+            class="explore-search-form"
+            th:action="@{/explore}"
+            method="get">
+
+
+            <div class="explore-search-field">
+
+
+                <span class="explore-search-icon">
+                    &#128269;
+                </span>
+
+
+
+                <input
+                    id="exploreSearch"
+                    type="search"
+                    name="q"
+                    th:value="${searchQuery}"
+                    placeholder="Cerca un itinerario per nome..."
+                    aria-label="Cerca un itinerario per nome">
+
+
+            </div>
+
+
+
+            <button
+                class="explore-search-button"
+                type="submit">
+
+                Cerca
+
+            </button>
+
+
+
+            <a
+                class="explore-search-clear"
+                th:if="${searchPerformed}"
+                th:href="@{/explore}">
+
+                Mostra tutti
+
+            </a>
+
+
+        </form>
+
+
+
+        <p class="explore-search-hint">
+
+            Inserisci il nome completo di un itinerario
+            o di un viaggio pubblico.
+
+        </p>
+
+
+
+        <!-- RICERCA EFFETTUATA -->
+
+        <div
+            class="explore-search-status"
+            th:if="${searchPerformed}">
+
+
+            Risultati per:
+
+            <strong th:text="${searchQuery}">
+                Nome cercato
+            </strong>
+
+
+        </div>
+
+
+    </section>
+
+
+
+    <!-- ================================================== -->
+    <!-- ITINERARI UFFICIALI -->
+    <!-- ================================================== -->
+
+    <section
+        class="trip-card-grid"
+        th:if="${!#lists.isEmpty(templates)}">
 
 
         <article
@@ -123,12 +215,11 @@
                 </span>
 
 
-                <h2
-                    th:text="${trip.name}">
 
-                    Copenhagen in 3 giorni
-
+                <h2 th:text="${trip.name}">
+                    Nome itinerario
                 </h2>
+
 
 
                 <p
@@ -151,11 +242,14 @@
                         </span>
 
                         <strong
-                            th:text="${trip.startDate}">
-                            data
+                            th:text="${#temporals.format(trip.startDate, 'dd/MM/yyyy')}">
+
+                            Data inizio
+
                         </strong>
 
                     </div>
+
 
 
                     <div>
@@ -165,11 +259,14 @@
                         </span>
 
                         <strong
-                            th:text="${trip.endDate}">
-                            data
+                            th:text="${#temporals.format(trip.endDate, 'dd/MM/yyyy')}">
+
+                            Data fine
+
                         </strong>
 
                     </div>
+
 
 
                     <div>
@@ -180,8 +277,7 @@
 
                         <strong>
 
-                            <span
-                                th:text="${trip.budget}">
+                            <span th:text="${trip.budget}">
                                 0
                             </span>
 
@@ -202,9 +298,7 @@
 
                     Scopri l'itinerario
 
-                    <span>
-                        →
-                    </span>
+                    <span>→</span>
 
                 </a>
 
@@ -217,160 +311,229 @@
 
     </section>
 
+
+
     <!-- ================================================== -->
-<!-- COMMUNITY -->
-<!-- ================================================== -->
+    <!-- COMMUNITY -->
+    <!-- ================================================== -->
 
-<section
-    class="community-explore-section"
-    th:if="${!#lists.isEmpty(communityTrips)}">
-
-
-    <div class="home-section-heading community-heading">
+    <section
+        class="community-explore-section"
+        th:if="${!#lists.isEmpty(communityTrips)}">
 
 
-        <span>
-            DALLA COMMUNITY
-        </span>
+        <div class="home-section-heading community-heading">
 
 
-        <h2>
-            Viaggi creati dai viaggiatori.
-        </h2>
-
-
-        <p>
-            Scopri gli itinerari che gli utenti Travelly
-            hanno scelto di condividere.
-        </p>
-
-
-    </div>
+            <span>
+                DALLA COMMUNITY
+            </span>
 
 
 
-    <div class="trip-card-grid">
+            <h2>
+                Viaggi creati dai viaggiatori.
+            </h2>
 
 
-        <article
-            class="travel-card"
-            th:each="trip : ${communityTrips}">
+
+            <p>
+                Scopri gli itinerari che gli utenti Travelly
+                hanno scelto di condividere.
+            </p>
 
 
-            <div class="travel-card-cover has-cover-image">
+        </div>
 
 
-                <img
-                    th:if="${trip.coverImage != null}"
-                    class="travel-card-cover-image"
-                    th:src="@{/uploads/trips/{image}(image=${trip.coverImage})}"
-                    th:alt="'Copertina di ' + ${trip.name}">
+
+        <div class="trip-card-grid">
 
 
-                <img
-                    th:if="${trip.coverImage == null}"
-                    class="travel-card-cover-image"
-                    th:src="@{/images/default-trip.jpg}"
-                    alt="Copertina Travelly">
+            <article
+                class="travel-card"
+                th:each="trip : ${communityTrips}">
 
 
-                <span class="travel-card-number">
+                <!-- COPERTINA -->
 
-                    <span>
-                        COMMUNITY
+                <div class="travel-card-cover has-cover-image">
+
+
+                    <img
+                        th:if="${trip.coverImage != null}"
+                        class="travel-card-cover-image"
+                        th:src="@{/uploads/trips/{image}(image=${trip.coverImage})}"
+                        th:alt="'Copertina di ' + ${trip.name}">
+
+
+                    <img
+                        th:if="${trip.coverImage == null}"
+                        class="travel-card-cover-image"
+                        th:src="@{/images/default-trip.jpg}"
+                        alt="Copertina Travelly">
+
+
+                    <span class="travel-card-number">
+
+                        <span>
+                            COMMUNITY
+                        </span>
+
+                        <strong>
+                            TRIP
+                        </strong>
+
                     </span>
-
-                    <strong>
-                        TRIP
-                    </strong>
-
-                </span>
-
-
-            </div>
-
-
-
-            <div class="travel-card-content">
-
-
-                <span class="travel-card-label">
-                    VIAGGIO PUBBLICO
-                </span>
-
-
-                <h2 th:text="${trip.name}">
-                    Nome viaggio
-                </h2>
-
-
-                <p
-                    class="travel-card-description"
-                    th:text="${trip.description}">
-
-                    Descrizione
-
-                </p>
-
-
-                <div class="travel-card-details">
-
-
-                    <div>
-
-                        <span>
-                            Dal
-                        </span>
-
-                        <strong th:text="${trip.startDate}">
-                            data
-                        </strong>
-
-                    </div>
-
-
-                    <div>
-
-                        <span>
-                            Al
-                        </span>
-
-                        <strong th:text="${trip.endDate}">
-                            data
-                        </strong>
-
-                    </div>
 
 
                 </div>
 
 
-                <a
-                    class="travel-card-open"
-                    th:href="@{/explore/community/{id}(id=${trip.id})}">
 
-                    Scopri il viaggio
+                <!-- CONTENUTO -->
 
-                    <span>→</span>
-
-                </a>
+                <div class="travel-card-content">
 
 
-            </div>
+                    <span class="travel-card-label">
+                        VIAGGIO PUBBLICO
+                    </span>
 
 
-        </article>
+
+                    <h2 th:text="${trip.name}">
+                        Nome viaggio
+                    </h2>
 
 
-    </div>
+
+                    <p
+                        class="travel-card-description"
+                        th:text="${trip.description}">
+
+                        Descrizione
+
+                    </p>
 
 
-</section>
+
+                    <div class="travel-card-details">
+
+
+                        <div>
+
+                            <span>
+                                Dal
+                            </span>
+
+                            <strong
+                                th:text="${#temporals.format(trip.startDate, 'dd/MM/yyyy')}">
+
+                                Data inizio
+
+                            </strong>
+
+                        </div>
+
+
+
+                        <div>
+
+                            <span>
+                                Al
+                            </span>
+
+                            <strong
+                                th:text="${#temporals.format(trip.endDate, 'dd/MM/yyyy')}">
+
+                                Data fine
+
+                            </strong>
+
+                        </div>
+
+
+                    </div>
+
+
+
+                    <a
+                        class="travel-card-open"
+                        th:href="@{/explore/community/{id}(id=${trip.id})}">
+
+                        Scopri il viaggio
+
+                        <span>→</span>
+
+                    </a>
+
+
+                </div>
+
+
+            </article>
+
+
+        </div>
+
+
+    </section>
+
+
+
+    <!-- ================================================== -->
+    <!-- NESSUN RISULTATO -->
+    <!-- ================================================== -->
+
+    <section
+        class="explore-search-empty"
+        th:if="${searchPerformed
+            and #lists.isEmpty(templates)
+            and #lists.isEmpty(communityTrips)}">
+
+
+        <div class="explore-search-empty-icon">
+            &#128269;
+        </div>
+
+
+        <h2>
+            Nessun viaggio trovato
+        </h2>
+
+
+
+        <p>
+
+            Non abbiamo trovato itinerari o viaggi pubblici
+            con questo nome esatto.
+
+            Verifica il nome e riprova.
+
+        </p>
+
+
+
+        <a
+            class="explore-search-reset-button"
+            th:href="@{/explore}">
+
+            Mostra tutti gli itinerari
+
+        </a>
+
+
+    </section>
 
 
 </main>
 
 
+
+<!-- ====================================================== -->
+<!-- FOOTER -->
+<!-- ====================================================== -->
 
 <footer class="home-footer">
 
@@ -380,6 +543,7 @@
         <strong>
             Travelly<span>.</span>
         </strong>
+
 
         <p>
             Pianifica. Viaggia. Ricorda.

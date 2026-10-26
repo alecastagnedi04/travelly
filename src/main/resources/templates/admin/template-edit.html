@@ -12,7 +12,9 @@
         name="viewport"
         content="width=device-width, initial-scale=1.0">
 
-    <title>Modifica itinerario - Travelly</title>
+    <title>
+        Modifica itinerario - Travelly
+    </title>
 
     <link
         rel="stylesheet"
@@ -23,6 +25,18 @@
 
 <body>
 
+
+<!-- ====================================================== -->
+<!-- NAVBAR GLOBALE -->
+<!-- ====================================================== -->
+
+<div th:replace="~{fragments/navbar :: siteNavbar}"></div>
+
+
+
+<!-- ====================================================== -->
+<!-- PAGINA -->
+<!-- ====================================================== -->
 
 <main class="trip-form-page">
 
@@ -39,6 +53,10 @@
 
     <div class="trip-form-layout">
 
+
+        <!-- ============================================== -->
+        <!-- INTRO -->
+        <!-- ============================================== -->
 
         <section class="trip-form-intro">
 
@@ -61,22 +79,51 @@
             </p>
 
 
+            <div class="trip-form-note">
+
+
+                <span>
+                    Travelly
+                </span>
+
+
+                <p>
+                    Aggiorna l'itinerario mantenendo
+                    le informazioni già inserite.
+                </p>
+
+
+            </div>
+
+
         </section>
 
 
+
+        <!-- ============================================== -->
+        <!-- FORM -->
+        <!-- ============================================== -->
 
         <section class="trip-form-panel">
 
 
             <div class="trip-form-heading">
 
+
                 <span>
                     MODIFICA ITINERARIO
                 </span>
 
+
                 <h2>
                     Informazioni principali
                 </h2>
+
+
+                <p>
+                    Modifica solamente i dati che vuoi aggiornare.
+                </p>
+
 
             </div>
 
@@ -89,11 +136,17 @@
                 enctype="multipart/form-data">
 
 
+                <!-- ====================================== -->
+                <!-- NOME -->
+                <!-- ====================================== -->
+
                 <div class="travelly-field">
+
 
                     <label for="name">
                         Nome
                     </label>
+
 
                     <input
                         id="name"
@@ -102,15 +155,22 @@
                         th:value="${trip.name}"
                         required>
 
+
                 </div>
 
 
 
+                <!-- ====================================== -->
+                <!-- DESCRIZIONE -->
+                <!-- ====================================== -->
+
                 <div class="travelly-field">
+
 
                     <label for="description">
                         Descrizione
                     </label>
+
 
                     <textarea
                         id="description"
@@ -118,18 +178,25 @@
                         th:text="${trip.description}">
                     </textarea>
 
+
                 </div>
 
 
+
+                <!-- ====================================== -->
+                <!-- DATE -->
+                <!-- ====================================== -->
 
                 <div class="travelly-form-row">
 
 
                     <div class="travelly-field">
 
+
                         <label for="startDate">
                             Data inizio
                         </label>
+
 
                         <input
                             id="startDate"
@@ -138,14 +205,18 @@
                             th:value="${trip.startDate}"
                             required>
 
+
                     </div>
+
 
 
                     <div class="travelly-field">
 
+
                         <label for="endDate">
                             Data fine
                         </label>
+
 
                         <input
                             id="endDate"
@@ -154,6 +225,7 @@
                             th:value="${trip.endDate}"
                             required>
 
+
                     </div>
 
 
@@ -161,11 +233,75 @@
 
 
 
+                <!-- ====================================== -->
+                <!-- COPERTINA ATTUALE -->
+                <!-- ====================================== -->
+
                 <div class="travelly-field">
 
-                    <label for="coverImage">
-                        Nuova copertina
+
+                    <label>
+                        Copertina attuale
                     </label>
+
+
+
+                    <!-- FOTO CARICATA -->
+
+                    <div
+                        class="edit-cover-preview"
+                        th:if="${trip.coverImage != null}">
+
+
+                        <img
+                            th:src="@{/uploads/trips/{image}(image=${trip.coverImage})}"
+                            th:alt="'Copertina di ' + ${trip.name}">
+
+
+                        <span>
+                            Copertina attuale
+                        </span>
+
+
+                    </div>
+
+
+
+                    <!-- FOTO DEFAULT -->
+
+                    <div
+                        class="edit-cover-preview"
+                        th:if="${trip.coverImage == null}">
+
+
+                        <img
+                            th:src="@{/images/default-trip.jpg}"
+                            alt="Copertina Travelly">
+
+
+                        <span>
+                            Copertina predefinita
+                        </span>
+
+
+                    </div>
+
+
+                </div>
+
+
+
+                <!-- ====================================== -->
+                <!-- NUOVA COPERTINA -->
+                <!-- ====================================== -->
+
+                <div class="travelly-field">
+
+
+                    <label for="coverImage">
+                        Sostituisci copertina
+                    </label>
+
 
                     <input
                         id="coverImage"
@@ -173,24 +309,36 @@
                         type="file"
                         accept="image/jpeg,image/png,image/webp">
 
+
                     <small class="field-help">
 
                         Lascia vuoto per mantenere
-                        la copertina attuale.
+                        la copertina mostrata sopra.
+
+                        Se scegli una nuova immagine,
+                        quella attuale verrà sostituita.
 
                     </small>
+
 
                 </div>
 
 
 
+                <!-- ====================================== -->
+                <!-- BUDGET -->
+                <!-- ====================================== -->
+
                 <div class="travelly-field">
+
 
                     <label for="budget">
                         Budget indicativo
                     </label>
 
+
                     <div class="budget-input-wrapper">
+
 
                         <input
                             id="budget"
@@ -201,15 +349,22 @@
                             th:value="${trip.budget}"
                             required>
 
+
                         <span>
                             €
                         </span>
 
+
                     </div>
+
 
                 </div>
 
 
+
+                <!-- ====================================== -->
+                <!-- AZIONI -->
+                <!-- ====================================== -->
 
                 <div class="travelly-form-actions">
 
@@ -223,13 +378,16 @@
                     </a>
 
 
+
                     <button
                         class="form-submit-button"
                         type="submit">
 
                         Salva modifiche
 
-                        <span>→</span>
+                        <span>
+                            →
+                        </span>
 
                     </button>
 

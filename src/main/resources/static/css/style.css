@@ -8999,3 +8999,731 @@ textarea {
 .navbar-register-link:hover {
     opacity: 0.9;
 }
+
+/* =========================================================
+   EXPLORE - BARRA DI RICERCA
+   ========================================================= */
+
+.explore-search-section {
+    margin: 26px auto 42px;
+    max-width: 1000px;
+}
+
+
+.explore-search-form {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+
+.explore-search-field {
+    display: flex;
+    align-items: center;
+    flex: 1;
+    min-width: 240px;
+
+    padding: 0 18px;
+
+    background: #ffffff;
+    border: 1px solid #ddd6cc;
+    border-radius: 14px;
+
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+
+.explore-search-field:focus-within {
+    border-color: #5f8178;
+
+    box-shadow:
+        0 0 0 3px rgba(95, 129, 120, 0.12);
+}
+
+
+.explore-search-icon {
+    margin-right: 12px;
+
+    font-size: 19px;
+    opacity: 0.65;
+}
+
+
+.explore-search-field input {
+    flex: 1;
+    width: 100%;
+    min-width: 0;
+
+    padding: 16px 0;
+
+    border: none;
+    outline: none;
+    background: transparent;
+
+    font-family: inherit;
+    font-size: 15px;
+    color: #173f3b;
+}
+
+
+.explore-search-field input::placeholder {
+    color: #8a8a84;
+}
+
+
+.explore-search-button,
+.explore-search-reset-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 16px 25px;
+
+    border: none;
+    border-radius: 14px;
+
+    background: #173f3b;
+    color: #ffffff;
+
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 700;
+    text-decoration: none;
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s ease,
+        transform 0.2s ease;
+}
+
+
+.explore-search-button:hover,
+.explore-search-reset-button:hover {
+    background: #315e53;
+    transform: translateY(-1px);
+}
+
+
+.explore-search-clear {
+    color: #52796f;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+
+.explore-search-clear:hover {
+    text-decoration: underline;
+}
+
+
+.explore-search-hint {
+    margin: 10px 0 0;
+
+    color: #777a73;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+
+.explore-search-status {
+    margin-top: 18px;
+
+    padding: 13px 17px;
+
+    border: 1px solid #d8e5df;
+    border-radius: 12px;
+
+    background: #edf4ef;
+    color: #315147;
+
+    font-size: 14px;
+}
+
+
+.explore-search-status strong {
+    margin-left: 4px;
+}
+
+
+.explore-search-empty {
+    margin: 32px auto 65px;
+    max-width: 620px;
+
+    padding: 45px 30px;
+
+    background: #ffffff;
+    border: 1px solid #e7e0d7;
+    border-radius: 20px;
+
+    text-align: center;
+}
+
+
+.explore-search-empty-icon {
+    margin-bottom: 15px;
+    font-size: 35px;
+}
+
+
+.explore-search-empty h2 {
+    margin: 0 0 12px;
+    color: #173f3b;
+}
+
+
+.explore-search-empty p {
+    margin-bottom: 25px;
+    color: #69736c;
+    line-height: 1.6;
+}
+
+
+@media (max-width: 650px) {
+
+    .explore-search-form {
+        align-items: stretch;
+    }
+
+
+    .explore-search-field {
+        flex-basis: 100%;
+    }
+
+
+    .explore-search-button {
+        flex: 1;
+    }
+
+
+    .explore-search-clear {
+        align-self: center;
+    }
+
+}
+
+/* =========================================================
+   TRAVELLY - RESTYLING DETTAGLIO VIAGGIO
+   ========================================================= */
+
+
+/* =========================================================
+   SEZIONI
+   ========================================================= */
+
+.trip-detail-page .trip-entity-section {
+    border-radius: 20px;
+}
+
+
+/* =========================================================
+   CARD BASE
+   ========================================================= */
+
+.trip-detail-page .trip-entity-card {
+
+    position: relative;
+
+    padding: 22px 24px;
+
+    border-radius: 16px;
+
+    border: 1px solid transparent;
+
+    border-left-width: 4px;
+
+    box-shadow:
+        0 3px 12px rgba(35, 54, 47, 0.035);
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+
+.trip-detail-page .trip-entity-card:hover {
+
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 8px 20px rgba(35, 54, 47, 0.07);
+}
+
+
+.trip-detail-page .trip-entity-card h3 {
+
+    margin: 0 0 12px;
+
+    color: #24453e;
+
+    font-size: 1.15rem;
+
+    font-weight: 750;
+
+    line-height: 1.35;
+}
+
+
+
+/* =========================================================
+   DESTINAZIONI - VERDE ACQUA
+   ========================================================= */
+
+.trip-detail-page
+.trip-entity-section--destinations
+.trip-entity-card {
+
+    background: #edf7f4;
+
+    border-color: #d4e9e2;
+
+    border-left-color: #65a18d;
+}
+
+
+
+/* =========================================================
+   PARTECIPANTI - AZZURRO
+   ========================================================= */
+
+.trip-detail-page
+.trip-entity-section--participants
+.trip-entity-card {
+
+    background: #eff5fb;
+
+    border-color: #d9e7f3;
+
+    border-left-color: #7eaccb;
+}
+
+
+
+/* =========================================================
+   ATTIVITÀ - PESCA
+   ========================================================= */
+
+.trip-detail-page
+.trip-entity-section--activities
+.trip-entity-card {
+
+    background: #fff3e9;
+
+    border-color: #f1e1d1;
+
+    border-left-color: #d9a176;
+}
+
+
+
+/* =========================================================
+   SPESE - LILLA
+   ========================================================= */
+
+.trip-detail-page
+.trip-entity-section--expenses
+.trip-entity-card {
+
+    background: #f5f0f9;
+
+    border-color: #e7ddef;
+
+    border-left-color: #ab91c5;
+}
+
+
+
+/* =========================================================
+   DESCRIZIONE
+   ========================================================= */
+
+.trip-detail-page .trip-entity-description {
+
+    margin: 0 0 14px;
+
+    color: #6d756f;
+
+    font-size: 0.92rem;
+
+    line-height: 1.6;
+}
+
+
+
+/* =========================================================
+   RIGA DELLE INFORMAZIONI
+   ========================================================= */
+
+.trip-detail-page .trip-entity-meta {
+
+    display: flex;
+
+    align-items: baseline;
+
+    flex-wrap: wrap;
+
+    column-gap: 24px;
+
+    row-gap: 12px;
+
+    margin: 10px 0 0;
+
+    padding: 0;
+}
+
+
+
+/* Singola informazione */
+
+.trip-detail-page .trip-entity-meta-item {
+
+    display: inline-flex;
+
+    align-items: baseline;
+
+    gap: 5px;
+
+    min-width: 0;
+
+    color: #63716a;
+
+    font-size: 0.92rem;
+
+    line-height: 1.5;
+}
+
+
+
+/* Nome del campo */
+
+.trip-detail-page .trip-entity-meta-item strong {
+
+    color: #5b6b62;
+
+    font-weight: 750;
+
+}
+
+
+
+/* Categoria */
+
+.trip-detail-page .trip-entity-category {
+
+    color: #4e6e62;
+
+    font-weight: 650;
+}
+
+
+
+/* =========================================================
+   AREA DEI PULSANTI
+   ========================================================= */
+
+.trip-detail-page .trip-entity-actions {
+
+    display: flex;
+
+    align-items: center;
+
+    flex-wrap: wrap;
+
+    gap: 8px;
+
+    margin-top: 17px;
+}
+
+
+
+/* Evita margini strani dei form */
+
+.trip-detail-page .trip-entity-actions form {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    margin: 0;
+
+    padding: 0;
+}
+
+
+
+/* =========================================================
+   PULSANTI PICCOLI
+   ========================================================= */
+
+.trip-detail-page .trip-entity-btn {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    width: auto;
+
+    min-height: 33px;
+
+    padding: 7px 13px;
+
+    border: 1px solid transparent;
+
+    border-radius: 9px;
+
+    font-family: inherit;
+
+    font-size: 0.79rem;
+
+    font-weight: 700;
+
+    line-height: 1.2;
+
+    white-space: nowrap;
+
+    text-decoration: none;
+
+    cursor: pointer;
+
+    box-shadow: none;
+
+    transition:
+        background-color 0.2s ease,
+        color 0.2s ease,
+        transform 0.2s ease;
+}
+
+
+
+/* =========================================================
+   MODIFICA - VERDE SALVIA
+   ========================================================= */
+
+.trip-detail-page .trip-entity-btn--edit {
+
+    background: #dcebe4;
+
+    border-color: #c2dbce;
+
+    color: #285748 !important;
+
+    box-shadow: none;
+}
+
+
+.trip-detail-page .trip-entity-btn--edit:hover {
+
+    background: #c8e0d3;
+
+    border-color: #a9cbb8;
+
+    color: #204738 !important;
+
+    transform: translateY(-1px);
+
+    box-shadow: none;
+
+}
+
+
+
+/* =========================================================
+   ELIMINA - TERRACOTTA TENUE
+   ========================================================= */
+
+.trip-detail-page .trip-entity-btn--delete {
+
+    background: #f7e3da;
+
+    border-color: #eccbbe;
+
+    color: #93503d !important;
+
+    box-shadow: none;
+}
+
+
+.trip-detail-page .trip-entity-btn--delete:hover {
+
+    background: #efd0c3;
+
+    border-color: #dcae9b;
+
+    color: #803d2c !important;
+
+    transform: translateY(-1px);
+
+    box-shadow: none;
+}
+
+
+
+/* =========================================================
+   PAGATORE SPESE
+   ========================================================= */
+
+.trip-detail-page
+.trip-entity-section--expenses
+.payer-section {
+
+    margin-top: 18px;
+
+    padding: 14px 16px;
+
+    background: rgba(255, 255, 255, 0.55);
+
+    border: 1px solid rgba(171, 145, 197, 0.16);
+
+    border-radius: 12px;
+}
+
+
+
+.trip-detail-page .trip-payer-label {
+
+    margin: 0 0 10px;
+
+    color: #52645d;
+
+    font-size: 0.9rem;
+
+    line-height: 1.5;
+}
+
+
+
+.trip-detail-page .trip-payer-label strong {
+
+    color: #40544b;
+
+    margin-right: 4px;
+}
+
+
+
+/* Tendina partecipante */
+
+.trip-detail-page .payer-section select {
+
+    width: auto;
+
+    max-width: 100%;
+
+    min-width: 190px;
+
+    margin-top: 2px;
+
+    font-size: 0.85rem;
+}
+
+
+
+/* =========================================================
+   SPESA AUTOMATICA
+   ========================================================= */
+
+.trip-detail-page .trip-automatic-expense-label {
+
+    display: inline-block;
+
+    margin: 14px 0 0;
+
+    padding: 7px 11px;
+
+    border-radius: 8px;
+
+    background: rgba(171, 145, 197, 0.13);
+
+    color: #80678d;
+
+    font-size: 0.81rem;
+
+    font-weight: 650;
+
+    line-height: 1.4;
+}
+
+
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 768px) {
+
+    .trip-detail-page .trip-entity-card {
+
+        padding: 18px 17px;
+    }
+
+
+    .trip-detail-page .trip-entity-meta {
+
+        column-gap: 16px;
+
+        row-gap: 10px;
+    }
+
+
+    .trip-detail-page .trip-entity-meta-item {
+
+        font-size: 0.86rem;
+    }
+
+
+    .trip-detail-page .trip-entity-card h3 {
+
+        font-size: 1.05rem;
+    }
+
+
+    .trip-detail-page .trip-entity-actions {
+
+        gap: 8px;
+    }
+
+}
+
+
+@media (max-width: 480px) {
+
+    .trip-detail-page .trip-entity-btn {
+
+        width: auto;
+
+        min-height: 33px;
+
+        padding: 7px 11px;
+
+        font-size: 0.76rem;
+    }
+
+
+    .trip-detail-page .trip-entity-actions form {
+
+        width: auto;
+    }
+
+
+    .trip-detail-page .trip-entity-actions button {
+
+        width: auto;
+    }
+
+
+    .trip-detail-page .trip-entity-meta {
+
+        flex-direction: column;
+
+        align-items: flex-start;
+
+        gap: 7px;
+    }
+
+}
