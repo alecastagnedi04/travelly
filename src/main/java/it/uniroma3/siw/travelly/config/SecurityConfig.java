@@ -10,10 +10,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import org.springframework.security.web.SecurityFilterChain;
 
-
 @Configuration
 public class SecurityConfig {
-
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -21,92 +19,73 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
-
     @Bean
     public SecurityFilterChain securityFilterChain(
             HttpSecurity http) throws Exception {
 
-
         http
 
-            .authorizeHttpRequests(authorize -> authorize
+                .authorizeHttpRequests(authorize -> authorize
 
+                        /*
+                         * =================================================
+                         * PAGINE PUBBLICHE
+                         * =================================================
+                         */
+                        .requestMatchers(
+                                "/",
+                                "/login",
+                                "/register",
+                                "/explore",
+                                "/explore/**",
+                                "/css/**",
+                                "/images/**",
+                                "/uploads/**")
+                        .permitAll()
 
-                /*
-                 * =================================================
-                 * PAGINE PUBBLICHE
-                 * =================================================
-                 */
-                .requestMatchers(
-                    "/",
-                    "/login",
-                    "/register",
-                    "/explore",
-                    "/explore/**",
-                    "/css/**",
-                    "/images/**",
-                    "/uploads/**"
-                )
-                .permitAll()
+                        /*
+                         * =================================================
+                         * ADMIN
+                         * =================================================
+                         */
+                        .requestMatchers(
+                                "/admin/**")
+                        .hasRole("ADMIN")
 
+                        /*
+                         * =================================================
+                         * VIAGGI PERSONALI
+                         * =================================================
+                         */
+                        .requestMatchers(
+                                "/trips/**")
+                        .hasAnyRole(
+                                "USER",
+                                "ADMIN")
 
-                /*
-                 * =================================================
-                 * ADMIN
-                 * =================================================
-                 */
-                .requestMatchers(
-                    "/admin/**"
-                )
-                .hasRole("ADMIN")
+                        /*
+                         * Tutto il resto richiede login.
+                         */
+                        .anyRequest()
+                        .authenticated())
 
+                .formLogin(form -> form
 
-                /*
-                 * =================================================
-                 * VIAGGI PERSONALI
-                 * =================================================
-                 */
-                .requestMatchers(
-                    "/trips/**"
-                )
-                .hasAnyRole(
-                    "USER",
-                    "ADMIN"
-                )
+                        .loginPage(
+                                "/login")
 
+                        .defaultSuccessUrl(
+                                "/trips",
+                                true)
 
-                /*
-                 * Tutto il resto richiede login.
-                 */
-                .anyRequest()
-                .authenticated()
-            )
+                        .permitAll())
 
+                .logout(logout -> logout
 
-            .formLogin(form -> form
+                        .logoutSuccessUrl(
+                                "/")
 
-                .loginPage(
-                    "/login"
-                )
-
-                .defaultSuccessUrl(
-                    "/trips",
-                    true
-                )
-
-                .permitAll()
-            )
-
-
-            .logout(logout -> logout
-
-                .logoutSuccessUrl(
-                    "/"
-                )
-
-                .permitAll()
-            );
-
+                        .permitAll());
 
         return http.build();
     }

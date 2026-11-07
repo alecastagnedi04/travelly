@@ -7,35 +7,27 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-
 @Configuration
 public class WebConfig
-        implements WebMvcConfigurer {
+                implements WebMvcConfigurer {
 
+        @Value("${travelly.upload-dir:uploads}")
+        private String uploadDir;
 
-    @Value("${travelly.upload-dir:uploads}")
-    private String uploadDir;
+        @Override
+        public void addResourceHandlers(
+                        ResourceHandlerRegistry registry) {
 
+                String uploadLocation = Paths.get(uploadDir)
+                                .toAbsolutePath()
+                                .normalize()
+                                .toUri()
+                                .toString();
 
-    @Override
-    public void addResourceHandlers(
-            ResourceHandlerRegistry registry) {
-
-
-        String uploadLocation =
-                Paths.get(uploadDir)
-                        .toAbsolutePath()
-                        .normalize()
-                        .toUri()
-                        .toString();
-
-
-        registry
-                .addResourceHandler(
-                        "/uploads/**"
-                )
-                .addResourceLocations(
-                        uploadLocation
-                );
-    }
+                registry
+                                .addResourceHandler(
+                                                "/uploads/**")
+                                .addResourceLocations(
+                                                uploadLocation);
+        }
 }
